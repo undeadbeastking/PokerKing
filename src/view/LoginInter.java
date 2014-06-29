@@ -11,11 +11,12 @@ public class LoginInter extends JFrame {
 
     public LoginInter(){
         setLayout(null);
-
         title.setBounds(185,70,250,20);
+
+        add(title);
+
         title.setFont(new Font("Consolas", Font.BOLD, 20));
         title.setForeground(Color.BLUE);
 
-        add(title);
     }
 }
