@@ -5,7 +5,7 @@ import view.MainFrame;
 import javax.swing.*;
 
 public class Main {
-    //Master
+    //Agatha
     public static void main(String[] args) {
         MainFrame mainFrame = new MainFrame();
 
