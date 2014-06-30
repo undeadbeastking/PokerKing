@@ -6,8 +6,7 @@ import javax.swing.*;
 
 public class Main {
 
-
-    // hello 2222222222222222222222
+    //From master
     public static void main(String[] args) {
         MainFrame mainFrame = new MainFrame();
 
