@@ -6,8 +6,8 @@ import javax.swing.*;
 
 public class Main {
 
-    // Agatha starts working
-    // Agatha also demands attentions
+    //Against all strikes
+    
     public static void main(String[] args) {
         MainFrame mainFrame = new MainFrame();
 
