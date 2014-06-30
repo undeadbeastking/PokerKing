@@ -70,6 +70,7 @@ public class Login extends JPanel {
                 if(tempInput.equals("Password...")){
                     password.setText("");
                 }
+                password.setFont(new Font("Consolas", Font.PLAIN, 10));
                 password.setForeground(Color.BLACK);
                 password.setEchoChar('*');
             }
