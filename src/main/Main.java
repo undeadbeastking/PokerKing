@@ -6,8 +6,8 @@ import javax.swing.*;
 
 public class Main {
 
-
-    
+    //Invasion here - Troll a bit - Create Conflict
+    int i = 10;
     // Master codes something here
     // Demand attentions
     public static void main(String[] args) {
