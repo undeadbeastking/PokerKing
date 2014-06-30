@@ -14,6 +14,7 @@ public class MainFrame extends JFrame {
 
     private Login login = new Login();
 
+    //My fonts
     private static Font DimFont = new Font("Consolas", Font.ITALIC, 14);
     private static Font myFont = new Font("Consolas", Font.PLAIN, 14);
 
