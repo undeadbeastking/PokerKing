@@ -1,116 +1,161 @@
 package controller;
 
+import model.Data;
 import view.MainFrame;
 import view.Utils;
 
-import java.awt.*;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import javax.swing.*;
+import java.awt.event.*;
 
 /**
  * Created by Agatha of Wood Beyond on 7/2/2014.
  */
 public class LoginCon {
+
     private MainFrame mainFrame;
 
-    public LoginCon(MainFrame mainF){
-        this.mainFrame = mainF;
+    public LoginCon(MainFrame f) {
+        this.mainFrame = f;
 
-        //Hint for usernameJTexfield and add Focuslisner
-        mainFrame.getLoginPanel().getUsernameField().setBorder(Utils.getColorBorder());
-        mainFrame.getLoginPanel().getUsernameField().setFont(Utils.getDimFont());
-        mainFrame.getLoginPanel().getUsernameField().setForeground(Color.LIGHT_GRAY);
-            //Add FocusListener
-        mainFrame.getLoginPanel().getUsernameField().addFocusListener(new usernameListen());
+        //Add FocusListener for Input Fields
+        mainFrame.getLoginPanel().getUsernameField().addFocusListener(new JFieldListener());
+        mainFrame.getLoginPanel().getPasswordField().addFocusListener(new JFieldListener());
 
-        //Hint for passwordfield and add Focuslisner
-        mainFrame.getLoginPanel().getPasswordField().setBorder(Utils.getColorBorder());
-        mainFrame.getLoginPanel().getPasswordField().setEchoChar((char) 0);
-        mainFrame.getLoginPanel().getPasswordField().setFont(Utils.getDimFont());
-        mainFrame.getLoginPanel().getPasswordField().setForeground(Color.LIGHT_GRAY);
-            //Add FocusListener
-        mainFrame.getLoginPanel().getPasswordField().addFocusListener(new passwordListen());
+        //Add MouseListener to Signup button
+        mainFrame.getLoginPanel().getSignUp().addMouseListener(new SignUpListener());
 
-        //Customize signUp button
-            //Remove button's border
-        mainFrame.getLoginPanel().getSignUp().setFocusPainted(false);
-        mainFrame.getLoginPanel().getSignUp().setMargin(new Insets(0, 0, 0, 0));
-            //Remove button's inside color and border
-        mainFrame.getLoginPanel().getSignUp().setContentAreaFilled(false);
-        mainFrame.getLoginPanel().getSignUp().setBorderPainted(false);
-            //Customize button text
-        mainFrame.getLoginPanel().getSignUp().setFont(new Font("Consolas", Font.PLAIN, 15));
-        mainFrame.getLoginPanel().getSignUp().setForeground(Color.BLUE);
-            //Add MouseListener
-        mainFrame.getLoginPanel().getSignUp().addMouseListener(new SignUpListen());
+        //Add ActionListener to Signin button
+        mainFrame.getLoginPanel().getSignIn().addActionListener(new SigninListener());
     }
 
-    private class usernameListen implements FocusListener{
+    private class SigninListener implements ActionListener{
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            //Extract inputs
+            String username = mainFrame.getLoginPanel().getUsernameField().getText();
+            String password = String.valueOf(mainFrame.getLoginPanel().getPasswordField().getPassword());
+            boolean byPass = false;
+
+            //Validate username and password
+            for (int i = 0; i < Data.getAccounts().size(); i++) {
+                String comparedUsername = Data.getAccounts().get(i).getUsername();
+                String comparedPassword = String.valueOf(Data.getAccounts().get(i).getPassword());
+
+                if(username.equals(comparedUsername) && password.equals(comparedPassword)){
+                    byPass = true;
+                    break;
+                }
+            }
+
+            //Log in successfully?
+            if(byPass){
+                //Remove text of Login panel's fields
+                mainFrame.getLoginPanel().loginPanelRefresh();
+                //Replace Login Panel with SignUp Panel
+                mainFrame.remove(mainFrame.getLoginPanel());
+                mainFrame.initialize_Game_Panel(username);
+                mainFrame.add(mainFrame.getGamePanel());
+                //Set suitable size for the frame and relocate it to center
+                mainFrame.setSize(Utils.GamePanel_width, Utils.GamePanel_height);
+                mainFrame.setLocationRelativeTo(null);
+                //Notify MainFrame
+                mainFrame.validate();
+                mainFrame.repaint();
+
+            } else {
+                mainFrame.getLoginPanel().getLoginApproval().setText("*Wrong username or password");
+            }
+        }
+    }
+
+    private class JFieldListener implements FocusListener {
         @Override
         public void focusGained(FocusEvent e) {
-            if (mainFrame.getLoginPanel().getUsernameField().getText().equals("Username...")) {
-                mainFrame.getLoginPanel().getUsernameField().setText("");
+            JTextField usernameRef;
+            JPasswordField passwordRef;
+
+            //usernameField
+            if (mainFrame.getLoginPanel().getUsernameField() == e.getSource()) {
+                usernameRef = mainFrame.getLoginPanel().getUsernameField();
+                if (usernameRef.getText().equals("Username...")) {
+                    usernameRef.setText("");
+                }
+                usernameRef.setForeground(Utils.inputColor);
+                usernameRef.setFont(Utils.inputFont);
             }
-            mainFrame.getLoginPanel().getUsernameField().setForeground(Color.BLACK);
-            mainFrame.getLoginPanel().getUsernameField().setFont(Utils.getMyFont());
+
+            //passwordField
+            if (mainFrame.getLoginPanel().getPasswordField() == e.getSource()) {
+                passwordRef = mainFrame.getLoginPanel().getPasswordField();
+                String pass = String.valueOf(passwordRef.getPassword());
+                if (pass.equals("Password...")) {
+                    passwordRef.setText("");
+                }
+                passwordRef.setForeground(Utils.inputColor);
+                passwordRef.setEchoChar('*');
+            }
         }
 
         @Override
         public void focusLost(FocusEvent e) {
-            if (mainFrame.getLoginPanel().getUsernameField().getText().equals("")) {
-                mainFrame.getLoginPanel().getUsernameField().setFont(Utils.getDimFont());
-                mainFrame.getLoginPanel().getUsernameField().setForeground(Color.LIGHT_GRAY);
-                mainFrame.getLoginPanel().getUsernameField().setText("Username...");
+            JTextField usernameRef;
+            JPasswordField passwordRef;
+
+            //usernameField
+            if (mainFrame.getLoginPanel().getUsernameField() == e.getSource()) {
+                usernameRef = mainFrame.getLoginPanel().getUsernameField();
+                if (usernameRef.getText().equals("")) {
+                    usernameRef.setFont(Utils.hintFont);
+                    usernameRef.setForeground(Utils.hintColor);
+                    usernameRef.setText("Username...");
+                }
+            }
+
+            //passwordField
+            if (mainFrame.getLoginPanel().getPasswordField() == e.getSource()) {
+                passwordRef = mainFrame.getLoginPanel().getPasswordField();
+                if (passwordRef.getPassword().length == 0) {
+                    passwordRef.setEchoChar((char) 0);
+                    passwordRef.setFont(Utils.hintFont);
+                    passwordRef.setForeground(Utils.hintColor);
+                    passwordRef.setText("Password...");
+                }
             }
         }
     }
 
-    private class passwordListen implements FocusListener{
-        @Override
-        public void focusGained(FocusEvent e) {
-            String tempInput = String.valueOf(mainFrame.getLoginPanel().getPasswordField().getPassword());
-            if (tempInput.equals("Password...")) {
-                mainFrame.getLoginPanel().getPasswordField().setText("");
-            }
-            mainFrame.getLoginPanel().getPasswordField().setForeground(Color.BLACK);
-            mainFrame.getLoginPanel().getPasswordField().setEchoChar('*');
-        }
-
-        @Override
-        public void focusLost(FocusEvent e) {
-            if (mainFrame.getLoginPanel().getPasswordField().getPassword().length == 0) {
-                mainFrame.getLoginPanel().getPasswordField().setEchoChar((char) 0);
-                mainFrame.getLoginPanel().getPasswordField().setFont(Utils.getDimFont());
-                mainFrame.getLoginPanel().getPasswordField().setForeground(Color.LIGHT_GRAY);
-                mainFrame.getLoginPanel().getPasswordField().setText("Password...");
-            }
-        }
-    }
-
-    private class SignUpListen implements MouseListener{
+    private class SignUpListener implements MouseListener {
         @Override
         public void mouseClicked(MouseEvent e) {
-
+            //Remove text of Login panel's fields
+            mainFrame.getLoginPanel().loginPanelRefresh();
+            //Replace Login Panel with SignUp Panel
+            mainFrame.remove(mainFrame.getLoginPanel());
+            mainFrame.add(mainFrame.getSignUpPanel());
+            //Set suitable size for the frame and relocate it to center
+            mainFrame.setSize(Utils.SignUpPanel_width, Utils.SignUpPanel_height);
+            mainFrame.setLocationRelativeTo(null);
+            //Notify MainFrame
+            mainFrame.validate();
+            mainFrame.repaint();
         }
 
         @Override
-        public void mousePressed(MouseEvent e) {}
+        public void mousePressed(MouseEvent e) {
+        }
 
         @Override
-        public void mouseReleased(MouseEvent e) {}
+        public void mouseReleased(MouseEvent e) {
+        }
 
         @Override
         public void mouseEntered(MouseEvent e) {
-            mainFrame.getLoginPanel().getSignUp().setFont(new Font("Consolas", Font.BOLD, 15));
-            mainFrame.getLoginPanel().getSignUp().setForeground(Color.BLUE);
+            mainFrame.getLoginPanel().getSignUp().setFont(Utils.hyperTextButtonFontEnter);
         }
 
         @Override
         public void mouseExited(MouseEvent e) {
-            mainFrame.getLoginPanel().getSignUp().setFont(new Font("Consolas", Font.PLAIN, 15));
-            mainFrame.getLoginPanel().getSignUp().setForeground(Color.BLUE);
+            mainFrame.getLoginPanel().getSignUp().setFont(Utils.hyperTextButtonFontNormal);
         }
     }
 }

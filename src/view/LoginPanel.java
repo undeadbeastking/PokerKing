@@ -1,14 +1,8 @@
 package view;
 
 import Custom.CustBut;
-import javafx.scene.control.Hyperlink;
 
 import javax.swing.*;
-import javax.swing.border.Border;
-import javax.swing.border.LineBorder;
-import java.awt.*;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 
 /**
  * Created by Agatha of Wood Beyond on 6/30/2014.
@@ -18,23 +12,28 @@ public class LoginPanel extends JPanel {
 
     //Panel components
     private JLabel intro = new JLabel("Welcome to Poker King");
+    //Input Fields
     private JTextField usernameField = new JTextField("Username...");
-    private JPasswordField passwordField = new JPasswordField ("Password...");
+    private JPasswordField passwordField = new JPasswordField("Password...");
+    //Input validation Message
+    private JLabel loginApproval = new JLabel();
+    //Buttons
     private CustBut signIn = new CustBut("Sign in");
-    private JButton signUp = new JButton("Sign me up");
+    private CustBut signUp = new CustBut("Sign me up");
 
-    public LoginPanel(){
+
+    public LoginPanel() {
         //Customize Login Panel
         setLayout(null);
-        this.setSize(600, 400);
-        this.setBackground(new Color(137,207,240));
+        this.setBackground(Utils.backGroundColor);
 
         //Set bounds for components
-        intro.setBounds(185, 70, 250, 30);
+        intro.setBounds(170, 70, 290, 30);
         usernameField.setBounds(200, 130, 200, 30);
         passwordField.setBounds(200, 180, 200, 30);
-        signIn.setBounds(225,240,150,30);
-        signUp.setBounds(40,315,120,30);
+        signIn.setBounds(225, 240, 150, 30);
+        signUp.setBounds(40, 315, 120, 30);
+        loginApproval.setBounds(375, 312, 190, 30);
 
         //Add components
         this.add(intro);
@@ -42,10 +41,39 @@ public class LoginPanel extends JPanel {
         this.add(passwordField);
         this.add(signIn);
         this.add(signUp);
+        this.add(loginApproval);
 
         //Customize Introduction label
-        intro.setFont(new Font("Calibri", Font.BOLD, 25));
-        intro.setForeground(Color.BLUE);
+        intro.setFont(Utils.loginPanelIntroLabelFont);
+        intro.setForeground(Utils.loginPanelIntroLabelColor);
+
+        //Initialize all the fields for first use
+        reverseInitializedState();
+    }
+
+    private void reverseInitializedState() {
+        //Customize usernameJTexfield first look
+        usernameField.setBorder(Utils.JTextFieldColorBorder);
+        usernameField.setFont(Utils.hintFont);
+        usernameField.setForeground(Utils.hintColor);
+
+        //Customize passwordField first look
+        passwordField.setBorder(Utils.JTextFieldColorBorder);
+        passwordField.setEchoChar((char) 0);
+        passwordField.setFont(Utils.hintFont);
+        passwordField.setForeground(Utils.hintColor);
+
+        //Customize login validation Label
+        loginApproval.setFont(Utils.loginFailFont);
+        loginApproval.setForeground(Utils.loginFailColor);
+    }
+
+    public void loginPanelRefresh() {
+        usernameField.setText("Username...");
+        passwordField.setText("Password...");
+        loginApproval.setText("");
+        signUp.setFont(Utils.hyperTextButtonFontNormal);
+        reverseInitializedState();
     }
 
     public JTextField getUsernameField() {
@@ -62,5 +90,9 @@ public class LoginPanel extends JPanel {
 
     public JButton getSignUp() {
         return signUp;
+    }
+
+    public JLabel getLoginApproval() {
+        return loginApproval;
     }
 }
