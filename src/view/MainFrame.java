@@ -20,7 +20,7 @@ public class MainFrame extends JFrame {
     //All panels
     private LoginPanel loginPanel = new LoginPanel();
     private SignUpPanel signUpPanel = new SignUpPanel();
-    private GamePanel gamePanel;
+    private GamePanel gamePanel = null;
 
     //Controllers
     private LoginCon loginCon;
@@ -42,7 +42,6 @@ public class MainFrame extends JFrame {
         //Initialize controllers and listeners for all panels' components
         loginCon = new LoginCon(this);
         signUpCon = new SignUpCon(this);
-        gameCon = new GameCon(this);
 
         //Load data to Arraylist accounts
         Data.loadData();
@@ -57,8 +56,13 @@ public class MainFrame extends JFrame {
         }
     }
 
-    public void initialize_Game_Panel(String username){
-        //Set background image for game panel
+    /*
+    Because the need of switching account, GamePanel and GameCon need to
+    be initialized later
+     */
+    public void initialize_GamePanel(String username){
+
+        //Initialized GamePanel & Set Background
         Image img;
         try {
             img = ImageIO.read(getClass().getResource(Utils.gameBackground));
@@ -67,6 +71,12 @@ public class MainFrame extends JFrame {
         } catch (IOException ex) {
             System.out.println("Unable to set background images");
         }
+
+        /*
+        Initialize Controller for Game Panel - add listeners after the
+        Game Panel has been initialized
+         */
+        gameCon = new GameCon(this);
     }
 
     public LoginPanel getLoginPanel() {

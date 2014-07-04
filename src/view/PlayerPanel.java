@@ -122,4 +122,28 @@ public class PlayerPanel extends JPanel {
         this.add(cash);
 
     }
+
+    public void changeCurrentPlayer(String newPlayer) {
+        //Change username
+        playerName.setText(newPlayer);
+
+        //Load new player icon
+        ImageIcon imageIcon = null;
+        Image img = null;
+        try {
+            String randon_image_path = Utils.random_mainPlayer_icon();
+            img = ImageIO.read(getClass().getResource(randon_image_path));
+
+            if (img != null) {
+                imageIcon = new ImageIcon(img);
+                icon.setIcon(imageIcon);
+            }
+
+        } catch (IOException ex) {
+            System.out.println("Unable to set player image");
+        }
+
+        //load new cash??
+//        cash.setText("$" + deposit);
+    }
 }

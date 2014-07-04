@@ -2,6 +2,7 @@ package controller;
 
 import model.Data;
 import view.MainFrame;
+import view.PlayerPanel;
 import view.Utils;
 
 import javax.swing.*;
@@ -53,7 +54,20 @@ public class LoginCon {
                 mainFrame.getLoginPanel().loginPanelRefresh();
                 //Replace Login Panel with SignUp Panel
                 mainFrame.remove(mainFrame.getLoginPanel());
-                mainFrame.initialize_Game_Panel(username);
+
+                if(mainFrame.getGamePanel() == null){
+                    mainFrame.initialize_GamePanel(username);
+
+                    /*
+                    Switch the panel of the current player only
+                    No need for set up the whole Game Panel again
+                     */
+                } else {
+                    //get current player panel
+                    PlayerPanel[] current = mainFrame.getGamePanel().getPlayersP();
+                    current[6].changeCurrentPlayer(username);
+                }
+
                 mainFrame.add(mainFrame.getGamePanel());
                 //Set suitable size for the frame and relocate it to center
                 mainFrame.setSize(Utils.GamePanel_width, Utils.GamePanel_height);
