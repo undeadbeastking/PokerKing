@@ -1,5 +1,7 @@
 package view;
 
+import Custom.CustBut;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -11,6 +13,7 @@ public class GamePanel extends JPanel {
     private Image backGroundImage;
     private int defaultPlayersNum = 9;
     private PlayerPanel[] playersP;
+    private CustBut back = new CustBut();
 
     public GamePanel(Image i, String playerName) {
         //Customize Game Panel
@@ -39,15 +42,25 @@ public class GamePanel extends JPanel {
         playersP[6].setBounds(Utils.MainPlayerPanel_7_x, Utils.MainPlayerPanel_7_y, Utils.MainPlayerPanel_width, Utils.MainPlayerPanel_height);
         playersP[7].setBounds(Utils.OpponentPanel8_x, Utils.OpponentPanel8_y, Utils.OpponentPanel_width, Utils.OpponentPanel_height);
         playersP[8].setBounds(Utils.OpponentPanel9_x, Utils.OpponentPanel9_y, Utils.OpponentPanel_width, Utils.OpponentPanel_height);
+        back.setBounds(1010, 10, 50, 50);
 
-        //Add real player panel
+        //Add components
         for (int j = 0; j < defaultPlayersNum; j++) {
             this.add(playersP[j]);
         }
+        this.add(back);
     }
 
     //Draw panel image
     public void paintComponent(Graphics g) {
         g.drawImage(backGroundImage, 0, 0, null);
+    }
+
+    public CustBut getBack() {
+        return back;
+    }
+
+    public PlayerPanel[] getPlayersP() {
+        return playersP;
     }
 }
