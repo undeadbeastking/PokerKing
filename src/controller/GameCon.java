@@ -11,27 +11,27 @@ import java.awt.event.ActionListener;
  */
 public class GameCon {
 
-    private MainFrame mainFrame;
+    private MainFrame f;
 
-    public GameCon(MainFrame f){
-        this.mainFrame = f;
+    public GameCon(MainFrame frame){
+        this.f = frame;
 
         //Set ActionListener for back button
-        this.mainFrame.getGamePanel().getBack().addActionListener(new BackButtonListener());
+        this.f.getGamePanel().getBack().addActionListener(new BackButtonListener());
     }
 
     private class BackButtonListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
             //Replace Game Panel with Login Panel
-            mainFrame.remove(mainFrame.getGamePanel());
-            mainFrame.add(mainFrame.getLoginPanel());
+            f.remove(f.getGamePanel());
+            f.add(f.getLoginPanel());
             //Set suitable size for the frame and relocate it to center
-            mainFrame.setSize(Utils.loginPanel_width, Utils.loginPanel_height);
-            mainFrame.setLocationRelativeTo(null);
-            //Refresh the mainFrame
-            mainFrame.validate();
-            mainFrame.repaint();
+            f.setSize(Utils.loginPanel_width, Utils.loginPanel_height);
+            f.setLocationRelativeTo(null);
+            //Refresh the MainFrame
+            f.validate();
+            f.repaint();
         }
     }
 }

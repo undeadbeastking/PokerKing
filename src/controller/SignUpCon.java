@@ -16,30 +16,30 @@ import java.awt.event.FocusListener;
  */
 public class SignUpCon {
 
-    private MainFrame mainFrame;
+    private MainFrame f;
 
-    public SignUpCon(MainFrame f) {
-        this.mainFrame = f;
+    public SignUpCon(MainFrame frame) {
+        this.f = frame;
 
         //Add FocusListener to fields
-        mainFrame.getSignUpPanel().getUsernameField().addFocusListener(new JFieldListener());
-        mainFrame.getSignUpPanel().getPasswordField().addFocusListener(new JFieldListener());
+        this.f.getSignUpPanel().getUsernameField().addFocusListener(new JFieldListener());
+        this.f.getSignUpPanel().getPasswordField().addFocusListener(new JFieldListener());
 
         //Add ActionListener for Back button
-        mainFrame.getSignUpPanel().getBack().addActionListener(new BackButtonListener());
+        this.f.getSignUpPanel().getBack().addActionListener(new BackButtonListener());
 
         //Add ActionListener for Register button
-        mainFrame.getSignUpPanel().getRegister().addActionListener(new RegisterListener());
+        this.f.getSignUpPanel().getRegister().addActionListener(new RegisterListener());
     }
 
     private class RegisterListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
             //Casting to local variables
-            JTextField usernameRef = mainFrame.getSignUpPanel().getUsernameField();
-            JPasswordField passwordRef = mainFrame.getSignUpPanel().getPasswordField();
-            JLabel usernameValRef = mainFrame.getSignUpPanel().getUsernameVal();
-            JLabel passwordValRef = mainFrame.getSignUpPanel().getPasswordVal();
+            JTextField usernameRef = f.getSignUpPanel().getUsernameField();
+            JPasswordField passwordRef = f.getSignUpPanel().getPasswordField();
+            JLabel usernameValRef = f.getSignUpPanel().getUsernameVal();
+            JLabel passwordValRef = f.getSignUpPanel().getPasswordVal();
             boolean qualified = true;
 
             //Extract inputs from TextFields
@@ -114,16 +114,16 @@ public class SignUpCon {
 
     private void backToLoginPanel() {
         //Refresh JTextfield and validation field
-        mainFrame.getSignUpPanel().signUpPanelRefresh();
+        f.getSignUpPanel().signUpPanelRefresh();
         //Replace Signup Panel with Login Panel
-        mainFrame.remove(mainFrame.getSignUpPanel());
-        mainFrame.add(mainFrame.getLoginPanel());
+        f.remove(f.getSignUpPanel());
+        f.add(f.getLoginPanel());
         //Set suitable size for the frame and relocate it to center
-        mainFrame.setSize(Utils.loginPanel_width, Utils.loginPanel_height);
-        mainFrame.setLocationRelativeTo(null);
-        //Refresh the mainFrame
-        mainFrame.validate();
-        mainFrame.repaint();
+        f.setSize(Utils.loginPanel_width, Utils.loginPanel_height);
+        f.setLocationRelativeTo(null);
+        //Refresh the MainFrame
+        f.validate();
+        f.repaint();
     }
 
     private class JFieldListener implements FocusListener {
@@ -133,8 +133,8 @@ public class SignUpCon {
             JPasswordField passwordRef;
 
             //usernameField
-            if (mainFrame.getSignUpPanel().getUsernameField() == e.getSource()) {
-                usernameRef = mainFrame.getSignUpPanel().getUsernameField();
+            if (f.getSignUpPanel().getUsernameField() == e.getSource()) {
+                usernameRef = f.getSignUpPanel().getUsernameField();
                 if (usernameRef.getText().equals("Username...")) {
                     usernameRef.setText("");
                 }
@@ -143,8 +143,8 @@ public class SignUpCon {
             }
 
             //passwordField
-            if (mainFrame.getSignUpPanel().getPasswordField() == e.getSource()) {
-                passwordRef = mainFrame.getSignUpPanel().getPasswordField();
+            if (f.getSignUpPanel().getPasswordField() == e.getSource()) {
+                passwordRef = f.getSignUpPanel().getPasswordField();
                 String password = String.valueOf(passwordRef.getPassword());
                 if (password.equals("Password...")) {
                     passwordRef.setText("");
@@ -160,8 +160,8 @@ public class SignUpCon {
             JPasswordField passwordRef;
 
             //usernameField
-            if (mainFrame.getSignUpPanel().getUsernameField() == e.getSource()) {
-                usernameRef = mainFrame.getSignUpPanel().getUsernameField();
+            if (f.getSignUpPanel().getUsernameField() == e.getSource()) {
+                usernameRef = f.getSignUpPanel().getUsernameField();
                 if (usernameRef.getText().equals("")) {
                     usernameRef.setFont(Utils.hintFont);
                     usernameRef.setForeground(Utils.hintColor);
@@ -170,8 +170,8 @@ public class SignUpCon {
             }
 
             //passwordField
-            if (mainFrame.getSignUpPanel().getPasswordField() == e.getSource()) {
-                passwordRef = mainFrame.getSignUpPanel().getPasswordField();
+            if (f.getSignUpPanel().getPasswordField() == e.getSource()) {
+                passwordRef = f.getSignUpPanel().getPasswordField();
                 if (passwordRef.getPassword().length == 0) {
                     passwordRef.setEchoChar((char) 0);
                     passwordRef.setFont(Utils.hintFont);
