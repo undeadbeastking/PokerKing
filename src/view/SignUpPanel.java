@@ -1,6 +1,8 @@
 package view;
 
-import Custom.CustBut;
+import CustomUI.CustBut;
+import Utils.SignUpPU;
+import Utils.Utils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -18,7 +20,7 @@ public class SignUpPanel extends JPanel {
     private JLabel usernameVal = new JLabel();
     private JLabel passwordVal = new JLabel();
     //Buttons
-    private CustBut back = new CustBut();
+    private CustBut back = new CustBut("back");
     private CustBut register = new CustBut("Register");
 
     public SignUpPanel() {
@@ -49,33 +51,32 @@ public class SignUpPanel extends JPanel {
         this.add(passwordVal);
 
         //Customize introduction label
-        intro.setFont(Utils.signUpPanelIntroLabelFont);
-        intro.setForeground(Utils.signUpPanelIntroLabelColor);
+        intro.setFont(SignUpPU.introLFont);
+        intro.setForeground(SignUpPU.introLColor);
 
-        //Customize input and validation fields for first use
-        reverseInitializedState();
+        //Set border for fields
+        usernameField.setBorder(Utils.JFColorBorder);
+        passwordField.setBorder(Utils.JFColorBorder);
+
+        //First init || refershPanel
+        refreshPanel();
     }
 
-    public void reverseInitializedState() {
+    public void refreshPanel() {
+        //Refresh input fields
+        usernameField.setText("Username...");
+        passwordField.setText("Password...");
+        passwordField.setEchoChar((char) 0);//Review password
+        //Refresh Validation messages
+        usernameVal.setText("");
+        passwordVal.setText("");
+
         //Customize Input fields
         defaultSetUp(usernameField);
-        //Review password hint
-        passwordField.setEchoChar((char) 0);
         defaultSetUp(passwordField);
-
         //Customize validation fields
         defaultSetUp(usernameVal);
         defaultSetUp(passwordVal);
-    }
-
-    public void signUpPanelRefresh() {
-        //Set initialized texts for fields
-        usernameField.setText("Username...");
-        passwordField.setText("Password...");
-        usernameVal.setText("");
-        passwordVal.setText("");
-        //Refresh to initialized state
-        reverseInitializedState();
     }
 
     private void defaultSetUp(Component input) {
@@ -84,19 +85,17 @@ public class SignUpPanel extends JPanel {
         JLabel labelField;
 
         if (input instanceof JTextField) {
-            textField = (JTextField) input;
-            textField.setBorder(Utils.JTextFieldColorBorder);
+            textField = (JTextField) input;//local cast
             textField.setFont(Utils.hintFont);
             textField.setForeground(Utils.hintColor);
 
         } else if (input instanceof JPasswordField) {
-            passField = (JPasswordField) input;
-            passField.setBorder(Utils.JTextFieldColorBorder);
+            passField = (JPasswordField) input;//local cast
             passField.setFont(Utils.hintFont);
             passField.setForeground(Utils.hintColor);
 
         } else if (input instanceof JLabel) {
-            labelField = (JLabel) input;
+            labelField = (JLabel) input;//local cast
             labelField.setFont(Utils.hintFont);
             labelField.setForeground(Utils.hintColor);
 
@@ -111,19 +110,19 @@ public class SignUpPanel extends JPanel {
         return usernameVal;
     }
 
-    public JPasswordField getPasswordField() {
+    public JPasswordField getPasswordF() {
         return passwordField;
     }
 
-    public JTextField getUsernameField() {
+    public JTextField getUsernameF() {
         return usernameField;
     }
 
-    public CustBut getRegister() {
+    public CustBut getRegistBut() {
         return register;
     }
 
-    public CustBut getBack() {
+    public CustBut getBackBut() {
         return back;
     }
 }

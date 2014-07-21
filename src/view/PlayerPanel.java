@@ -1,9 +1,9 @@
 package view;
 
-import javax.imageio.ImageIO;
+import Utils.PlayerPU;
+
 import javax.swing.*;
 import java.awt.*;
-import java.io.IOException;
 
 /**
  * Created by Agatha of Wood Beyond on 7/4/2014.
@@ -11,139 +11,84 @@ import java.io.IOException;
 public class PlayerPanel extends JPanel {
 
     private JLabel icon = new JLabel();
-    private JLabel playerName = new JLabel();
-    private JLabel cash = new JLabel();
+    private JLabel username = new JLabel();
+    private JLabel status = new JLabel();
+    private JLabel bet = new JLabel();
 
-    public PlayerPanel(int p, String username, int deposit) {
+    public PlayerPanel(int p, String username) {
         //Read player image into JLabel icon
         ImageIcon imageIcon = null;
-        Image img = null;
-        try {
-            switch (p) {
-                case 1:
-                    img = ImageIO.read(getClass().getResource(Utils.Nami_icon));
-                    break;
+        Image img = PlayerPU.randomIcon();
 
-                case 2:
-                    img = ImageIO.read(getClass().getResource(Utils.Octopus_icon));
-                    break;
-
-                case 3:
-                    img = ImageIO.read(getClass().getResource(Utils.Rabbit_icon));
-                    break;
-
-                case 4:
-                    img = ImageIO.read(getClass().getResource(Utils.Riven_icon));
-                    break;
-
-                case 5:
-                    img = ImageIO.read(getClass().getResource(Utils.Robot_icon));
-                    break;
-
-                case 6:
-                    img = ImageIO.read(getClass().getResource(Utils.Scooby_icon));
-                    break;
-
-                case 7:
-                    String randon_image_path = Utils.random_mainPlayer_icon();
-                    img = ImageIO.read(getClass().getResource(randon_image_path));
-                    break;
-
-                case 8:
-                    img = ImageIO.read(getClass().getResource(Utils.Sona_icon));
-                    break;
-
-                case 9:
-                    img = ImageIO.read(getClass().getResource(Utils.Lux_icon));
-                    break;
-
-                default:
-                    System.out.println("No suitable case.");
-                    break;
-            }
-
-            if (img != null) {
-                imageIcon = new ImageIcon(img);
-                icon.setIcon(imageIcon);
-            }
-
-        } catch (IOException ex) {
-            System.out.println("Unable to set player image");
+        if (img != null) {
+            imageIcon = new ImageIcon(img);
+            icon.setIcon(imageIcon);
         }
 
         //Customize player panel
         this.setLayout(null);
-        this.setBorder(Utils.PlayerPanel_border);
-        this.setBackground(Utils.Transparent_background);
+        this.setBorder(PlayerPU.PanelBorder);
+        this.setBackground(PlayerPU.Transparent_background);
 
         //Main player is number 7 (Count from 1)
         if (p == 7) {
             //Set bounds for Main player
-            icon.setBounds(Utils.PlayerIcon_x, Utils.PlayerIcon_y,
-                    Utils.PlayerIcon_width, Utils.PlayerIcon_height);
+            icon.setBounds(PlayerPU.icon_x, PlayerPU.icon_y,
+                    PlayerPU.icon_w, PlayerPU.icon_h);
 
-            playerName.setBounds(Utils.PlayerName_x, Utils.PlayerName_y,
-                    Utils.PlayerName_width, Utils.PlayerName_height);
+            this.username.setBounds(PlayerPU.username_x, PlayerPU.username_y,
+                    PlayerPU.username7_w, PlayerPU.username7_h);
 
-            cash.setBounds(Utils.PlayerCash_x, Utils.PlayerCash_y,
-                    Utils.PlayerCash_width, Utils.PlayerCash_height);
+            bet.setBounds(PlayerPU.playerBet_x, PlayerPU.playerBet_y,
+                    PlayerPU.playerBet_w, PlayerPU.playerBet_h);
 
             //Customize player statistics
-            playerName.setText(username);
-            playerName.setForeground(Utils.PlayerName_Color);
-            playerName.setFont(Utils.PlayerName_font);
-            cash.setText("$" + deposit);
-            cash.setForeground(Utils.PlayerCash_Color);
-            cash.setFont(Utils.PlayerCash_font);
+            this.username.setText(username);
+            this.username.setForeground(PlayerPU.username7_Color);
+            this.username.setFont(PlayerPU.username7_font);
+            //Default bet
+            bet.setText("Bet: $" + 5000000);
+            bet.setForeground(PlayerPU.playerBet_color);
+            bet.setFont(PlayerPU.playerBet_font);
 
         } else {
             //Set bounds for opponent players
-            icon.setBounds(Utils.OpponentIcon_x, Utils.OpponentIcon_y,
-                    Utils.OpponentIcon_width, Utils.OpponentIcon_height);
+            icon.setBounds(PlayerPU.icon_x, PlayerPU.icon_y,
+                    PlayerPU.icon_w, PlayerPU.icon_h);
 
-            playerName.setBounds(Utils.OpponentName_x, Utils.OpponentName_y,
-                    Utils.OpponentName_width, Utils.OpponentName_height);
+            this.username.setBounds(PlayerPU.username_x, PlayerPU.username_y,
+                    PlayerPU.username_w, PlayerPU.username_h);
 
-            cash.setBounds(Utils.OpponentCash_x, Utils.OpponentCash_y,
-                    Utils.OpponentCash_width, Utils.OpponentCash_height);
+            bet.setBounds(PlayerPU.bet_x, PlayerPU.bet_y,
+                    PlayerPU.bet_w, PlayerPU.bet_h);
 
             //Customize player statistics
-            playerName.setText(username);
-            playerName.setForeground(Utils.OpponnentName_Color);
-            playerName.setFont(Utils.OpponentName_font);
-            cash.setText("$" + deposit);
-            cash.setForeground(Utils.OpponnentCash_Color);
-            cash.setFont(Utils.OpponentCash_font);
+            this.username.setText(username);
+            this.username.setForeground(PlayerPU.username_Color);
+            this.username.setFont(PlayerPU.username_font);
+            bet.setText("Bet: $" + 5000000);
+            bet.setForeground(PlayerPU.bet_Color);
+            bet.setFont(PlayerPU.bet_font);
         }
 
         //Add component
         this.add(icon);
-        this.add(playerName);
-        this.add(cash);
+        this.add(this.username);
+        this.add(bet);
 
     }
 
-    public void changeCurrentPlayer(String newPlayer) {
+    public void newMainPlayer(String newName) {
         //Change username
-        playerName.setText(newPlayer);
+        username.setText(newName);
 
         //Load new player icon
         ImageIcon imageIcon = null;
-        Image img = null;
-        try {
-            String randon_image_path = Utils.random_mainPlayer_icon();
-            img = ImageIO.read(getClass().getResource(randon_image_path));
+        Image img = PlayerPU.randomIcon();
 
-            if (img != null) {
-                imageIcon = new ImageIcon(img);
-                icon.setIcon(imageIcon);
-            }
-
-        } catch (IOException ex) {
-            System.out.println("Unable to set player image");
+        if (img != null) {
+            imageIcon = new ImageIcon(img);
+            icon.setIcon(imageIcon);
         }
-
-        //load new cash??
-//        cash.setText("$" + deposit);
     }
 }

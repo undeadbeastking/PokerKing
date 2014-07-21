@@ -14,12 +14,12 @@ public class Data {
     public Data() {
     }
 
-    public static void add(String username, String password) {
+    public static void addAccount(String username, String password) {
         Account account = new Account(username, password);
         accounts.add(account);
     }
 
-    public static void loadData() {
+    public static void loadAccounts() {
         BufferedReader br = null;
         try {
             FileReader fr = new FileReader("src/bin/accounts.txt");
@@ -28,23 +28,23 @@ public class Data {
             String line;
             while ((line = br.readLine()) != null) {
                 StringTokenizer tokenizer = new StringTokenizer(line, ",");
-                add(tokenizer.nextToken(), tokenizer.nextToken());
+                addAccount(tokenizer.nextToken(), tokenizer.nextToken());
             }
 
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Nothing to read.");
 
         } finally {
             try {
                 if (br != null) br.close();
 
             } catch (IOException ex) {
-                ex.printStackTrace();
+                System.out.println("Cannot close file.");
             }
         }
     }
 
-    public static void saveData() {
+    public static void saveAccounts() {
         try {
             File file = new File("src/bin/accounts.txt");
             // if file doesnt exists, then create it
@@ -56,7 +56,7 @@ public class Data {
 
             String line = "Nothing\n";
             for (int i = 0; i < accounts.size(); i++) {
-                line = accounts.get(i).getUsername() + "," + accounts.get(i).getPassword() + "\n";
+                line = accounts.get(i).toString();
                 writer.write(line);
             }
 
