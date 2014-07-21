@@ -1,9 +1,11 @@
 package controller;
 
+import Utils.LoginPU;
+import Utils.Utils;
 import model.Data;
 import model.Validator;
 import view.MainFrame;
-import view.Utils;
+import view.SignUpPanel;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -21,105 +23,102 @@ public class SignUpCon {
     public SignUpCon(MainFrame frame) {
         this.f = frame;
 
+        //local variable
+        SignUpPanel local = f.getSignUpPanel();
+
         //Add FocusListener to fields
-        this.f.getSignUpPanel().getUsernameField().addFocusListener(new JFieldListener());
-        this.f.getSignUpPanel().getPasswordField().addFocusListener(new JFieldListener());
+        local.getUsernameF().addFocusListener(new JFieldListener());
+        local.getPasswordF().addFocusListener(new JFieldListener());
 
-        //Add ActionListener for Back button
-        this.f.getSignUpPanel().getBack().addActionListener(new BackButtonListener());
-
-        //Add ActionListener for Register button
-        this.f.getSignUpPanel().getRegister().addActionListener(new RegisterListener());
+        //Add ActionListener for buttons
+        local.getBackBut().addActionListener(new ActionList());
+        local.getRegistBut().addActionListener(new ActionList());
     }
 
-    private class RegisterListener implements ActionListener {
+    private class ActionList implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            //Casting to local variables
-            JTextField usernameRef = f.getSignUpPanel().getUsernameField();
-            JPasswordField passwordRef = f.getSignUpPanel().getPasswordField();
-            JLabel usernameValRef = f.getSignUpPanel().getUsernameVal();
-            JLabel passwordValRef = f.getSignUpPanel().getPasswordVal();
-            boolean qualified = true;
+            //Local SignUpPanel
+            SignUpPanel local = f.getSignUpPanel();
 
-            //Extract inputs from TextFields
-            String username = usernameRef.getText();
-            String password = String.valueOf(passwordRef.getPassword());
+            if (e.getSource() == local.getRegistBut()) {
+                //Casting to local variables
+                JTextField usernameRef = local.getUsernameF();
+                JPasswordField passwordRef = local.getPasswordF();
+                JLabel usernameValRef = local.getUsernameVal();
+                JLabel passwordValRef = local.getPasswordVal();
 
-            //Validate username
-            if (Validator.isEmpty(username)) {
-                qualified = false;
-                usernameRef.setBorder(Utils.JTextFieldErrorBorder);
-                usernameValRef.setText(Validator.emptyMess);
+                boolean isQualified = true;
 
-            } else if (Validator.containSpace(username)) {
-                qualified = false;
-                usernameRef.setBorder(Utils.JTextFieldErrorBorder);
-                usernameValRef.setText(Validator.spaceMess);
+                //Extract inputs from TextFields
+                String username = usernameRef.getText();
+                String password = String.valueOf(passwordRef.getPassword());
 
-            } else if (Validator.usernameExist(username)) {
-                qualified = false;
-                usernameRef.setBorder(Utils.JTextFieldErrorBorder);
-                usernameValRef.setText(Validator.unavailableMess);
+                //Validate username
+                if (Validator.isEmpty(username)) {
+                    isQualified = false;
+                    usernameValRef.setText(Validator.emptyMess);
 
-            } else if (Validator.notLongEnough(username)) {
-                qualified = false;
-                usernameRef.setBorder(Utils.JTextFieldErrorBorder);
-                usernameValRef.setText(Validator.lengthMess);
+                } else if (Validator.containSpace(username)) {
+                    isQualified = false;
+                    usernameValRef.setText(Validator.spaceMess);
 
-            } else {
-                usernameRef.setBorder(Utils.JTextFieldColorBorder);
-                usernameValRef.setText("");
+                } else if (Validator.usernameExist(username)) {
+                    isQualified = false;
+                    usernameValRef.setText(Validator.unavailableMess);
 
+                } else if (Validator.notLongEnough(username)) {
+                    isQualified = false;
+                    usernameValRef.setText(Validator.lengthMess);
+
+                } else {
+                    usernameValRef.setText("");
+
+                }
+
+                //Validate password
+                if (Validator.isEmpty(password)) {
+                    isQualified = false;
+                    passwordValRef.setText(Validator.emptyMess);
+
+                } else if (Validator.containSpace(password)) {
+                    isQualified = false;
+                    passwordValRef.setText(Validator.spaceMess);
+
+                } else if (Validator.notLongEnough(password)) {
+                    isQualified = false;
+                    passwordValRef.setText(Validator.lengthMess);
+
+                } else {
+                    passwordValRef.setText("");
+
+                }
+
+                if (isQualified) {
+                    Data.addAccount(username, password);
+
+                    //Show success message
+                    JOptionPane.showMessageDialog(null, "Register successfully");
+
+                    //Return to login
+                    toLoginP();
+                }
             }
 
-            //Validate password
-            if (Validator.isEmpty(password)) {
-                qualified = false;
-                passwordRef.setBorder(Utils.JTextFieldErrorBorder);
-                passwordValRef.setText(Validator.emptyMess);
-
-            } else if (Validator.containSpace(password)) {
-                qualified = false;
-                passwordRef.setBorder(Utils.JTextFieldErrorBorder);
-                passwordValRef.setText(Validator.spaceMess);
-
-            } else if (Validator.notLongEnough(password)) {
-                qualified = false;
-                passwordRef.setBorder(Utils.JTextFieldErrorBorder);
-                passwordValRef.setText(Validator.lengthMess);
-
-            } else {
-                passwordRef.setBorder(Utils.JTextFieldColorBorder);
-                passwordValRef.setText("");
-
-            }
-
-            if (qualified) {
-                Data.add(username, password);
-                //Show success message
-                JOptionPane.showMessageDialog(null, "Register successfully");
-                //Return to login
-                backToLoginPanel();
+            if (e.getSource() == local.getBackBut()) {
+                toLoginP();
             }
         }
     }
 
-    private class BackButtonListener implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            backToLoginPanel();
-        }
-    }
-
-    private void backToLoginPanel() {
+    private void toLoginP() {
         //Refresh JTextfield and validation field
-        f.getSignUpPanel().signUpPanelRefresh();
+        f.getSignUpPanel().refreshPanel();
         //Replace Signup Panel with Login Panel
         f.remove(f.getSignUpPanel());
         f.add(f.getLoginPanel());
         //Set suitable size for the frame and relocate it to center
-        f.setSize(Utils.loginPanel_width, Utils.loginPanel_height);
+        f.setSize(LoginPU.width, LoginPU.height);
         f.setLocationRelativeTo(null);
         //Refresh the MainFrame
         f.validate();
@@ -133,8 +132,10 @@ public class SignUpCon {
             JPasswordField passwordRef;
 
             //usernameField
-            if (f.getSignUpPanel().getUsernameField() == e.getSource()) {
-                usernameRef = f.getSignUpPanel().getUsernameField();
+            if (f.getSignUpPanel().getUsernameF() == e.getSource()) {
+
+                usernameRef = f.getSignUpPanel().getUsernameF();
+
                 if (usernameRef.getText().equals("Username...")) {
                     usernameRef.setText("");
                 }
@@ -143,9 +144,11 @@ public class SignUpCon {
             }
 
             //passwordField
-            if (f.getSignUpPanel().getPasswordField() == e.getSource()) {
-                passwordRef = f.getSignUpPanel().getPasswordField();
+            if (f.getSignUpPanel().getPasswordF() == e.getSource()) {
+
+                passwordRef = f.getSignUpPanel().getPasswordF();
                 String password = String.valueOf(passwordRef.getPassword());
+
                 if (password.equals("Password...")) {
                     passwordRef.setText("");
                 }
@@ -160,8 +163,9 @@ public class SignUpCon {
             JPasswordField passwordRef;
 
             //usernameField
-            if (f.getSignUpPanel().getUsernameField() == e.getSource()) {
-                usernameRef = f.getSignUpPanel().getUsernameField();
+            if (f.getSignUpPanel().getUsernameF() == e.getSource()) {
+                usernameRef = f.getSignUpPanel().getUsernameF();
+
                 if (usernameRef.getText().equals("")) {
                     usernameRef.setFont(Utils.hintFont);
                     usernameRef.setForeground(Utils.hintColor);
@@ -170,8 +174,9 @@ public class SignUpCon {
             }
 
             //passwordField
-            if (f.getSignUpPanel().getPasswordField() == e.getSource()) {
-                passwordRef = f.getSignUpPanel().getPasswordField();
+            if (f.getSignUpPanel().getPasswordF() == e.getSource()) {
+                passwordRef = f.getSignUpPanel().getPasswordF();
+
                 if (passwordRef.getPassword().length == 0) {
                     passwordRef.setEchoChar((char) 0);
                     passwordRef.setFont(Utils.hintFont);
