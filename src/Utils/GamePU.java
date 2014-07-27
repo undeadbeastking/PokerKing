@@ -17,4 +17,11 @@ public class GamePU {
     public static final int backBut_w = 50;
     public static final int backBut_h = 50;
 
+    //Fold - Call - Raise - fcr
+    public static final int fcr_y = 570;//Combine bound
+    public static final int fcr_w = 160;//Combine bound
+    public static final int fcr_h = 40;//Combine bound
+    public static  final int fold_x = 230;
+    public static  final int call_x = 430;
+    public static  final int raise_x = 630;
 }

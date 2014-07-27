@@ -12,7 +12,7 @@ public class PlayerPanel extends JPanel {
 
     private JLabel icon = new JLabel();
     private JLabel username = new JLabel();
-    private JLabel status = new JLabel();
+    private JLabel status = new JLabel("Status: Raise");
     private JLabel bet = new JLabel();
 
     public PlayerPanel(int p, String username) {
@@ -30,52 +30,42 @@ public class PlayerPanel extends JPanel {
         this.setBorder(PlayerPU.PanelBorder);
         this.setBackground(PlayerPU.Transparent_background);
 
-        //Main player is number 7 (Count from 1)
+        //Same components
+        //Bounds
+        icon.setBounds(PlayerPU.icon_x, PlayerPU.icon_y,
+                PlayerPU.icon_w, PlayerPU.icon_h);
+        this.username.setBounds(PlayerPU.label_x, PlayerPU.username_y,
+                PlayerPU.label_w, PlayerPU.label_h);
+        status.setBounds(PlayerPU.label_x, PlayerPU.status_y,
+                PlayerPU.label_w, PlayerPU.label_h);
+        bet.setBounds(PlayerPU.label_x, PlayerPU.bet_y,
+                PlayerPU.label_w, PlayerPU.label_h);
+        //Customize displays
+        this.username.setText(username);
+        this.username.setFont(PlayerPU.label_font);
+        bet.setText("Bet: $" + 5000000);
+        bet.setFont(PlayerPU.label_font);
+        status.setFont(PlayerPU.label_font);
+
         if (p == 7) {
-            //Set bounds for Main player
-            icon.setBounds(PlayerPU.icon_x, PlayerPU.icon_y,
-                    PlayerPU.icon_w, PlayerPU.icon_h);
-
-            this.username.setBounds(PlayerPU.username_x, PlayerPU.username_y,
-                    PlayerPU.username7_w, PlayerPU.username7_h);
-
-            bet.setBounds(PlayerPU.playerBet_x, PlayerPU.playerBet_y,
-                    PlayerPU.playerBet_w, PlayerPU.playerBet_h);
-
             //Customize player statistics
-            this.username.setText(username);
-            this.username.setForeground(PlayerPU.username7_Color);
-            this.username.setFont(PlayerPU.username7_font);
-            //Default bet
-            bet.setText("Bet: $" + 5000000);
-            bet.setForeground(PlayerPU.playerBet_color);
-            bet.setFont(PlayerPU.playerBet_font);
+            this.username.setForeground(PlayerPU.pUsername_Color);
+            status.setForeground(PlayerPU.label_Color);
+            bet.setForeground(PlayerPU.label_Color);
 
         } else {
-            //Set bounds for opponent players
-            icon.setBounds(PlayerPU.icon_x, PlayerPU.icon_y,
-                    PlayerPU.icon_w, PlayerPU.icon_h);
-
-            this.username.setBounds(PlayerPU.username_x, PlayerPU.username_y,
-                    PlayerPU.username_w, PlayerPU.username_h);
-
-            bet.setBounds(PlayerPU.bet_x, PlayerPU.bet_y,
-                    PlayerPU.bet_w, PlayerPU.bet_h);
-
             //Customize player statistics
-            this.username.setText(username);
             this.username.setForeground(PlayerPU.username_Color);
-            this.username.setFont(PlayerPU.username_font);
-            bet.setText("Bet: $" + 5000000);
-            bet.setForeground(PlayerPU.bet_Color);
-            bet.setFont(PlayerPU.bet_font);
+            status.setForeground(PlayerPU.label_Color);
+            bet.setForeground(PlayerPU.label_Color);
+
         }
 
         //Add component
         this.add(icon);
         this.add(this.username);
         this.add(bet);
-
+        this.add(status);
     }
 
     public void newMainPlayer(String newName) {
