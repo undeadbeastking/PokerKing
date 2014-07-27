@@ -1,7 +1,7 @@
 package controller;
 
 import view.MainFrame;
-import view.Utils;
+import Utils.LoginPU;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -17,7 +17,7 @@ public class GameCon {
         this.f = frame;
 
         //Set ActionListener for back button
-        this.f.getGamePanel().getBack().addActionListener(new BackButtonListener());
+        this.f.getGamePanel().getBackBut().addActionListener(new BackButtonListener());
     }
 
     private class BackButtonListener implements ActionListener {
@@ -27,7 +27,7 @@ public class GameCon {
             f.remove(f.getGamePanel());
             f.add(f.getLoginPanel());
             //Set suitable size for the frame and relocate it to center
-            f.setSize(Utils.loginPanel_width, Utils.loginPanel_height);
+            f.setSize(LoginPU.width, LoginPU.height);
             f.setLocationRelativeTo(null);
             //Refresh the MainFrame
             f.validate();

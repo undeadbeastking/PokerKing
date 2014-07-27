@@ -20,4 +20,9 @@ public class Account {
     public String getPassword() {
         return password;
     }
+
+    @Override
+    public String toString(){
+        return username + ","+ password + "\n";
+    }
 }
