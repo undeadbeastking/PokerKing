@@ -15,8 +15,6 @@ public class CustBut extends JButton {
 
         //'Sign me up' Hyperlink button
         if (name.equals("Sign me up")) {
-            //Set text
-            this.setText(name);
             //Remove button's highlight when clicked
             this.setFocusPainted(false);
             this.setMargin(new Insets(0, 0, 0, 0));
@@ -24,6 +22,7 @@ public class CustBut extends JButton {
             this.setContentAreaFilled(false);
             this.setBorderPainted(false);
             //Customize button text
+            this.setText(name);
             this.setFont(Utils.hyperButUnfocusState);
             this.setForeground(Utils.hyperButColor);
 
@@ -37,12 +36,11 @@ public class CustBut extends JButton {
 
             //Normal Button
         } else {
-            //Set text
-            this.setText(name);
             //Set button icon
             Image img = ImageGetter.getInstance().getImage(Utils.normalButImage);
             this.setIcon(new ImageIcon(img));
             //Customize button text
+            this.setText(name);
             this.setFont(Utils.normalButFont);
             this.setHorizontalTextPosition(SwingConstants.CENTER);
         }
