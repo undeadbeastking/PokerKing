@@ -73,11 +73,6 @@ public class LoginCon {
 
             if (f.getGamePanel() == null) {
                 f.initGamePanel(username);
-
-            } else {
-                //get current Game panel but switch to another username
-                PlayerPanel[] current = f.getGamePanel().getPlayersP();
-                current[6].newMainPlayer(username);
             }
 
             f.add(f.getGamePanel());

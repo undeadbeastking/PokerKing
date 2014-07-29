@@ -21,58 +21,52 @@ public class PlayerPanel extends JPanel {
     private JLabel card1 = new JLabel();
     private JLabel card2 = new JLabel();
 
-    public PlayerPanel(int p, String username) {
-        //Read player image into JLabel icon
-        Image img = PlayerPU.randomIcon();
-        ImageIcon imageIcon = null;
-
-        if (img != null) {
-            imageIcon = new ImageIcon(img);
-            icon.setIcon(imageIcon);
-        }
-
-        //Read cards images
-        img = ImageGetter.getInstance().getImage("cards/h1.png");
-        //Drop images
-        Image cardI1 = createImage(new FilteredImageSource(img.getSource(),
-                new CropImageFilter(1, 1, 18, 32)));
-        if(img != null){
-            imageIcon = new ImageIcon(cardI1);
-            card1.setIcon(imageIcon);
-        }
-
+    public PlayerPanel(int p, String u) {
         //Customize player panel
         this.setLayout(null);
         this.setBorder(PlayerPU.PanelBorder);
         this.setBackground(PlayerPU.Transparent_background);
 
-        //Same components
+        //Read player image into JLabel icon
+        Image img = PlayerPU.randomIcon();
+        ImageIcon imageIcon = null;
+        if (img != null) {
+            imageIcon = new ImageIcon(img);
+            icon.setIcon(imageIcon);
+        }
+
+        //Set cards images - TEST
+        setCards("3,1", "4,1");
+
         //Bounds
         icon.setBounds(PlayerPU.icon_x, PlayerPU.icon_y,
                 PlayerPU.icon_w, PlayerPU.icon_h);
-        this.username.setBounds(PlayerPU.label_x, PlayerPU.username_y,
+        username.setBounds(PlayerPU.label_x, PlayerPU.username_y,
                 PlayerPU.label_w, PlayerPU.label_h);
         status.setBounds(PlayerPU.label_x, PlayerPU.status_y,
                 PlayerPU.label_w, PlayerPU.label_h);
         bet.setBounds(PlayerPU.label_x, PlayerPU.bet_y,
                 PlayerPU.label_w, PlayerPU.label_h);
-        card1.setBounds(100, 20, 50, 50);
+        card1.setBounds(PlayerPU.card1_x, PlayerPU.card_y,
+                PlayerPU.card_w, PlayerPU.card_h);
+        card2.setBounds(PlayerPU.card2_x, PlayerPU.card_y,
+                PlayerPU.card_w, PlayerPU.card_h);
         //Customize displays
-        this.username.setText(username);
-        this.username.setFont(PlayerPU.label_font);
+        username.setText(u);
+        username.setFont(PlayerPU.label_font);
         bet.setText("Bet: $" + 5000000);
         bet.setFont(PlayerPU.label_font);
         status.setFont(PlayerPU.label_font);
 
         if (p == 7) {
             //Customize player statistics
-            this.username.setForeground(PlayerPU.pUsername_Color);
+            username.setForeground(PlayerPU.pUsername_Color);
             status.setForeground(PlayerPU.label_Color);
             bet.setForeground(PlayerPU.label_Color);
 
         } else {
             //Customize player statistics
-            this.username.setForeground(PlayerPU.username_Color);
+            username.setForeground(PlayerPU.username_Color);
             status.setForeground(PlayerPU.label_Color);
             bet.setForeground(PlayerPU.label_Color);
 
@@ -80,23 +74,29 @@ public class PlayerPanel extends JPanel {
 
         //Add component
         this.add(icon);
-        this.add(this.username);
+        this.add(username);
         this.add(bet);
         this.add(status);
         this.add(card1);
+        this.add(card2);
     }
 
-    public void newMainPlayer(String newName) {
-        //Change username
-        username.setText(newName);
-
-        //Load new player icon
-        ImageIcon imageIcon = null;
-        Image img = PlayerPU.randomIcon();
-
-        if (img != null) {
-            imageIcon = new ImageIcon(img);
-            icon.setIcon(imageIcon);
+    //Set hole cards
+    public void setCards(String suffix1, String suffix2){
+        String path1 = PlayerPU.pathPrefix + suffix1 + ".png";
+        String path2 = PlayerPU.pathPrefix + suffix2 + ".png";
+        Image img1 = ImageGetter.getInstance().getImage(path1);
+        Image img2 = ImageGetter.getInstance().getImage(path2);
+        //Drop images
+        Image cardI1 = createImage(new FilteredImageSource(img1.getSource(),
+                new CropImageFilter(1, 1, 18, 32)));
+        Image cardI2 = createImage(new FilteredImageSource(img2.getSource(),
+                new CropImageFilter(1, 1, 18, 32)));
+        if(img1 != null && img2 != null){
+            ImageIcon imageIcon = new ImageIcon(cardI1);
+            card1.setIcon(imageIcon);
+            imageIcon = new ImageIcon(cardI2);
+            card2.setIcon(imageIcon);
         }
     }
 }
