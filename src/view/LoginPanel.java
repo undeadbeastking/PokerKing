@@ -23,7 +23,6 @@ public class LoginPanel extends JPanel {
     private CustBut signIn = new CustBut("Sign in");
     private CustBut signUp = new CustBut("Sign me up");
 
-
     public LoginPanel() {
         //Customize Login Panel
         setLayout(null);
