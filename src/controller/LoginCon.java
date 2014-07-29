@@ -9,6 +9,7 @@ import view.MainFrame;
 import view.PlayerPanel;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.*;
 
 /**
@@ -66,22 +67,36 @@ public class LoginCon {
 
         //Log in successfully?
         if (true) {
-            //Refresh LoginPanel for next Login
-            local.refreshPanel();
-            //Replace Login Panel with Game Panel
-            f.remove(local);
+            boolean waitingStatus = true;
 
-            if (f.getGamePanel() == null) {
-                f.initGamePanel(username);
+            f.remove(local);
+            JLabel yeah =  new JLabel("Yeah");
+            JPanel p = new JPanel();
+            p.add(yeah);
+            f.add(p);
+
+            while(true){
+                System.out.println("Yeah.");
+
+
             }
 
-            f.add(f.getGamePanel());
-            //Set suitable size for the frame and relocate it to center
-            f.setSize(GamePU.width, GamePU.height);
-            f.setLocationRelativeTo(null);
-            //Notify MainFrame
-            f.validate();
-            f.repaint();
+//            //Refresh LoginPanel for next Login
+//            local.refreshPanel();
+////            Replace Login Panel with Game Panel
+//            f.remove(local);
+//
+//            if (f.getGamePanel() == null) {
+//                f.initGamePanel(username);
+//            }
+//
+//            f.add(f.getGamePanel());
+//            //Set suitable size for the frame and relocate it to center
+//            f.setSize(GamePU.width, GamePU.height);
+//            f.setLocationRelativeTo(null);
+//            //Notify MainFrame
+//            f.validate();
+//            f.repaint();
 
         } else {
             local.getErrorMess().setText("*Wrong username or password");

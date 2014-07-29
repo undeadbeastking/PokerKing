@@ -1,5 +1,6 @@
 package view;
 
+import Client.Client;
 import Utils.LoginPU;
 import controller.GameCon;
 import controller.LoginCon;
@@ -62,7 +63,7 @@ public class MainFrame extends JFrame {
     public void initGamePanel(String username) {
 
         //Initialized GamePanel & Game Controller
-        gamePanel = new GamePanel(username);
+        gamePanel = new GamePanel(username, new Client());
         gameCon = new GameCon(this);
     }
 

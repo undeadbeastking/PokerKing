@@ -21,7 +21,6 @@ public class Hand {
      */
 
     public Hand(Deck d) {
-
         /*
         Initialize Player hand
          */

@@ -1,5 +1,6 @@
 package view;
 
+import Client.Client;
 import Utils.PlayerPU;
 import images.ImageGetter;
 
@@ -20,12 +21,15 @@ public class PlayerPanel extends JPanel {
     //Cards
     private JLabel card1 = new JLabel();
     private JLabel card2 = new JLabel();
+    //CLient
+    private Client client;
 
-    public PlayerPanel(int p, String u) {
+    public PlayerPanel(int p, String u, Client c) {
         //Customize player panel
         this.setLayout(null);
         this.setBorder(PlayerPU.PanelBorder);
         this.setBackground(PlayerPU.Transparent_background);
+        this.client = c;
 
         //Read player image into JLabel icon
         Image img = PlayerPU.randomIcon();
@@ -36,7 +40,7 @@ public class PlayerPanel extends JPanel {
         }
 
         //Set cards images - TEST
-        setCards("3,1", "4,1");
+        setCards(client.getHoleCards());
 
         //Bounds
         icon.setBounds(PlayerPU.icon_x, PlayerPU.icon_y,
@@ -82,9 +86,9 @@ public class PlayerPanel extends JPanel {
     }
 
     //Set hole cards
-    public void setCards(String suffix1, String suffix2){
-        String path1 = PlayerPU.pathPrefix + suffix1 + ".png";
-        String path2 = PlayerPU.pathPrefix + suffix2 + ".png";
+    public void setCards(String[] names){
+        String path1 = PlayerPU.pathPrefix + names[0] + ".png";
+        String path2 = PlayerPU.pathPrefix + names[1] + ".png";
         Image img1 = ImageGetter.getInstance().getImage(path1);
         Image img2 = ImageGetter.getInstance().getImage(path2);
         //Drop images

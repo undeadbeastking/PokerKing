@@ -15,12 +15,15 @@ public class Deck {
 
     //Deck cards
     private ArrayList<Card> cards;
-
+    //Hands
+    private int currentHand = 0;
+    private Hand[] hands;
     //Community cards
     private Card[] commuCards;
 
     public Deck(){
         cards = new ArrayList<Card>();
+        hands = new Hand[9];
 
         //Create a Poker deck with arranged order
         // 4 types of suit
@@ -60,8 +63,24 @@ public class Deck {
         }
     }
 
+    public Hand newHand(){
+        if (currentHand != 9){
+            hands[currentHand] = new Hand(this);
+            currentHand++;
+            return hands[currentHand-1];
+
+        } else{
+            System.out.println("Max hand reached.");
+            return null;
+        }
+    }
+
     public Card[] getCommuCards() {
         return commuCards;
+    }
+
+    public Hand[] getHands() {
+        return hands;
     }
 
     //Draw the top card from a deck

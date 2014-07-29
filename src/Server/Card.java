@@ -35,7 +35,7 @@ public class Card {
     //A card object full info
     @Override
     public String toString() {
-        return ranks[rank - 1] + " of " + suits[suit - 1];
+        return suit + "," + rank;
     }
 
     public int getRank() {
