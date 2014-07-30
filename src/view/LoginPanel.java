@@ -12,6 +12,7 @@ import javax.swing.*;
 
 public class LoginPanel extends JPanel {
 
+    private MainFrame f;
     //Panel components
     private JLabel intro = new JLabel("Welcome to Poker King");
     //Input Fields
@@ -22,11 +23,14 @@ public class LoginPanel extends JPanel {
     //Buttons
     private CustBut signIn = new CustBut("Sign in");
     private CustBut signUp = new CustBut("Sign me up");
+    private CustBut ready = new CustBut("I am ready");
 
-    public LoginPanel() {
+    public LoginPanel(MainFrame f) {
+
         //Customize Login Panel
         setLayout(null);
         this.setBackground(Utils.backGroundColor);
+        this.f = f;
 
         //Set bounds for components
         intro.setBounds(LoginPU.intro_x, LoginPU.intro_y,
@@ -41,6 +45,10 @@ public class LoginPanel extends JPanel {
                 LoginPU.but_w, LoginPU.but_h);
         errorMess.setBounds(LoginPU.error_x, LoginPU.error_y,
                 LoginPU.error_w, LoginPU.error_h);
+        ready.setBounds(LoginPU.signIn_x, LoginPU.ready_y,
+                LoginPU.but_w, LoginPU.but_h);
+        //Disable ready button
+        ready.setEnabled(false);
 
         //Add components
         this.add(intro);
@@ -49,6 +57,7 @@ public class LoginPanel extends JPanel {
         this.add(signIn);
         this.add(signUp);
         this.add(errorMess);
+        this.add(ready);
 
         //Customize Introduction label
         intro.setFont(LoginPU.IntroFont);
@@ -67,18 +76,23 @@ public class LoginPanel extends JPanel {
     }
 
     public void loadWaitingUI(){
-        errorMess.setText("Waiting for other players");
+        errorMess.setText("*Waiting for other players");
         //Prevent UI Interaction
         signUp.setEnabled(false);
         signIn.setEnabled(false);
         usernameF.setEnabled(false);
         passwordF.setEnabled(false);
+        //Enable ready button
+        ready.setEnabled(true);
     }
 
     public void refreshPanel() {
 
         //Clean error message
         errorMess.setText("");
+
+        //Diable ready again
+        ready.setEnabled(false);
 
         //Set signup button Unfocus State
         signUp.setFont(Utils.hyperButUnfocusState);
@@ -113,5 +127,9 @@ public class LoginPanel extends JPanel {
 
     public JLabel getErrorMess() {
         return errorMess;
+    }
+
+    public CustBut getReady() {
+        return ready;
     }
 }
