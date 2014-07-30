@@ -12,6 +12,7 @@ public class Hand {
 
     private Card[] cards;
     private int[] values;
+    private int id;
 
     /*
     Every hand will have 5 same community cards and 2 random cards from the created deck
@@ -37,7 +38,7 @@ public class Hand {
         for (int i = 2; i < 7; i++) {
             cards[i] = commuCards[i - 2];
         }
-
+        id = d.generateID();
         //Evaluate best 5 of 7
         handEvaluate();
     }
@@ -64,6 +65,10 @@ public class Hand {
 
         //Evaluate best 5 of 7
         handEvaluate();
+    }
+
+    public int getId(){
+        return id;
     }
 
     private void handEvaluate() {
@@ -487,4 +492,5 @@ public class Hand {
     public Card[] getCards() {
         return cards;
     }
+    public int[] getValues(){ return values;}
 }

@@ -7,7 +7,10 @@ import Utils.PlayerPU;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.CropImageFilter;
+import java.awt.image.FilteredImageSource;
 import java.util.ArrayList;
+import java.util.StringTokenizer;
 
 /**
  * Created by Agatha of Wood Beyond on 7/4/2014.
@@ -20,22 +23,28 @@ public class GamePanel extends JPanel {
     private CustBut back = new CustBut("back");
     //Function buttons
     private CustBut foldBut = new CustBut("Fold");
-    private CustBut callBut= new CustBut("Call");
+    private CustBut callBut = new CustBut("Call");
     private CustBut raiseBut = new CustBut("Raise");
-    private  MainFrame f;
+    private MainFrame f;
     private ArrayList<String> allPlayers;
+    private JLabel card1 = new JLabel();
+    private JLabel card2 = new JLabel();
+    private JLabel card3 = new JLabel();
+    private JLabel card4 = new JLabel();
+    private JLabel card5 = new JLabel();
+
 
     public GamePanel(MainFrame frame) {
         //Customize Game Panel
         this.backGround = ImageGetter.getInstance().getImage(GamePU.backGround);
         setLayout(null);
         this.f = frame;
-
+        setCards();
         //Create all players panels - real player will be added
         playersP = new PlayerPanel[maxPlayersNum];
         allPlayers = f.getAllUsers();
         for (int j = 0; j < allPlayers.size(); j++) {
-                playersP[j] = new PlayerPanel(j, f);
+            playersP[j] = new PlayerPanel(j, f);
         }
 
         //Set bounds for player panels
@@ -70,6 +79,17 @@ public class GamePanel extends JPanel {
                 GamePU.fcr_w, GamePU.fcr_h);
         raiseBut.setBounds(GamePU.raise_x, GamePU.fcr_y,
                 GamePU.fcr_w, GamePU.fcr_h);
+        card1.setBounds(GamePU.card_x, GamePU.card_y,
+                GamePU.card_w, GamePU.card_h);
+        card2.setBounds(GamePU.card_x + 120, GamePU.card_y,
+                GamePU.card_w, GamePU.card_h);
+        card3.setBounds(GamePU.card_x + 240, GamePU.card_y,
+                GamePU.card_w, GamePU.card_h);
+        card4.setBounds(GamePU.card_x + 360, GamePU.card_y,
+                GamePU.card_w, GamePU.card_h);
+        card5.setBounds(GamePU.card_x + 480, GamePU.card_y,
+                GamePU.card_w, GamePU.card_h);
+
 
         //Add components
         for (int j = 0; j < allPlayers.size(); j++) {
@@ -79,7 +99,13 @@ public class GamePanel extends JPanel {
         this.add(foldBut);
         this.add(callBut);
         this.add(raiseBut);
-}
+        this.add(card1);
+        this.add(card2);
+        this.add(card3);
+        this.add(card4);
+        this.add(card5);
+
+    }
 
     //Draw panel image
     public void paintComponent(Graphics g) {
@@ -92,5 +118,40 @@ public class GamePanel extends JPanel {
 
     public PlayerPanel[] getPlayersP() {
         return playersP;
+    }
+
+    public void setCards() {
+
+        String path1, path2, path3, path4, path5;
+
+
+        StringTokenizer tokenizer = new StringTokenizer(f.getCommuCards(), "-");
+        path1 = PlayerPU.pathPrefix + tokenizer.nextToken() + ".png";
+        path2 = PlayerPU.pathPrefix + tokenizer.nextToken() + ".png";
+        path3 = PlayerPU.pathPrefix + tokenizer.nextToken() + ".png";
+        path4 = PlayerPU.pathPrefix + tokenizer.nextToken() + ".png";
+        path5 = PlayerPU.pathPrefix + tokenizer.nextToken() + ".png";
+
+
+        Image img1 = ImageGetter.getInstance().getImage(path1);
+        Image img2 = ImageGetter.getInstance().getImage(path2);
+        Image img3 = ImageGetter.getInstance().getImage(path3);
+        Image img4 = ImageGetter.getInstance().getImage(path4);
+        Image img5 = ImageGetter.getInstance().getImage(path5);
+
+
+        if (img1 != null && img2 != null && img3 != null && img4 != null && img5 != null) {
+            ImageIcon imageIcon;
+            imageIcon = new ImageIcon(img1);
+            card1.setIcon(imageIcon);
+            imageIcon = new ImageIcon(img2);
+            card2.setIcon(imageIcon);
+            imageIcon = new ImageIcon(img3);
+            card3.setIcon(imageIcon);
+            imageIcon = new ImageIcon(img4);
+            card4.setIcon(imageIcon);
+            imageIcon = new ImageIcon(img5);
+            card5.setIcon(imageIcon);
+        }
     }
 }

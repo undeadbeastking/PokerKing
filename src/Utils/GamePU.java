@@ -24,4 +24,10 @@ public class GamePU {
     public static  final int fold_x = 230;
     public static  final int call_x = 430;
     public static  final int raise_x = 630;
+
+    //Community cards
+    public static final int card_w = 70;//Combine bound
+    public static final int card_h = 100;//Combine bound
+    public static final int card_x = 260;
+    public static final int card_y = 320;
 }

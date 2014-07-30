@@ -40,7 +40,9 @@ public class MainFrame extends JFrame {
     //CLient user
     private String clientUser = "";
     private String cards = "";
+    private String commuCards = "";
     private ArrayList<String> allUsers = new ArrayList<String>();
+    private String serverAddress = "localhost";
 
     public MainFrame() {
         //Customize MainFrame for loginPanel
@@ -79,7 +81,7 @@ public class MainFrame extends JFrame {
     private void initSocket() throws IOException {
 
         //Make connection and initialize streams
-        Socket socket = new Socket("localhost", 9001);
+        Socket socket = new Socket(serverAddress, 9001);
         in = new BufferedReader(new InputStreamReader(
                 socket.getInputStream()
         ));
@@ -87,7 +89,7 @@ public class MainFrame extends JFrame {
     }
 
     //Receive and process stuffs from server
-    public void processSignalFromServer(){
+    public void processSignalFromServer() {
         while (true) {
             try {
                 String line = in.readLine();
@@ -105,7 +107,7 @@ public class MainFrame extends JFrame {
                     StringTokenizer tokenizer = new StringTokenizer(signal, ",");
 
                     String userExtract;
-                    while(!(userExtract = tokenizer.nextToken()).equals("end")){
+                    while (!(userExtract = tokenizer.nextToken()).equals("end")) {
                         allUsers.add(userExtract);
                     }
                     for (int i = 0; i < allUsers.size(); i++) {
@@ -116,9 +118,14 @@ public class MainFrame extends JFrame {
                     String signal = line.substring(6);
                     cards = signal;
                     System.out.println(cards);
-
-                } else if(line.startsWith("Playing")){
+                } else if (line.startsWith("CommuCards")) {
+                    commuCards = line.substring(11);
+                    System.out.println(commuCards);
+                } else if (line.startsWith("Playing")) {
                     initGamePanel();
+                    String winner = line.substring(7);
+                    JOptionPane.showConfirmDialog(null, winner, "Winners:", JOptionPane.PLAIN_MESSAGE);
+
                     break;
                 }
 
@@ -194,4 +201,9 @@ public class MainFrame extends JFrame {
     public String getClientUser() {
         return clientUser;
     }
+
+    public String getCommuCards() {
+        return commuCards;
+    }
+
 }

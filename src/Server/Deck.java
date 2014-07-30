@@ -1,6 +1,7 @@
 package Server;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Random;
 
 /**
@@ -12,18 +13,19 @@ import java.util.Random;
  */
 
 public class Deck {
-
+    private int id = 0;
     //Deck cards
     private ArrayList<Card> cards;
     //Hands
     private int currentHand = 0;
-    private Hand[] hands;
+//    private Hand[] hands;
+    private LinkedList<Hand> hands = new LinkedList<Hand>();
     //Community cards
     private Card[] commuCards;
 
     public Deck(){
         cards = new ArrayList<Card>();
-        hands = new Hand[9];
+//        hands = new Hand[9];
 
         //Create a Poker deck with arranged order
         // 4 types of suit
@@ -63,11 +65,16 @@ public class Deck {
         }
     }
 
+    public int generateID(){
+        return id++;
+    }
+
     public Hand newHand(){
         if (currentHand != 9){
-            hands[currentHand] = new Hand(this);
+//            hands[currentHand] = new Hand(this);
+            hands.add(new Hand(this));
             currentHand++;
-            return hands[currentHand-1];
+            return hands.get(currentHand - 1);
 
         } else{
             System.out.println("Max hand reached.");
@@ -79,7 +86,7 @@ public class Deck {
         return commuCards;
     }
 
-    public Hand[] getHands() {
+    public LinkedList<Hand> getHands() {
         return hands;
     }
 

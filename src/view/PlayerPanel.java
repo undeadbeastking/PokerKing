@@ -54,6 +54,7 @@ public class PlayerPanel extends JPanel {
                 PlayerPU.card_w, PlayerPU.card_h);
         card2.setBounds(PlayerPU.card2_x, PlayerPU.card_y,
                 PlayerPU.card_w, PlayerPU.card_h);
+
         //Customize displays
 
         username.setFont(PlayerPU.label_font);
@@ -101,11 +102,14 @@ public class PlayerPanel extends JPanel {
 
         Image img1 = ImageGetter.getInstance().getImage(path1);
         Image img2 = ImageGetter.getInstance().getImage(path2);
+
+
         //Drop images
         Image cardI1 = createImage(new FilteredImageSource(img1.getSource(),
                 new CropImageFilter(1, 1, 18, 32)));
         Image cardI2 = createImage(new FilteredImageSource(img2.getSource(),
                 new CropImageFilter(1, 1, 18, 32)));
+
         if (img1 != null && img2 != null) {
             ImageIcon imageIcon = new ImageIcon(cardI1);
             card1.setIcon(imageIcon);

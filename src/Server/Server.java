@@ -33,6 +33,7 @@ public class Server {
         Data.loadAccounts();
         deck = new Deck();
 
+
         try {
             while (true) {
                 new Handler(listener.accept()).start();
@@ -93,7 +94,7 @@ public class Server {
                         }
                         if(usernames.contains(username)){
                             byPass = false;
-                            System.out.println("SOmeone is using this account.");
+                            System.out.println("Someone is using this account.");
                         }
                         if (byPass) {
                             usernames.add(username);
@@ -130,17 +131,51 @@ public class Server {
 
                     //Send cards
                     for (PrintWriter writer: writers) {
-                        Card[] cards = deck.newHand().getCards();
+                        Hand hand = deck.newHand();
+                        Card[] cards = hand.getCards();
                         String beSent = cards[0].toString() + "-" + cards[1].toString();
+                        System.out.println(beSent);
                         writer.println("Cards " + beSent);
                     }
+                    for (PrintWriter writer:writers){
+                        Card[] commuCards = deck.getCommuCards();
+                        String beSent = commuCards[0].toString();
+                        for (int i = 1; i < commuCards.length; i ++){
+                            beSent = beSent + "-" + commuCards[i].toString();
+                        }
+                        writer.println("CommuCards " + beSent);
+                    }
+                    ShowHand showHand = new ShowHand(deck.getHands(), 500);
 
                     for (PrintWriter writer : writers) {
-                        writer.println("Playing");
+                        String beSent = "";
+                        for (int i = 0; i < showHand.getWinnerList().size(); i ++) {
+
+                            int handID = showHand.getWinnerList().get(i).getId();
+
+                            beSent = beSent + usernames.get(handID) + ",";
+                        }
+                        int monney = showHand.getFinalMoney();
+                        beSent = beSent + "total money:" + String.valueOf(monney);
+
+                        writer.println("Playing " + beSent);
                     }
 
                 }
 
+
+                for (PrintWriter writer: writers) {
+                    Card[] commuCards = deck.getCommuCards();
+                    String beSent = commuCards[0].toString() + "-" + commuCards[1].toString();
+                    for (int i = 0; i < commuCards.length; i ++){
+                        beSent = beSent+ commuCards[i].toString();
+                    }
+                    writer.println("Cards " + beSent);
+                }
+
+                for (PrintWriter writer : writers) {
+                    writer.println("Display");
+                }
 
                 while (true) {
                     String input = in.readLine();
