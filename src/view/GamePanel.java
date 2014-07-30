@@ -1,6 +1,5 @@
 package view;
 
-import Client.Client;
 import CustomUI.CustBut;
 import images.ImageGetter;
 import Utils.GamePU;
@@ -22,24 +21,21 @@ public class GamePanel extends JPanel {
     private CustBut foldBut = new CustBut("Fold");
     private CustBut callBut= new CustBut("Call");
     private CustBut raiseBut = new CustBut("Raise");
-    //Player client
-    private Client client;
 
-    public GamePanel(String playerName, Client c) {
+    public GamePanel(String playerName) {
         //Customize Game Panel
         this.backGround = ImageGetter.getInstance().getImage(GamePU.backGround);
         setLayout(null);
-        client = c;
 
         //Create all players panels - real player will be added
         playersP = new PlayerPanel[maxPlayersNum];
         for (int j = 0; j < maxPlayersNum; j++) {
             //Number 7 is always the current Player
             if(j == 6){
-                playersP[j] = new PlayerPanel(j+1, playerName, client);
+                playersP[j] = new PlayerPanel(j+1, playerName);
 
             } else{
-                playersP[j] = new PlayerPanel(j+1, "Anonymous", client);
+                playersP[j] = new PlayerPanel(j+1, "Anonymous");
             }
         }
 

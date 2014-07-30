@@ -66,6 +66,15 @@ public class LoginPanel extends JPanel {
         refreshPanel();
     }
 
+    public void loadWaitingUI(){
+        errorMess.setText("Waiting for other players");
+        //Prevent UI Interaction
+        signUp.setEnabled(false);
+        signIn.setEnabled(false);
+        usernameF.setEnabled(false);
+        passwordF.setEnabled(false);
+    }
+
     public void refreshPanel() {
 
         //Clean error message

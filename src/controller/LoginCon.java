@@ -1,16 +1,16 @@
 package controller;
 
-import Utils.GamePU;
 import Utils.SignUpPU;
 import Utils.Utils;
+import Utils.GamePU;
 import model.Data;
 import view.LoginPanel;
 import view.MainFrame;
-import view.PlayerPanel;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.*;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Created by Agatha of Wood Beyond on 7/2/2014.
@@ -67,40 +67,32 @@ public class LoginCon {
 
         //Log in successfully?
         if (true) {
-            boolean waitingStatus = true;
-
-            f.remove(local);
-            JLabel yeah =  new JLabel("Yeah");
-            JPanel p = new JPanel();
-            p.add(yeah);
-            f.add(p);
-
-            while(true){
-                System.out.println("Yeah.");
-
-
-            }
-
-//            //Refresh LoginPanel for next Login
-//            local.refreshPanel();
-////            Replace Login Panel with Game Panel
-//            f.remove(local);
-//
-//            if (f.getGamePanel() == null) {
-//                f.initGamePanel(username);
-//            }
-//
-//            f.add(f.getGamePanel());
-//            //Set suitable size for the frame and relocate it to center
-//            f.setSize(GamePU.width, GamePU.height);
-//            f.setLocationRelativeTo(null);
-//            //Notify MainFrame
-//            f.validate();
-//            f.repaint();
+            //Send username and pass to server
+            f.processUser(username, password);
 
         } else {
             local.getErrorMess().setText("*Wrong username or password");
         }
+    }
+
+    private void initilizeGameP(){
+        LoginPanel local = f.getLoginPanel();
+        //Refresh LoginPanel for next Login
+        local.refreshPanel();
+        //Replace Login Panel with Game Panel
+        f.remove(local);
+
+        if (f.getGamePanel() == null) {
+            f.initGamePanel("Agatha");
+        }
+
+        f.add(f.getGamePanel());
+        //Set suitable size for the frame and relocate it to center
+        f.setSize(GamePU.width, GamePU.height);
+        f.setLocationRelativeTo(null);
+        //Notify MainFrame
+        f.validate();
+        f.repaint();
     }
 
     private class JFieldListener implements FocusListener {

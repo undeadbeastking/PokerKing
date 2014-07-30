@@ -16,9 +16,6 @@ public class Main {
             public void run() {
                 //Turn off metal's use of bold fonts
                 UIManager.put("swing.boldMetal", Boolean.FALSE);
-
-
-
                 new MainFrame();
             }
         });
