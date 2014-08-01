@@ -53,6 +53,15 @@ public class PlayerPU {
     public static final int status_y = 105;
     public static final int bet_y = 118;
 
+    //CArds
+    public static final String pathPrefix = "cards/";
+    //cards bounds
+    public static final int card_y = 50;//Combine bound
+    public static final int card_w = 30;//Combine bound
+    public static final int card_h = 30;//Combine bound
+    public static final int card1_x = 120;
+    public static final int card2_x = 145;
+
     //Color & Style
     public static final Font label_font = new Font("Consolas", Font.BOLD, 13);//Combine
     public static final Color label_Color = Color.green;//Combine

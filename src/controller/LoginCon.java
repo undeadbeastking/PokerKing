@@ -1,15 +1,16 @@
 package controller;
 
-import Utils.GamePU;
 import Utils.SignUpPU;
 import Utils.Utils;
+import Utils.GamePU;
 import model.Data;
 import view.LoginPanel;
 import view.MainFrame;
-import view.PlayerPanel;
 
 import javax.swing.*;
 import java.awt.event.*;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Created by Agatha of Wood Beyond on 7/2/2014.
@@ -35,61 +36,28 @@ public class LoginCon {
         local.getSignIn().addActionListener(new ActionList());
         local.getUsernameF().addActionListener(new ActionList());
         local.getPasswordF().addActionListener(new ActionList());
+        local.getReady().addActionListener(new ReadyList());
+    }
+
+    private class ReadyList implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            f.processSignalFromServer();
+        }
     }
 
     private class ActionList implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            processLogin();
-        }
-    }
+            //Local cast
+            LoginPanel local = f.getLoginPanel();
 
-    private void processLogin() {
-        //Local cast
-        LoginPanel local = f.getLoginPanel();
+            //Extract inputs
+            String username = local.getUsernameF().getText();
+            String password = String.valueOf(local.getPasswordF().getPassword());
 
-        //Extract inputs
-        String username = local.getUsernameF().getText();
-        String password = String.valueOf(local.getPasswordF().getPassword());
-        boolean byPass = false;
-
-        //Validate username and password
-        for (int i = 0; i < Data.getAccounts().size(); i++) {
-            String dataUsername = Data.getAccounts().get(i).getUsername();
-            String dataPassword = String.valueOf(Data.getAccounts().get(i).getPassword());
-
-            if (username.equals(dataUsername) && password.equals(dataPassword)) {
-                byPass = true;
-                break;
-            }
-        }
-
-        //Log in successfully?
-        if (true) {
-            //Refresh LoginPanel for next Login
-            local.refreshPanel();
-            //Replace Login Panel with Game Panel
-            f.remove(local);
-
-            if (f.getGamePanel() == null) {
-                f.initGamePanel(username);
-
-            } else {
-                //get current Game panel but switch to another username
-                PlayerPanel[] current = f.getGamePanel().getPlayersP();
-                current[6].newMainPlayer(username);
-            }
-
-            f.add(f.getGamePanel());
-            //Set suitable size for the frame and relocate it to center
-            f.setSize(GamePU.width, GamePU.height);
-            f.setLocationRelativeTo(null);
-            //Notify MainFrame
-            f.validate();
-            f.repaint();
-
-        } else {
-            local.getErrorMess().setText("*Wrong username or password");
+            //Send username and pass to server
+            f.processUser(username, password);
         }
     }
 
