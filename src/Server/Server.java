@@ -1,209 +1,116 @@
 package Server;
 
+import model.Account;
 import model.Data;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.StringTokenizer;
 
-public class Server {
+public class Server implements Runnable{
 
     public static Deck deck;
-    private static final int PORT = 9001;
+    private static final int PORT = 9000;
 
     //Set of all usernames
     private static ArrayList<String> usernames = new ArrayList<String>();
-    private static HashSet<PrintWriter> writers = new HashSet<PrintWriter>();
-    public static int numberOfPlayers = 0;
+    public static int numberOfPlayers = 4;
 
-    /**
-     * The appplication main method, which just listens on a port and
-     * spawns handler threads.
-     */
     public static void main(String[] args) throws Exception {
-        System.out.println("The chat server is running.");
-        ServerSocket listener = new ServerSocket(PORT);
         //Load users data
         Data.loadAccounts();
+
+        Server s = new Server();
+        new Thread(s).start();
+    }
+
+    public Server() {
+        //Server UI here
+    }
+
+    @Override
+    public void run(){
+        ServerSocket server = null;
         deck = new Deck();
 
+        try{
+            server = new ServerSocket(PORT);
 
-        try {
             while (true) {
-                new Handler(listener.accept()).start();
+                GameHandler g = new GameHandler();
+
+                for (int j = 0; j < numberOfPlayers; j++) {
+
+                    Socket socket = server.accept();
+                    PlayerCommunicator player = new PlayerCommunicator(
+                            socket,
+                            new ObjectInputStream(socket.getInputStream()),
+                            new ObjectOutputStream(socket.getOutputStream())
+                    );
+
+                    while(true){
+                        Object o = player.read();
+                        boolean rightAccount = false;
+
+                        if(o instanceof Account){
+                            Account acc = (Account) o;
+                            String username = acc.getUsername();
+                            String pass = acc.getPassword();
+
+                            //Validate username and password
+                            for (int i = 0; i < Data.getAccounts().size(); i++) {
+                                String dataUsername = Data.getAccounts().get(i).getUsername();
+                                String dataPassword = String.valueOf(Data.getAccounts().get(i).getPassword());
+
+                                if (username.equals(dataUsername) && pass.equals(dataPassword)) {
+                                    rightAccount = true;
+                                    break;
+                                }
+                            }
+                            if(usernames.contains(username)){
+                                rightAccount = false;
+                                System.out.println("Someone is using this account.");
+                            }
+                        }
+
+                        if(rightAccount){
+                            g.addPlayer(player);
+                            player.write(State.Waiting);
+                            break;
+
+                        } else {
+                            player.write(State.WrongAccount);
+                        }
+                    }
+                }
+                //Enough players then we start a thread handling for that room
+                new Thread(g).start();
             }
 
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+
         } finally {
-            listener.close();
+            try{
+                server.close();
+
+            } catch(IOException i) {
+                System.out.println("Cannot close server socket.");
+            }
+
             //Save accounts
             Data.saveAccounts();
         }
     }
 
-    /**
-     * A handler thread class.  Handlers are spawned from the listening
-     * loop and are responsible for a dealing with a single client
-     * and broadcasting its messages.
-     */
-    private static class Handler extends Thread {
+    public static ArrayList<String> getUsernames() {
+        return usernames;
+    }
 
-        private String account;
-        private String username, pass;
-        //Server connection
-        private Socket socket;
-        private BufferedReader in;
-        private PrintWriter out;
-
-        public Handler(Socket socket) {
-            this.socket = socket;
-        }
-
-        public void run() {
-
-            try {
-                // Create character streams for the socket.
-                in = new BufferedReader(new InputStreamReader(
-                        socket.getInputStream()));
-                out = new PrintWriter(socket.getOutputStream(), true);
-
-                while (true) {
-                    out.println("SubmitAccount");
-                    account = in.readLine();
-
-                    synchronized (usernames) {
-                        boolean byPass = false;
-                        //Splitting
-                        StringTokenizer tokenizer = new StringTokenizer(account, ",");
-                        username = tokenizer.nextToken();
-                        pass = tokenizer.nextToken();
-                        //Validate username and password
-                        for (int i = 0; i < Data.getAccounts().size(); i++) {
-                            String dataUsername = Data.getAccounts().get(i).getUsername();
-                            String dataPassword = String.valueOf(Data.getAccounts().get(i).getPassword());
-
-                            if (username.equals(dataUsername) && pass.equals(dataPassword)) {
-                                byPass = true;
-                                break;
-                            }
-                        }
-                        if(usernames.contains(username)){
-                            byPass = false;
-                            System.out.println("Someone is using this account.");
-                        }
-                        if (byPass) {
-                            usernames.add(username);
-                            writers.add(out);//Remember socket address
-                            System.out.println("A new user just signed in: " + username);
-                            numberOfPlayers++;
-                            break;
-
-                        } else {
-                            out.println("FailLogin");
-                            out.println("SubmitAccount");
-                        }
-                    }
-                }
-
-                out.println("Accepted");
-
-                //Enough 3 players then init GamePanel for all
-                if(numberOfPlayers == 3){
-                    //Send usernames
-                    for (PrintWriter writer: writers) {
-                        String users = "";
-                        for (int i = 0; i < usernames.size(); i++) {
-                            if(i < usernames.size() - 1){
-                                users = users + usernames.get(i) + ",";
-                            } else {
-                                users = users + usernames.get(i);
-                                users = users + ",end";
-                            }
-                        }
-                        System.out.println(users);
-                        writer.println("AllUsers " + users);
-                    }
-
-                    //Send cards
-                    for (PrintWriter writer: writers) {
-                        Hand hand = deck.newHand();
-                        Card[] cards = hand.getCards();
-                        String beSent = cards[0].toString() + "-" + cards[1].toString();
-                        System.out.println(beSent);
-                        writer.println("Cards " + beSent);
-                    }
-                    for (PrintWriter writer:writers){
-                        Card[] commuCards = deck.getCommuCards();
-                        String beSent = commuCards[0].toString();
-                        for (int i = 1; i < commuCards.length; i ++){
-                            beSent = beSent + "-" + commuCards[i].toString();
-                        }
-                        writer.println("CommuCards " + beSent);
-                    }
-                    ShowHand showHand = new ShowHand(deck.getHands(), 500);
-
-                    for (PrintWriter writer : writers) {
-                        String beSent = "";
-                        for (int i = 0; i < showHand.getWinnerList().size(); i ++) {
-
-                            int handID = showHand.getWinnerList().get(i).getId();
-
-                            beSent = beSent + usernames.get(handID) + ",";
-                        }
-                        int monney = showHand.getFinalMoney();
-                        beSent = beSent + "total money:" + String.valueOf(monney);
-
-                        writer.println("Playing " + beSent);
-                    }
-
-                }
-
-
-                for (PrintWriter writer: writers) {
-                    Card[] commuCards = deck.getCommuCards();
-                    String beSent = commuCards[0].toString() + "-" + commuCards[1].toString();
-                    for (int i = 0; i < commuCards.length; i ++){
-                        beSent = beSent+ commuCards[i].toString();
-                    }
-                    writer.println("Cards " + beSent);
-                }
-
-                for (PrintWriter writer : writers) {
-                    writer.println("Display");
-                }
-
-                while (true) {
-                    String input = in.readLine();
-                    if (input == null) {
-                        return;
-                    }
-                    for (PrintWriter writer : writers) {
-                        writer.println("MESSAGE " + account + ": " + input);
-                    }
-                }
-            } catch (IOException e) {
-                System.out.println(e);
-
-            } finally {
-                if (username != null) {
-                    //remove a username if logged out
-                    usernames.remove(username);
-                }
-                if (out != null) {
-                    writers.remove(out);
-                }
-                try {
-                    //Remove socket
-                    socket.close();
-
-                } catch (IOException e) {
-                }
-            }
-        }
+    public static int getPort() {
+        return PORT;
     }
 }
