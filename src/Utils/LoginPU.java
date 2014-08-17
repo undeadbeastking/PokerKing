@@ -39,7 +39,6 @@ public class LoginPU {
     public static final int signIn_y = 240;
     public static final int signUp_x = 40;
     public static final int signUp_y = 315;
-    public static final int ready_y = 295;
 
     //Login Message
     public static final int error_x = 390;

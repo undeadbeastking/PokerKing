@@ -27,6 +27,7 @@ public class GameHandler implements Runnable {
 
     public GameHandler() {
         this.usernames = Server.getUsernames();
+        playersCom = new ArrayList<PlayerCommunicator>();
     }
 
     public void addPlayer(PlayerCommunicator p){
@@ -41,5 +42,16 @@ public class GameHandler implements Runnable {
         }
 
         //Handling Bets and stuffs
+
+        //Test closing game
+        for(PlayerCommunicator p : playersCom) {
+            //Send first hand info
+            p.write(State.EndGame);
+        }
+
+        //Close connection of every player in the room
+        for(PlayerCommunicator p : playersCom){
+            p.close();
+        }
     }
 }

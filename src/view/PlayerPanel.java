@@ -64,20 +64,20 @@ public class PlayerPanel extends JPanel {
         status.setForeground(PlayerPU.label_Color);
         bet.setForeground(PlayerPU.label_Color);
 
-        allPlayers = f.getAllUsers();
-        if (allPlayers.get(p).equals(f.getClientUser())) {
-            username.setText(f.getClientUser());
-            //Customize player statistics
-            username.setForeground(PlayerPU.pUsername_Color);
-            setCards(true);
-
-        } else {
-            username.setText(allPlayers.get(p));
-            //Customize player statistics
-            username.setForeground(PlayerPU.username_Color);
-            setCards(false);
-
-        }
+//        allPlayers = f.getAllUsers();
+//        if (allPlayers.get(p).equals(f.getClientUser())) {
+//            username.setText(f.getClientUser());
+//            //Customize player statistics
+//            username.setForeground(PlayerPU.pUsername_Color);
+//            setCards(true);
+//
+//        } else {
+//            username.setText(allPlayers.get(p));
+//            //Customize player statistics
+//            username.setForeground(PlayerPU.username_Color);
+//            setCards(false);
+//
+//        }
 
         //Add component
         this.add(icon);
@@ -91,30 +91,30 @@ public class PlayerPanel extends JPanel {
     //Set hole cards
     public void setCards(boolean thisPlayer) {
 
-        String path1 = PlayerPU.pathPrefix + "0.png";
-        String path2 = PlayerPU.pathPrefix + "0.png";
-
-        if (thisPlayer) {
-            StringTokenizer tokenizer = new StringTokenizer(f.getCards(), "-");
-            path1 = PlayerPU.pathPrefix + tokenizer.nextToken() + ".png";
-            path2 = PlayerPU.pathPrefix + tokenizer.nextToken() + ".png";
-        }
-
-        Image img1 = ImageGetter.getInstance().getImage(path1);
-        Image img2 = ImageGetter.getInstance().getImage(path2);
-
-
-        //Drop images
-        Image cardI1 = createImage(new FilteredImageSource(img1.getSource(),
-                new CropImageFilter(1, 1, 18, 32)));
-        Image cardI2 = createImage(new FilteredImageSource(img2.getSource(),
-                new CropImageFilter(1, 1, 18, 32)));
-
-        if (img1 != null && img2 != null) {
-            ImageIcon imageIcon = new ImageIcon(cardI1);
-            card1.setIcon(imageIcon);
-            imageIcon = new ImageIcon(cardI2);
-            card2.setIcon(imageIcon);
-        }
+//        String path1 = PlayerPU.pathPrefix + "0.png";
+//        String path2 = PlayerPU.pathPrefix + "0.png";
+//
+//        if (thisPlayer) {
+//            StringTokenizer tokenizer = new StringTokenizer(f.getCards(), "-");
+//            path1 = PlayerPU.pathPrefix + tokenizer.nextToken() + ".png";
+//            path2 = PlayerPU.pathPrefix + tokenizer.nextToken() + ".png";
+//        }
+//
+//        Image img1 = ImageGetter.getInstance().getImage(path1);
+//        Image img2 = ImageGetter.getInstance().getImage(path2);
+//
+//
+//        //Drop images
+//        Image cardI1 = createImage(new FilteredImageSource(img1.getSource(),
+//                new CropImageFilter(1, 1, 18, 32)));
+//        Image cardI2 = createImage(new FilteredImageSource(img2.getSource(),
+//                new CropImageFilter(1, 1, 18, 32)));
+//
+//        if (img1 != null && img2 != null) {
+//            ImageIcon imageIcon = new ImageIcon(cardI1);
+//            card1.setIcon(imageIcon);
+//            imageIcon = new ImageIcon(cardI2);
+//            card2.setIcon(imageIcon);
+//        }
     }
 }
