@@ -102,6 +102,13 @@ public class MainFrame extends JFrame implements Runnable {
 
                 } else if (s == State.Waiting) {
                     loginPanel.loadWaiting();
+
+                } else if(s==State.StartGame){
+                    System.out.println("Pop up GamePanel");
+
+                } else if(s==State.EndGame){
+                    System.out.println("End game. No longer reading signal from server.");
+                    break;
                 }
             }
             System.out.println("Read signal...");

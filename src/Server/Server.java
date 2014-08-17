@@ -99,8 +99,9 @@ public class Server implements Runnable{
 
         } finally {
             try{
-
                 server.close();
+                System.out.println("Stop server.");
+
             } catch(IOException i) {
                 System.out.println("Cannot close server socket.");
             }
