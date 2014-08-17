@@ -3,6 +3,7 @@ package controller;
 import Utils.SignUpPU;
 import Utils.Utils;
 import Utils.GamePU;
+import model.Account;
 import model.Data;
 import view.LoginPanel;
 import view.MainFrame;
@@ -36,14 +37,6 @@ public class LoginCon {
         local.getSignIn().addActionListener(new ActionList());
         local.getUsernameF().addActionListener(new ActionList());
         local.getPasswordF().addActionListener(new ActionList());
-        local.getReady().addActionListener(new ReadyList());
-    }
-
-    private class ReadyList implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            f.processSignalFromServer();
-        }
     }
 
     private class ActionList implements ActionListener {
@@ -56,8 +49,7 @@ public class LoginCon {
             String username = local.getUsernameF().getText();
             String password = String.valueOf(local.getPasswordF().getPassword());
 
-            //Send username and pass to server
-            f.processUser(username, password);
+            f.getServer().write(new Account(username, password));
         }
     }
 

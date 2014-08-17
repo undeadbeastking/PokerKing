@@ -12,7 +12,6 @@ import java.util.StringTokenizer;
 
 public class Server implements Runnable{
 
-    public static Deck deck;
     private static final int PORT = 9000;
 
     //Set of all usernames
@@ -23,6 +22,7 @@ public class Server implements Runnable{
         //Load users data
         Data.loadAccounts();
 
+        System.out.println("Server is running.");
         Server s = new Server();
         new Thread(s).start();
     }
@@ -34,14 +34,12 @@ public class Server implements Runnable{
     @Override
     public void run(){
         ServerSocket server = null;
-        deck = new Deck();
 
         try{
             server = new ServerSocket(PORT);
 
             while (true) {
                 GameHandler g = new GameHandler();
-
                 for (int j = 0; j < numberOfPlayers; j++) {
 
                     Socket socket = server.accept();
@@ -51,6 +49,8 @@ public class Server implements Runnable{
                             new ObjectOutputStream(socket.getOutputStream())
                     );
 
+                    System.out.println("Player "+(j+1) + " is trying to log in.");
+                    //Waiting for account obj and send back validation result
                     while(true){
                         Object o = player.read();
                         boolean rightAccount = false;
@@ -60,7 +60,7 @@ public class Server implements Runnable{
                             String username = acc.getUsername();
                             String pass = acc.getPassword();
 
-                            //Validate username and password
+                            //Right username and password?
                             for (int i = 0; i < Data.getAccounts().size(); i++) {
                                 String dataUsername = Data.getAccounts().get(i).getUsername();
                                 String dataPassword = String.valueOf(Data.getAccounts().get(i).getPassword());
@@ -70,6 +70,7 @@ public class Server implements Runnable{
                                     break;
                                 }
                             }
+                            //Account is currently in used
                             if(usernames.contains(username)){
                                 rightAccount = false;
                                 System.out.println("Someone is using this account.");
@@ -83,9 +84,11 @@ public class Server implements Runnable{
 
                         } else {
                             player.write(State.WrongAccount);
+                            System.out.println("Wrong account.");
                         }
                     }
                 }
+                System.out.println("Enough players, begin a game.");
                 //Enough players then we start a thread handling for that room
                 new Thread(g).start();
             }
@@ -95,8 +98,8 @@ public class Server implements Runnable{
 
         } finally {
             try{
-                server.close();
 
+                server.close();
             } catch(IOException i) {
                 System.out.println("Cannot close server socket.");
             }

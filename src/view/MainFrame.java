@@ -1,6 +1,7 @@
 package view;
 
-import Server.*;
+import Server.PlayerCommunicator;
+import Server.State;
 import Utils.GamePU;
 import Utils.LoginPU;
 import controller.GameCon;
@@ -11,10 +12,10 @@ import model.Account;
 import javax.swing.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.*;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.StringTokenizer;
 
 /**
  * Created by Agatha of Wood Beyond on 6/29/2014.
@@ -38,14 +39,6 @@ public class MainFrame extends JFrame implements Runnable {
     private Account me;
 
     public MainFrame() {
-        //Start COnnection
-        try {
-            initSocket();
-
-        } catch (IOException e) {
-            System.out.println("Cannot to server");
-        }
-
         //Customize MainFrame for loginPanel
         this.setSize(LoginPU.width, LoginPU.height);
         this.setTitle("Poker King - The Game");
@@ -63,6 +56,14 @@ public class MainFrame extends JFrame implements Runnable {
 
         //Add Windows listener - On Exit - save files
         this.addWindowListener(new OnExit());
+
+        //Start Connection
+        try {
+            initSocket();
+
+        } catch (IOException e) {
+            System.out.println("Cannot connect to server");
+        }
     }
 
     private void initSocket() throws IOException {
@@ -89,17 +90,20 @@ public class MainFrame extends JFrame implements Runnable {
     }
 
     @Override
-    public void run(){
+    public void run() {
+        //Process signals from Server
+        Object message = server.read();
+        while (message != null) {
+            if (message instanceof State) {
+                State s = (State) message;
+                if (s == State.WrongAccount) {
+                    loginPanel.getErrorMess().setText("*Wrong account");
 
-    }
-
-    //Receive and process stuffs from server
-    public void processSignalFromServer() {
-    }
-
-    //Client send username to server
-    public void processUser(String username, String password) {
-
+                } else if (s == State.Waiting) {
+                    loginPanel.loadWaiting();
+                }
+            }
+        }
     }
 
     /*
@@ -140,5 +144,7 @@ public class MainFrame extends JFrame implements Runnable {
         return gamePanel;
     }
 
-
+    public PlayerCommunicator getServer() {
+        return server;
+    }
 }

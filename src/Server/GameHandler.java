@@ -41,5 +41,10 @@ public class GameHandler implements Runnable {
         }
 
         //Handling Bets and stuffs
+
+        //Close connection of every player in the room
+        for(PlayerCommunicator p : playersCom){
+            p.close();
+        }
     }
 }
