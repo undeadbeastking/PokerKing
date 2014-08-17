@@ -92,6 +92,7 @@ public class MainFrame extends JFrame implements Runnable {
     @Override
     public void run() {
         //Process signals from Server
+        System.out.println("Read signal...");
         Object message = server.read();
         while (message != null) {
             if (message instanceof State) {
@@ -103,7 +104,10 @@ public class MainFrame extends JFrame implements Runnable {
                     loginPanel.loadWaiting();
                 }
             }
+            System.out.println("Read signal...");
+            message = server.read();
         }
+        System.out.println("No longer reading signal from the server.");
     }
 
     /*

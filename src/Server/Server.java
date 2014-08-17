@@ -52,6 +52,7 @@ public class Server implements Runnable{
                     System.out.println("Player "+(j+1) + " is trying to log in.");
                     //Waiting for account obj and send back validation result
                     while(true){
+                        System.out.println("Waiting for account info...");
                         Object o = player.read();
                         boolean rightAccount = false;
 

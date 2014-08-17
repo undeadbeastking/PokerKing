@@ -27,6 +27,7 @@ public class GameHandler implements Runnable {
 
     public GameHandler() {
         this.usernames = Server.getUsernames();
+        playersCom = new ArrayList<PlayerCommunicator>();
     }
 
     public void addPlayer(PlayerCommunicator p){
