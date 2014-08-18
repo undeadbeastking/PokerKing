@@ -25,6 +25,8 @@ public class Hand {
         /*
         Initialize Player hand
          */
+        id = d.generateID();//Id of a specific Hand
+
         cards = new Card[7];
         values = new int[6];//first index is the strongest combination of a hand
         for (int i = 0; i < 6; i++) {
@@ -38,14 +40,13 @@ public class Hand {
         for (int i = 2; i < 7; i++) {
             cards[i] = commuCards[i - 2];
         }
-        id = d.generateID();
+
         //Evaluate best 5 of 7
         handEvaluate();
     }
 
     //Test Evaluate Constructor
     public Hand(Card one, Card two, Card three, Card four, Card five, Card six, Card seven) {
-
         /*
         Initialize Player hand
          */

@@ -23,16 +23,12 @@ public class Card {
         this.rank = rank;
     }
 
-    //Return a card's rank as String
-    public static String rankAsString(int x) {
-        //x: 1 -> 13 but array first element is 0
-        if (x < 1 || x > 13) {
-            return "Unavailable rank.";
-        }
-        return ranks[x - 1];
+    //Return card's full info
+    public String CardName() {
+        return ranks[rank] + " of " + suits[suit] + ".";
     }
 
-    //A card object full info
+    //Fast access to card's info
     @Override
     public String toString() {
         return suit + "," + rank;
