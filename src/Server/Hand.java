@@ -10,9 +10,10 @@ package Server;
 
 public class Hand {
 
+    private int id;
     private Card[] cards;
     private int[] values;
-    private int id;
+    private Card[] bestHand;
 
     /*
     Every hand will have 5 same community cards and 2 random cards from the created deck
@@ -28,10 +29,12 @@ public class Hand {
         id = d.generateID();//Id of a specific Hand
 
         cards = new Card[7];
+        bestHand = new Card[5];//For display Purpose
         values = new int[6];//first index is the strongest combination of a hand
         for (int i = 0; i < 6; i++) {
             values[i] = 0;
         }
+
         //2 cards on Hand
         cards[0] = d.drawFromDeck();
         cards[1] = d.drawFromDeck();
@@ -68,32 +71,103 @@ public class Hand {
         handEvaluate();
     }
 
-    public int getId(){
+    public int getId() {
         return id;
     }
 
     private void handEvaluate() {
 
         /*
-        Find the Suit with most cards
+        Implemet new Checking Flush version
          */
-        int flushSuit = -1, curSuit, cardCount = 1;
-        for (int i = 0; i < 7; i++) {
-            curSuit = cards[i].getSuit();
-            cardCount = 1;
-
-            for (int j = 0; j < 7; j++) {
-                if (i != j && curSuit == cards[j].getSuit()) {
+        boolean Flush = false;
+        int flushSuit = cards[0].getSuit();
+        int cardCount = 0;
+        if (flushSuit == cards[1].getSuit()) {
+            //Just need to check the suit of the community cards
+            for (int i = 2; i < 7; i++) {
+                if (flushSuit == cards[i].getSuit()) {
                     cardCount++;
+                }
+                if (cardCount > 3) {
+                    Flush = true;
+                    break;
+                }
+            }
+        }
+
+//        /*
+//        Find the Suit with most cards
+//         */
+//        int flushSuit = -1, curSuit, cardCount = 1;
+//        for (int i = 0; i < 7; i++) {
+//            curSuit = cards[i].getSuit();
+//            cardCount = 1;
+//
+//            for (int j = 0; j < 7; j++) {
+//                if (i != j && curSuit == cards[j].getSuit()) {
+//                    cardCount++;
+//                }
+//            }
+//            /*
+//            Check Flush
+//            Of 7 cards can only have 1 suit with 5 - 7 cards
+//             */
+//            if (cardCount >= 5) {
+//                flushSuit = curSuit;
+//                break;
+//            }
+//        }
+
+        /*
+        New version of checking StraightFlush
+         */
+        if (Flush) {
+            int rankSF[] = new int[14];
+            /*
+            Count cards of each rank with the suit of Flush
+            Ignore index 0 (Since there is No rank 0)
+             */
+            for (int i = 0; i < 14; i++) {
+                rankSF[i]=0;
+            }
+            for (int i = 0; i < 7; i++) {
+                //Only take cards with Flush suit
+                if(flushSuit==cards[i].getSuit()){
+                    rankSF[cards[i].getRank()]++;
                 }
             }
             /*
-            Check Flush
-            Of 7 cards can only have 1 suit with 5 - 7 cards
+            Check StraightFlush
+
+            Break Tie:
+            Only need to record the lead card
              */
-            if (cardCount >= 5) {
-                flushSuit = curSuit;
-                break;
+            //Royal StraightFlush - The unbeatable
+            if (rankSF[10] == 1 && rankSF[11] == 1 && rankSF[12] == 1 && rankSF[13] == 1 && rankSF[1] == 1 &&
+                    //Check if 2 hand cards are from these 5
+                    ((cards[0].getRank()==1 || (10<=cards[0].getRank() && (cards[0].getRank()<=13))) &&
+                            (cards[1].getRank()==1 || (10<=cards[1].getRank() && (cards[1].getRank()<=13)))
+                    )) {
+
+                values[0] = 9;//9 = StraightFlush
+                values[1] = 14;//Ace as High card
+
+            } else {
+                /*
+                Ace is funny because it can be the strongest (Royal StaightFlush) or the weakest (Low SF)
+                 */
+                for (int i = 13; i >= 5; i--) {
+                    if (rankSF[i] == 1 && rankSF[i - 1] == 1 && rankSF[i - 2] == 1 && rankSF[i - 3] == 1 && rankSF[i - 4] == 1 &&
+                        //Check if 2 hand cards are from these 5
+                        (i>=cards[0].getRank() && (cards[0].getRank()>=i-4)) &&
+                        (i>=cards[1].getRank() && (cards[1].getRank()>=i-4))) {
+
+                        values[0] = 9;//9 = StraightFlush
+                        values[1] = i;//Highest Rank
+                        break;
+                    }
+                }
             }
         }
 
@@ -103,10 +177,6 @@ public class Hand {
         int rankSF[] = new int[14];
 
         if (flushSuit != -1) {
-            /*
-            Count cards of each rank with the suit of Flush
-            Ignore index 0 (Since there is No rank 0)
-             */
             for (int i = 0; i < 14; i++) {
                 rankSF[i] = 0;
             }
@@ -409,7 +479,7 @@ public class Hand {
                 //Get 3 cards
                 int index = 2;
                 //There is an Ace???
-                if(ranks[1] == 1){
+                if (ranks[1] == 1) {
                     values[index] = 14;
                     index++;
                 }
@@ -449,13 +519,13 @@ public class Hand {
         }
     }
 
-    public void display(){
+    public void display() {
         for (int i = 0; i < 7; i++) {
             System.out.print(cards[i] + ", ");
         }
         System.out.println();
 
-        switch(values[0]){
+        switch (values[0]) {
             case 9:
                 System.out.println("Straight FLush: " + values[1]);
                 break;
@@ -493,5 +563,8 @@ public class Hand {
     public Card[] getCards() {
         return cards;
     }
-    public int[] getValues(){ return values;}
+
+    public int[] getValues() {
+        return values;
+    }
 }

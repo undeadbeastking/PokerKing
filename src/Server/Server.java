@@ -94,8 +94,8 @@ public class Server implements Runnable{
                 new Thread(g).start();
             }
 
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
+        } catch (Exception ex) {
+            System.out.println("A player has disconnected");
 
         } finally {
             try{
