@@ -31,9 +31,6 @@ public class Hand {
         cards = new Card[7];
         bestHand = new Card[5];//For display Purpose
         values = new int[6];//first index is the strongest combination of a hand
-        for (int i = 0; i < 6; i++) {
-            values[i] = 0;
-        }
 
         //2 cards on Hand
         cards[0] = d.drawFromDeck();
@@ -54,6 +51,9 @@ public class Hand {
         Initialize Player hand
          */
         cards = new Card[7];
+        bestHand = new Card[5];//for display purpose
+        values = new int[6];//first index is the strongest combination of a hand
+
         cards[0] = one;
         cards[1] = two;
         cards[2] = three;
@@ -61,11 +61,6 @@ public class Hand {
         cards[4] = five;
         cards[5] = six;
         cards[6] = seven;
-
-        values = new int[6];//first index is the strongest combination of a hand
-        for (int i = 0; i < 6; i++) {
-            values[i] = 0;
-        }
 
         //Evaluate best 5 of 7
         handEvaluate();
@@ -96,29 +91,6 @@ public class Hand {
             }
         }
 
-//        /*
-//        Find the Suit with most cards
-//         */
-//        int flushSuit = -1, curSuit, cardCount = 1;
-//        for (int i = 0; i < 7; i++) {
-//            curSuit = cards[i].getSuit();
-//            cardCount = 1;
-//
-//            for (int j = 0; j < 7; j++) {
-//                if (i != j && curSuit == cards[j].getSuit()) {
-//                    cardCount++;
-//                }
-//            }
-//            /*
-//            Check Flush
-//            Of 7 cards can only have 1 suit with 5 - 7 cards
-//             */
-//            if (cardCount >= 5) {
-//                flushSuit = curSuit;
-//                break;
-//            }
-//        }
-
         /*
         New version of checking StraightFlush
          */
@@ -137,12 +109,15 @@ public class Hand {
                     rankSF[cards[i].getRank()]++;
                 }
             }
+
+            //Add the
             /*
             Check StraightFlush
 
             Break Tie:
             Only need to record the lead card
              */
+
             //Royal StraightFlush - The unbeatable
             if (rankSF[10] == 1 && rankSF[11] == 1 && rankSF[12] == 1 && rankSF[13] == 1 && rankSF[1] == 1 &&
                     //Check if 2 hand cards are from these 5
@@ -166,85 +141,6 @@ public class Hand {
                         values[0] = 9;//9 = StraightFlush
                         values[1] = i;//Highest Rank
                         break;
-                    }
-                }
-            }
-        }
-
-        /*
-        Check StraightFlush
-         */
-        int rankSF[] = new int[14];
-
-        if (flushSuit != -1) {
-            for (int i = 0; i < 14; i++) {
-                rankSF[i] = 0;
-            }
-            for (int i = 0; i < 7; i++) {
-                //Only take cards with Flush suit
-                if (cards[i].getSuit() == flushSuit) {
-                    rankSF[cards[i].getRank()]++;
-                }
-            }
-
-            /*
-            Check StraightFlush
-
-            Break Tie:
-            Only need to record the lead card
-             */
-            //Royal StraightFlush - The unbeatable
-            if (rankSF[10] == 1 && rankSF[11] == 1 && rankSF[12] == 1 && rankSF[13] == 1 && rankSF[1] == 1) {
-                values[0] = 9;//9 = StraightFlush
-                values[1] = 14;//Ace as High card
-
-            } else {
-                /*
-                Ace is funny because it can be the strongest (Royal StaightFlush) or the weakest (Low SF)
-                 */
-                for (int i = 13; i >= 5; i--) {
-                    if (rankSF[i] == 1 && rankSF[i - 1] == 1 && rankSF[i - 2] == 1 && rankSF[i - 3] == 1 && rankSF[i - 4] == 1) {
-                        values[0] = 9;//9 = StraightFlush
-                        values[1] = i;//Highest Rank
-                        break;
-                    }
-                }
-            }
-
-            /*
-            Not StraightFlush then can only be FLUSH
-            Just a premature set. If we encounter Four of a kind then we can override Flush later
-             */
-            if (values[0] != 9) {
-                values[0] = 6;
-                /*
-                Get Highest cards to break tie
-
-                3   5    6   7   8
-                3   4    5   7   8
-
-                Not right in Table play case when best hand is table-flush
-
-                Break Tie:
-                All hands end up with FLush will belong to same Suit
-                => need to record the ranks of all 5 cards from Flush-Hand
-                 */
-
-                int handCount = 1;//1 -> 5 - card order on a player hand
-
-                //Inspect Ace first so there is no need to include rank 1 in the next Loop
-                if (rankSF[1] == 1) {
-                    values[handCount] = 14;
-                    //First card on player hand has been chosen as Ace
-                    handCount++;
-                }
-                //Get 5 || remaining 4 cards
-                for (int i = 13; i >= 2; i--) {
-                    if (rankSF[i] == 1) {
-                        values[handCount] = i;
-                        handCount++;
-                        //Hand is full then stop
-                        if (handCount > 5) break;
                     }
                 }
             }
