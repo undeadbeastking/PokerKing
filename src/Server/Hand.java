@@ -51,7 +51,6 @@ public class Hand {
         Initialize Player hand
          */
         cards = new Card[7];
-        bestHand = new Card[5];//for display purpose
         values = new int[6];//first index is the strongest combination of a hand
 
         cards[0] = one;
@@ -73,81 +72,97 @@ public class Hand {
     private void handEvaluate() {
 
         /*
-        Implemet new Checking Flush version
+        2 hole cards on our hand have the same Suit -> Flush and SF possibility
          */
-        boolean Flush = false;
-        int flushSuit = cards[0].getSuit();
-        int cardCount = 0;
-        if (flushSuit == cards[1].getSuit()) {
-            //Just need to check the suit of the community cards
-            for (int i = 2; i < 7; i++) {
-                if (flushSuit == cards[i].getSuit()) {
-                    cardCount++;
-                }
-                if (cardCount > 3) {
-                    Flush = true;
-                    break;
-                }
-            }
-        }
-
-        /*
-        New version of checking StraightFlush
-         */
-        if (Flush) {
-            int rankSF[] = new int[14];
-            /*
-            Count cards of each rank with the suit of Flush
-            Ignore index 0 (Since there is No rank 0)
-             */
-            for (int i = 0; i < 14; i++) {
-                rankSF[i]=0;
-            }
+        if (cards[0].getSuit() == cards[1].getSuit()) {
+            int rank[] = new int[14];
+            int suitOfFlush = cards[0].getSuit();
+            //of 7 cards, those with the suit of FLush will go into this array
             for (int i = 0; i < 7; i++) {
-                //Only take cards with Flush suit
-                if(flushSuit==cards[i].getSuit()){
-                    rankSF[cards[i].getRank()]++;
-                }
+                if (suitOfFlush == cards[i].getSuit())
+                    rank[cards[i].getRank()]++;
             }
-
-            //Add the
             /*
             Check StraightFlush
-
-            Break Tie:
-            Only need to record the lead card
+            Break Tie: Store the Highest card in values[1]
              */
 
-            //Royal StraightFlush - The unbeatable
-            if (rankSF[10] == 1 && rankSF[11] == 1 && rankSF[12] == 1 && rankSF[13] == 1 && rankSF[1] == 1 &&
-                    //Check if 2 hand cards are from these 5
-                    ((cards[0].getRank()==1 || (10<=cards[0].getRank() && (cards[0].getRank()<=13))) &&
-                            (cards[1].getRank()==1 || (10<=cards[1].getRank() && (cards[1].getRank()<=13)))
+            //Royal StraightFlush
+            if (rank[10] == 1 && rank[11] == 1 && rank[12] == 1 && rank[13] == 1 && rank[1] == 1 &&
+                    //Check if 2 hole cards are from these 5
+                    ((cards[0].getRank() == 1 || (10 <= cards[0].getRank() && (cards[0].getRank() <= 13))) &&
+                            (cards[1].getRank() == 1 || (10 <= cards[1].getRank() && (cards[1].getRank() <= 13)))
                     )) {
-
                 values[0] = 9;//9 = StraightFlush
                 values[1] = 14;//Ace as High card
 
+                //Store best hand for display
+                bestHand[0] = new Card(suitOfFlush, 1);
+                int startFromKing = 13;
+                for (int i = 0; i < 4; i++) {
+                    bestHand[i] = new Card(suitOfFlush, startFromKing);
+                    startFromKing--;
+                }
+
             } else {
                 /*
-                Ace is funny because it can be the strongest (Royal StaightFlush) or the weakest (Low SF)
+                Normal Straight Flush
+                Ace can belong to 'Royal StraightFlush' or 'Lowest StraightFlush'
                  */
                 for (int i = 13; i >= 5; i--) {
-                    if (rankSF[i] == 1 && rankSF[i - 1] == 1 && rankSF[i - 2] == 1 && rankSF[i - 3] == 1 && rankSF[i - 4] == 1 &&
-                        //Check if 2 hand cards are from these 5
-                        (i>=cards[0].getRank() && (cards[0].getRank()>=i-4)) &&
-                        (i>=cards[1].getRank() && (cards[1].getRank()>=i-4))) {
+                    if (rank[i] == 1 && rank[i - 1] == 1 && rank[i - 2] == 1 && rank[i - 3] == 1 && rank[i - 4] == 1 &&
+                            //Check if 2 hole cards are from these 5
+                            (i >= cards[0].getRank() && (cards[0].getRank() >= i - 4)) &&
+                            (i >= cards[1].getRank() && (cards[1].getRank() >= i - 4))) {
 
                         values[0] = 9;//9 = StraightFlush
-                        values[1] = i;//Highest Rank
+                        values[1] = i;//Highest card
+
+                        //Store best hand for display purpose
+                        int startFromKing = 13;
+                        for (int j = 0; j < 5; j++) {
+                            bestHand[j] = new Card(suitOfFlush, startFromKing);
+                            startFromKing--;
+                        }
                         break;
                     }
                 }
             }
+
+            /*
+            Not Straight Flush -> Checking Flush
+             */
+            if(values[0] != 9){
+                int cardsWithFlushSuit = 0;
+                for (int i = 13; i > 0; i--) {
+                    if(rank[i] == 1){
+                        cardsWithFlushSuit++;
+                    }
+                    //at least 5 cards with same suit to make a Flush
+                    if(cardsWithFlushSuit >= 5){
+                        values[0] = 6;
+                        /*
+                        Break tie: Only need the highest hole card of a hand
+
+                        All Flush hands of a game must have the same Suit. Because Stricly at least 3 Commu cards have same suit with 2
+                            hole cards from a handto form a Flush. That makes the remain 2 Commu cards insignificant! Since
+                            not enough commu cards left to form another FLush with different suit so other hands with Flush
+                            end up belong to that Suit also.
+
+                        Break tie Equation:
+                        Community cards (Can have >= 0 cards) > Highest hole card of hand 1
+                            > Community cards (Can have >= 0 cards) > Highest hole card of hand 2 > ... > Highest hole card of hand 3
+                         */
+                        values[1] = cards[0].getRank() > cards[1].getRank() ? cards[0].getRank() : cards[1].getRank();
+                        break;
+                    }
+                }
+                //Store best hand for display
+            }
         }
 
         /*
-        StraightFlush fails then find other combinations
+        StraightFlush fails then find other combinations but still keep result of Flush
          */
         int ranks[];
         if (values[0] != 9) {
