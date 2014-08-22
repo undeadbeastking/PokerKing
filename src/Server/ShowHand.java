@@ -1,6 +1,7 @@
 package Server;
 
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 /**
@@ -10,6 +11,7 @@ public class ShowHand {
 
     private LinkedList<Hand> hands, winnerList;
     private int pot, finalMoney;
+
 
     public ShowHand(LinkedList<Hand> hands, int pot) {
         this.hands = hands;
@@ -24,10 +26,6 @@ public class ShowHand {
     public LinkedList<Hand> getWinnerList() {
         return winnerList;
     }
-
-//    public void setPot(int pot){
-//
-//    }
 
     public void findWinners() {
 
@@ -59,7 +57,6 @@ public class ShowHand {
         finalMoney = pot / numberOfWinner;
 
     }
-
 
     private LinkedList<Hand> handleTie(LinkedList<Hand> tieList, int strongestCom) {
 
@@ -318,6 +315,5 @@ public class ShowHand {
 
         return numberOfTie;
     }
-
 
 }

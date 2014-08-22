@@ -4,13 +4,14 @@ import model.Account;
 import model.Data;
 
 import java.io.*;
+import java.net.Inet4Address;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.StringTokenizer;
 
-public class Server implements Runnable{
+public class Server implements Runnable {
 
     private static final int PORT = 9000;
 
@@ -22,24 +23,32 @@ public class Server implements Runnable{
         //Load users data
         Data.loadAccounts();
 
-        System.out.println("Server is running.");
+//        System.out.println("Server is running.");
         Server s = new Server();
         new Thread(s).start();
     }
 
     public Server() {
+        //print out server ip
+        try {
+            System.out.println("Server is running. The IP is: \n"
+                    + Inet4Address.getLocalHost().getHostAddress());
+        } catch (Exception e) {
+            System.out.println("Can not find server ip!");
+        }
+
         //Server UI here
     }
 
     @Override
-    public void run(){
+    public void run() {
         ServerSocket server = null;
 
-        try{
+        try {
             server = new ServerSocket(PORT);
 
             while (true) {
-                GameHandler g = new GameHandler();
+                GameHandler g = new GameHandler(numberOfPlayers);
                 for (int j = 0; j < numberOfPlayers; j++) {
 
                     Socket socket = server.accept();
@@ -49,17 +58,18 @@ public class Server implements Runnable{
                             new ObjectOutputStream(socket.getOutputStream())
                     );
 
-                    System.out.println("Player "+(j+1) + " is trying to log in.");
+                    System.out.println("Player " + (j + 1) + " is trying to log in.");
                     //Waiting for account obj and send back validation result
-                    while(true){
+                    while (true) {
                         System.out.println("Waiting for account info...");
                         Object o = player.read();
                         boolean rightAccount = false;
 
-                        if(o instanceof Account){
+                        if (o instanceof Account) {
                             Account acc = (Account) o;
                             String username = acc.getUsername();
                             String pass = acc.getPassword();
+                            System.out.println(username + " login successfully");
 
                             //Right username and password?
                             for (int i = 0; i < Data.getAccounts().size(); i++) {
@@ -72,15 +82,16 @@ public class Server implements Runnable{
                                 }
                             }
                             //Account is currently in used
-                            if(usernames.contains(username)){
+                            if (usernames.contains(username)) {
                                 rightAccount = false;
                                 System.out.println("Someone is using this account.");
                             }
                         }
 
-                        if(rightAccount){
+                        if (rightAccount) {
                             g.addPlayer(player);
                             player.write(State.Waiting);
+                            player.write("cards from server");
                             break;
 
                         } else {
@@ -91,31 +102,35 @@ public class Server implements Runnable{
                 }
                 System.out.println("Enough players, begin a game.");
                 //Enough players then we start a thread handling for that room
+
+
                 new Thread(g).start();
             }
 
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
-
+        } catch (Exception ex) {
+            System.out.println("A player has disconnected.");
         } finally {
-            try{
+
+            try {
                 server.close();
                 System.out.println("Stop server.");
 
-            } catch(IOException i) {
-                System.out.println("Cannot close server socket.");
-            }
+            } catch (IOException i) {
+                try {
+                    server.close();
+                    System.out.println("Stop server.");
 
-            //Save accounts
-            Data.saveAccounts();
+                } catch (Exception e) {
+                    System.out.println("Cannot close server socket.");
+                }
+
+                //Save accounts
+                Data.saveAccounts();
+            }
         }
     }
 
     public static ArrayList<String> getUsernames() {
         return usernames;
-    }
-
-    public static int getPort() {
-        return PORT;
     }
 }

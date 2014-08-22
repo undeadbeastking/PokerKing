@@ -7,5 +7,6 @@ public enum State {
     WrongAccount,
     Waiting,
     StartGame,
+    SendCard,
     EndGame
 }

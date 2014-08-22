@@ -67,7 +67,7 @@ public class Hand {
         handEvaluate();
     }
 
-    public int getId(){
+    public int getId() {
         return id;
     }
 
@@ -408,7 +408,7 @@ public class Hand {
                 //Get 3 cards
                 int index = 2;
                 //There is an Ace???
-                if(ranks[1] == 1){
+                if (ranks[1] == 1) {
                     values[index] = 14;
                     index++;
                 }
@@ -448,13 +448,13 @@ public class Hand {
         }
     }
 
-    public void display(){
+    public void display() {
         for (int i = 0; i < 7; i++) {
             System.out.print(cards[i] + ", ");
         }
         System.out.println();
 
-        switch(values[0]){
+        switch (values[0]) {
             case 9:
                 System.out.println("Straight FLush: " + values[1]);
                 break;
@@ -489,8 +489,17 @@ public class Hand {
         System.out.println();
     }
 
-    public Card[] getCards() {
-        return cards;
+    //    public Card[] getCards() {
+//        return cards;
+//    }
+    public String getCards() {
+        String myCards = cards[0].toString() + "-" + cards[1].toString();
+        String commuCards = cards[2].toString() + "-" + cards[3].toString() + "-" + cards[4].toString() + "-" + cards[5].toString() + "-" + cards[6].toString();
+        String allCards = myCards + "/" + commuCards;
+        return allCards;
     }
-    public int[] getValues(){ return values;}
+
+    public int[] getValues() {
+        return values;
+    }
 }
