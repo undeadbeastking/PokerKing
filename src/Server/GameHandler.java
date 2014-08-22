@@ -51,6 +51,11 @@ public class GameHandler implements Runnable {
                     State s = (State) fromClient;
                     if(s == State.SendCard){
                         sendCards(p);
+                        if (s == State.SendPlayers){
+                            p.write(usernames);
+                        }
+
+
                     }
                 }
 //            }

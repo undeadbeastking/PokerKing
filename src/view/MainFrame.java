@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.StringTokenizer;
 
 /**
@@ -39,6 +40,7 @@ public class MainFrame extends JFrame implements Runnable {
     private PlayerCommunicator server;
     private Account me;
     private String myCards, commuCards;
+    private ArrayList<String> usernames = new ArrayList<String>();
 
     public MainFrame() {
         //Customize MainFrame for loginPanel
@@ -100,15 +102,12 @@ public class MainFrame extends JFrame implements Runnable {
                 State s = (State) fromServer;
                 if (s == State.WrongAccount) {
                     loginPanel.getErrorMess().setText("*Wrong account");
-
-
                 } else if (s == State.Waiting) {
                     loginPanel.loadWaiting();
-//                    takeCard();
-
                 } else if (s == State.StartGame) {
                     takeCard();
-//                    initGamePanel();
+                    takePlayers();
+//                    takePlayers();
                     System.out.println("Pop up GamePanel");
 
                 } else if (s == State.EndGame) {
@@ -162,6 +161,16 @@ public class MainFrame extends JFrame implements Runnable {
         }
     }
 
+    public void takePlayers(){
+        server.write(State.SendPlayers);
+        Object fromServer = server.read();
+        if (fromServer instanceof  ArrayList) {
+            usernames = (ArrayList) fromServer;
+        } else {
+            System.out.println("Can not take players from server");
+        }
+    }
+
     public LoginPanel getLoginPanel() {
         return loginPanel;
     }
@@ -184,5 +193,9 @@ public class MainFrame extends JFrame implements Runnable {
 
     public String getMyCards(){
         return myCards;
+    }
+
+    public ArrayList<String> getAllUsers(){
+        return  usernames;
     }
 }

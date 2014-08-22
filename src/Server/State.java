@@ -8,5 +8,6 @@ public enum State {
     Waiting,
     StartGame,
     SendCard,
+    SendPlayers,
     EndGame
 }

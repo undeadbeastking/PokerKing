@@ -102,7 +102,7 @@ public class Server implements Runnable {
                 }
                 System.out.println("Enough players, begin a game.");
                 //Enough players then we start a thread handling for that room
-
+                System.out.println("~~~~~~~~~~~~~~~//////~~~~~~~~~~~~~~");
 
 
                 new Thread(g).start();
