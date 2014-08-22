@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.StringTokenizer;
 
 /**
  * Created by Agatha of Wood Beyond on 6/29/2014.
@@ -37,6 +38,7 @@ public class MainFrame extends JFrame implements Runnable {
     private String serverAddress = "localhost";
     private PlayerCommunicator server;
     private Account me;
+    private String myCards, commuCards;
 
     public MainFrame() {
         //Customize MainFrame for loginPanel
@@ -92,20 +94,30 @@ public class MainFrame extends JFrame implements Runnable {
     @Override
     public void run() {
         //Process signals from Server
-        System.out.println("Read signal...");
-        Object message = server.read();
-        while (message != null) {
-            if (message instanceof State) {
-                State s = (State) message;
+        Object fromServer = server.read();
+        while (fromServer != null) {
+            if (fromServer instanceof State) {
+                State s = (State) fromServer;
                 if (s == State.WrongAccount) {
                     loginPanel.getErrorMess().setText("*Wrong account");
 
+
                 } else if (s == State.Waiting) {
                     loginPanel.loadWaiting();
+//                    takeCard();
+
+                } else if (s == State.StartGame) {
+                    takeCard();
+//                    initGamePanel();
+                    System.out.println("Pop up GamePanel");
+
+                } else if (s == State.EndGame) {
+                    System.out.println("End game. No longer reading signal from server.");
+                    break;
                 }
             }
             System.out.println("Read signal...");
-            message = server.read();
+            fromServer = server.read();
         }
         System.out.println("No longer reading signal from the server.");
     }
@@ -136,6 +148,20 @@ public class MainFrame extends JFrame implements Runnable {
         this.repaint();
     }
 
+    public void takeCard() {
+        server.write(State.SendCard);
+        Object fromServer = server.read();
+        if (fromServer != null) {
+            String cards = fromServer.toString();
+            StringTokenizer tokenizer = new StringTokenizer(cards, "/");
+            myCards = tokenizer.nextToken();
+            commuCards = tokenizer.nextToken();
+            System.out.println(cards);
+        } else {
+            System.out.println("Can not take cards from server");
+        }
+    }
+
     public LoginPanel getLoginPanel() {
         return loginPanel;
     }
@@ -150,5 +176,13 @@ public class MainFrame extends JFrame implements Runnable {
 
     public PlayerCommunicator getServer() {
         return server;
+    }
+
+    public String getCommuCards() {
+        return commuCards;
+    }
+
+    public String getMyCards(){
+        return myCards;
     }
 }

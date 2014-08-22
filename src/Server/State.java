@@ -6,5 +6,7 @@ package Server;
 public enum State {
     WrongAccount,
     Waiting,
-    StartGame
+    StartGame,
+    SendCard,
+    EndGame
 }

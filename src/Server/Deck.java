@@ -25,7 +25,6 @@ public class Deck {
 
     public Deck(){
         cards = new ArrayList<Card>();
-//        hands = new Hand[9];
 
         //Create a Poker deck with arranged order
         // 4 types of suit

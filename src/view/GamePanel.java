@@ -50,12 +50,11 @@ public class GamePanel extends JPanel {
         //Set bounds for player panels
         playersP[0].setBounds(PlayerPU.panel1_x, PlayerPU.panel1_4_y,
                 PlayerPU.width, PlayerPU.height);
-//        playersP[3].setBounds(PlayerPU.panel4_x, PlayerPU.panel1_4_y,
-//                PlayerPU.width, PlayerPU.height);
-
         playersP[1].setBounds(PlayerPU.panel2_x, PlayerPU.panel2_3_y,
                 PlayerPU.width, PlayerPU.height);
         playersP[2].setBounds(PlayerPU.panel3_x, PlayerPU.panel2_3_y,
+                PlayerPU.width, PlayerPU.height);
+        playersP[3].setBounds(PlayerPU.panel4_x, PlayerPU.panel1_4_y,
                 PlayerPU.width, PlayerPU.height);
 
 //        playersP[4].setBounds(PlayerPU.panel5_x, PlayerPU.panel5_9_y,
@@ -122,36 +121,36 @@ public class GamePanel extends JPanel {
 
     public void setCards() {
 
-//        String path1, path2, path3, path4, path5;
-//
-//
-//        StringTokenizer tokenizer = new StringTokenizer(f.getCommuCards(), "-");
-//        path1 = PlayerPU.pathPrefix + tokenizer.nextToken() + ".png";
-//        path2 = PlayerPU.pathPrefix + tokenizer.nextToken() + ".png";
-//        path3 = PlayerPU.pathPrefix + tokenizer.nextToken() + ".png";
-//        path4 = PlayerPU.pathPrefix + tokenizer.nextToken() + ".png";
-//        path5 = PlayerPU.pathPrefix + tokenizer.nextToken() + ".png";
-//
-//
-//        Image img1 = ImageGetter.getInstance().getImage(path1);
-//        Image img2 = ImageGetter.getInstance().getImage(path2);
-//        Image img3 = ImageGetter.getInstance().getImage(path3);
-//        Image img4 = ImageGetter.getInstance().getImage(path4);
-//        Image img5 = ImageGetter.getInstance().getImage(path5);
-//
-//
-//        if (img1 != null && img2 != null && img3 != null && img4 != null && img5 != null) {
-//            ImageIcon imageIcon;
-//            imageIcon = new ImageIcon(img1);
-//            card1.setIcon(imageIcon);
-//            imageIcon = new ImageIcon(img2);
-//            card2.setIcon(imageIcon);
-//            imageIcon = new ImageIcon(img3);
-//            card3.setIcon(imageIcon);
-//            imageIcon = new ImageIcon(img4);
-//            card4.setIcon(imageIcon);
-//            imageIcon = new ImageIcon(img5);
-//            card5.setIcon(imageIcon);
-//        }
+        String path1, path2, path3, path4, path5;
+
+
+        StringTokenizer tokenizer = new StringTokenizer(f.getCommuCards(), "-");
+        path1 = PlayerPU.pathPrefix + tokenizer.nextToken() + ".png";
+        path2 = PlayerPU.pathPrefix + tokenizer.nextToken() + ".png";
+        path3 = PlayerPU.pathPrefix + tokenizer.nextToken() + ".png";
+        path4 = PlayerPU.pathPrefix + tokenizer.nextToken() + ".png";
+        path5 = PlayerPU.pathPrefix + tokenizer.nextToken() + ".png";
+
+
+        Image img1 = ImageGetter.getInstance().getImage(path1);
+        Image img2 = ImageGetter.getInstance().getImage(path2);
+        Image img3 = ImageGetter.getInstance().getImage(path3);
+        Image img4 = ImageGetter.getInstance().getImage(path4);
+        Image img5 = ImageGetter.getInstance().getImage(path5);
+
+
+        if (img1 != null && img2 != null && img3 != null && img4 != null && img5 != null) {
+            ImageIcon imageIcon;
+            imageIcon = new ImageIcon(img1);
+            card1.setIcon(imageIcon);
+            imageIcon = new ImageIcon(img2);
+            card2.setIcon(imageIcon);
+            imageIcon = new ImageIcon(img3);
+            card3.setIcon(imageIcon);
+            imageIcon = new ImageIcon(img4);
+            card4.setIcon(imageIcon);
+            imageIcon = new ImageIcon(img5);
+            card5.setIcon(imageIcon);
+        }
     }
 }
