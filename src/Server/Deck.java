@@ -14,12 +14,10 @@ import java.util.Random;
 
 public class Deck {
     private int id = 0;
+
     //Deck cards
     private ArrayList<Card> cards;
-    //Hands
-    private int currentHand = 0;
-//    private Hand[] hands;
-    private LinkedList<Hand> hands = new LinkedList<Hand>();
+
     //Community cards
     private Card[] commuCards;
 
@@ -27,7 +25,7 @@ public class Deck {
         cards = new ArrayList<Card>();
 
         //Create a Poker deck with arranged order
-        // 4 types of suit
+        //4 types of suit
         for (int i = 1; i <= 4; i++){
             //For each suit, create 13 cards
             for(int j = 1; j <= 13; j++){
@@ -68,25 +66,8 @@ public class Deck {
         return id++;
     }
 
-    public Hand newHand(){
-        if (currentHand != 9){
-//            hands[currentHand] = new Hand(this);
-            hands.add(new Hand(this));
-            currentHand++;
-            return hands.get(currentHand - 1);
-
-        } else{
-            System.out.println("Max hand reached.");
-            return null;
-        }
-    }
-
     public Card[] getCommuCards() {
         return commuCards;
-    }
-
-    public LinkedList<Hand> getHands() {
-        return hands;
     }
 
     //Draw the top card from a deck
@@ -94,7 +75,7 @@ public class Deck {
         return cards.remove(0);
     }
 
-    //How many remaining cards the deck still has
+    //How many cards the deck still has
     public int getTotalCards(){
         return cards.size();
     }

@@ -108,7 +108,8 @@ public class Server implements Runnable {
             }
 
         } catch (Exception ex) {
-            System.out.println("A player has disconnected.");
+            System.out.println("A player has disconnected");
+
         } finally {
 
             try {
