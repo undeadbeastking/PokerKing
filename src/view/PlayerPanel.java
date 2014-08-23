@@ -64,20 +64,20 @@ public class PlayerPanel extends JPanel {
         status.setForeground(PlayerPU.label_Color);
         bet.setForeground(PlayerPU.label_Color);
 
-//        allPlayers = f.getAllUsers();
-//        if (allPlayers.get(p).equals(f.getClientUser())) {
-//            username.setText(f.getClientUser());
-//            //Customize player statistics
-//            username.setForeground(PlayerPU.pUsername_Color);
-//            setCards(true);
-//
-//        } else {
-//            username.setText(allPlayers.get(p));
-//            //Customize player statistics
-//            username.setForeground(PlayerPU.username_Color);
-//            setCards(false);
-//
-//        }
+        allPlayers = f.getAllUsers();
+        if (allPlayers.get(p).equals(f.getMe().getUsername())) {
+            username.setText(f.getMe().getUsername());
+            //Customize player statistics
+            username.setForeground(PlayerPU.pUsername_Color);
+            setCards(true);
+
+        } else {
+            username.setText(allPlayers.get(p));
+            //Customize player statistics
+            username.setForeground(PlayerPU.username_Color);
+            setCards(false);
+
+        }
 
         //Add component
         this.add(icon);

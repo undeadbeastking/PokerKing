@@ -42,7 +42,7 @@ public class GamePanel extends JPanel {
         setCards();
         //Create all players panels - real player will be added
         playersP = new PlayerPanel[maxPlayersNum];
-//        allPlayers = f.getAllUsers();
+        allPlayers = f.getAllUsers();
         for (int j = 0; j < allPlayers.size(); j++) {
             playersP[j] = new PlayerPanel(j, f);
         }
@@ -94,6 +94,11 @@ public class GamePanel extends JPanel {
         for (int j = 0; j < allPlayers.size(); j++) {
             this.add(playersP[j]);
         }
+
+//        callBut.setEnabled(false);
+//        foldBut.setEnabled(false);
+//        raiseBut.setEnabled(false);
+
         this.add(back);
         this.add(foldBut);
         this.add(callBut);
@@ -113,6 +118,30 @@ public class GamePanel extends JPanel {
 
     public CustBut getBackBut() {
         return back;
+    }
+
+    public CustBut getFoldBut() {
+        return foldBut;
+    }
+
+    public CustBut getCallBut() {
+        return callBut;
+    }
+
+    public CustBut getRaiseBut() {
+        return raiseBut;
+    }
+
+    public void setYourTurn(boolean myTurn){
+        if (myTurn){
+            callBut.setEnabled(true);
+            foldBut.setEnabled(true);
+            raiseBut.setEnabled(true);
+        } else {
+            callBut.setEnabled(false);
+            foldBut.setEnabled(false);
+            raiseBut.setEnabled(false);
+        }
     }
 
     public PlayerPanel[] getPlayersP() {

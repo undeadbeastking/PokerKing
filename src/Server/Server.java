@@ -64,6 +64,7 @@ public class Server implements Runnable {
                         System.out.println("Waiting for account info...");
                         Object o = player.read();
                         boolean rightAccount = false;
+                        String acceptUsername = "";
 
                         if (o instanceof Account) {
                             Account acc = (Account) o;
@@ -78,6 +79,7 @@ public class Server implements Runnable {
 
                                 if (username.equals(dataUsername) && pass.equals(dataPassword)) {
                                     rightAccount = true;
+                                    acceptUsername = username;
                                     break;
                                 }
                             }
@@ -86,10 +88,12 @@ public class Server implements Runnable {
                                 rightAccount = false;
                                 System.out.println("Someone is using this account.");
                             }
+
                         }
 
                         if (rightAccount) {
                             g.addPlayer(player);
+                            usernames.add(acceptUsername);
                             player.write(State.Waiting);
                             player.write("cards from server");
                             break;

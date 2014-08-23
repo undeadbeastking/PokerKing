@@ -107,7 +107,8 @@ public class MainFrame extends JFrame implements Runnable {
                 } else if (s == State.StartGame) {
                     takeCard();
                     takePlayers();
-//                    takePlayers();
+
+                    initGamePanel(checkTurn());
                     System.out.println("Pop up GamePanel");
 
                 } else if (s == State.EndGame) {
@@ -125,7 +126,7 @@ public class MainFrame extends JFrame implements Runnable {
     Because the need of switching account, GamePanel and GameCon need to
     be initialized later so it can receive the logged in user
      */
-    public void initGamePanel() {
+    public void initGamePanel(boolean myTurn) {
 
         //Refresh LoginPanel for next Login
         loginPanel.refreshPanel();
@@ -136,6 +137,7 @@ public class MainFrame extends JFrame implements Runnable {
             //Initialized GamePanel & Game Controller
             gamePanel = new GamePanel(this);
             gameCon = new GameCon(this);
+            gamePanel.setYourTurn(myTurn);
         }
 
         this.add(this.getGamePanel());
@@ -161,14 +163,32 @@ public class MainFrame extends JFrame implements Runnable {
         }
     }
 
-    public void takePlayers(){
+    public void takePlayers() {
         server.write(State.SendPlayers);
         Object fromServer = server.read();
-        if (fromServer instanceof  ArrayList) {
-            usernames = (ArrayList) fromServer;
+        if (fromServer instanceof ArrayList) {
+            usernames = (ArrayList<String>) fromServer;
         } else {
             System.out.println("Can not take players from server");
         }
+    }
+
+    public boolean checkTurn() {
+        boolean myTurn = false;
+        Object fromServer = server.read();
+        if (fromServer instanceof State) {
+            State s = (State) fromServer;
+            if (s == State.CurrentTurn){
+                System.out.println("My Turn");
+                myTurn = true;
+            } else if (s == State.NotYourTurn) {
+                String string = server.read().toString();
+                myTurn = false;
+                System.out.println("Not my turn");
+                System.out.println(string);
+            }
+        }
+        return myTurn;
     }
 
     public LoginPanel getLoginPanel() {
@@ -191,11 +211,19 @@ public class MainFrame extends JFrame implements Runnable {
         return commuCards;
     }
 
-    public String getMyCards(){
+    public String getMyCards() {
         return myCards;
     }
 
-    public ArrayList<String> getAllUsers(){
-        return  usernames;
+    public ArrayList<String> getAllUsers() {
+        return usernames;
+    }
+
+    public void setMe(Account a) {
+        me = a;
+    }
+
+    public Account getMe() {
+        return me;
     }
 }

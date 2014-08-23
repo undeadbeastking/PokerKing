@@ -49,7 +49,9 @@ public class LoginCon {
             String username = local.getUsernameF().getText();
             String password = String.valueOf(local.getPasswordF().getPassword());
 
-            f.getServer().write(new Account(username, password));
+            Account temp = new Account(username, password);
+            f.setMe(temp);
+            f.getServer().write(temp);
         }
     }
 
