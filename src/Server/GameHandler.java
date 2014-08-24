@@ -61,20 +61,35 @@ public class GameHandler implements Runnable {
             }
         }
 
+        //Send role
+//        int role = 0;
+//        while(role < playersCom.size() ){
+//            playersCom.get(role).write("D");
+//            playersCom.get(role+1).write("SB");
+//            playersCom.get(role+2).write("BB");
+//            for (int j = role+3; j < playersCom.size(); j++) {
+//                playersCom.get(j).write("Com");
+//            }
+//        }
+
         //Handling Bets and stuffs
-        for (int i = 0; i < playersCom.size(); i++) {
-            playersCom.get(i).write(State.CurrentTurn);
+        for (int i = 0; i < usernames.size();i++) {
+            System.out.println("Current turn: " + usernames.get(i));
+            //send whos turn
             for (int j = 0; j < playersCom.size(); j++) {
-                if (j != i) {
-                    playersCom.get(j).write(State.NotYourTurn);
-                    playersCom.get(j).write(i);
+                playersCom.get(j).write(usernames.get(i));
+
+            }
+            //receive response from that player
+            Object fromClient = playersCom.get(i).read();
+            if (fromClient != null){
+                //send that response to everyone
+                for (int k = 0; k < playersCom.size(); k++) {
+                    playersCom.get(k).write(fromClient);
                 }
             }
-            Object fromClient = playersCom.get(i).read();
-            for (int j = 0; j < playersCom.size(); j++) {
-                if (j != i) {
-                    playersCom.get(j).write(fromClient);
-                }
+            if(i == 3){
+                i = -1;
             }
         }
 

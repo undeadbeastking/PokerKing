@@ -29,7 +29,7 @@ public class PlayerPanel extends JPanel {
     public PlayerPanel(int p, MainFrame frame) {
         //Customize player panel
         this.setLayout(null);
-        this.setBorder(PlayerPU.PanelBorder);
+//        this.setBorder(PlayerPU.PanelBorder);
         this.setBackground(PlayerPU.Transparent_background);
         this.f = frame;
 
@@ -115,6 +115,14 @@ public class PlayerPanel extends JPanel {
             card1.setIcon(imageIcon);
             imageIcon = new ImageIcon(cardI2);
             card2.setIcon(imageIcon);
+        }
+    }
+
+    public void setTurn (boolean myTurn){
+        if (myTurn){
+            this.setBorder(PlayerPU.TurnBorder);
+        } else {
+            this.setBorder(PlayerPU.PanelBorder);
         }
     }
 }

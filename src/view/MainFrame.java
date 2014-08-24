@@ -107,9 +107,13 @@ public class MainFrame extends JFrame implements Runnable {
                 } else if (s == State.StartGame) {
                     takeCard();
                     takePlayers();
-
-                    initGamePanel(checkTurn());
+                    initGamePanel();
                     System.out.println("Pop up GamePanel");
+                    while (true){
+                        checkTurn();
+                        listenResponse();
+                    }
+
 
                 } else if (s == State.EndGame) {
                     System.out.println("End game. No longer reading signal from server.");
@@ -126,7 +130,7 @@ public class MainFrame extends JFrame implements Runnable {
     Because the need of switching account, GamePanel and GameCon need to
     be initialized later so it can receive the logged in user
      */
-    public void initGamePanel(boolean myTurn) {
+    public void initGamePanel() {
 
         //Refresh LoginPanel for next Login
         loginPanel.refreshPanel();
@@ -137,7 +141,7 @@ public class MainFrame extends JFrame implements Runnable {
             //Initialized GamePanel & Game Controller
             gamePanel = new GamePanel(this);
             gameCon = new GameCon(this);
-            gamePanel.setYourTurn(myTurn);
+//            gamePanel.setYourTurn(myTurn);
         }
 
         this.add(this.getGamePanel());
@@ -173,23 +177,35 @@ public class MainFrame extends JFrame implements Runnable {
         }
     }
 
-    public boolean checkTurn() {
+    public void checkTurn() {
         boolean myTurn = false;
         Object fromServer = server.read();
-        if (fromServer instanceof State) {
-            State s = (State) fromServer;
-            if (s == State.CurrentTurn){
-                System.out.println("My Turn");
+        int myPosition = 0;
+        if (fromServer instanceof String){
+            if (me.getUsername().equals(fromServer)){
+                System.out.println("This is: " + fromServer + " turn!!!!!!!!!!!!!!");
+                myPosition = usernames.indexOf(fromServer);
                 myTurn = true;
-            } else if (s == State.NotYourTurn) {
-                String string = server.read().toString();
-                myTurn = false;
-                System.out.println("Not my turn");
-                System.out.println(string);
             }
         }
-        return myTurn;
+        gamePanel.setYourTurn(myTurn);
+
+        for (int i = 0; i < usernames.size(); i ++) {
+            if (i != myPosition) {
+                gamePanel.getPlayersP().get(i).setTurn(myTurn);
+            }
+        }
+
     }
+
+    public void listenResponse (){
+        Object fromServer = server.read();
+        if (fromServer instanceof String){
+            System.out.println(fromServer + " Receive a respose from a player");
+        }
+    }
+
+
 
     public LoginPanel getLoginPanel() {
         return loginPanel;

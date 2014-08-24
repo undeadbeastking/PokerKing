@@ -19,7 +19,8 @@ public class GamePanel extends JPanel {
 
     private Image backGround;
     private int maxPlayersNum = 9;
-    private PlayerPanel[] playersP;
+    private ArrayList<PlayerPanel> playersP;
+//    private PlayerPanel[] playersP;
     private CustBut back = new CustBut("back");
     //Function buttons
     private CustBut foldBut = new CustBut("Fold");
@@ -41,21 +42,23 @@ public class GamePanel extends JPanel {
         this.f = frame;
         setCards();
         //Create all players panels - real player will be added
-        playersP = new PlayerPanel[maxPlayersNum];
+        playersP = new ArrayList<PlayerPanel>();
+//        playersP = new PlayerPanel[maxPlayersNum];
         allPlayers = f.getAllUsers();
         for (int j = 0; j < allPlayers.size(); j++) {
-            playersP[j] = new PlayerPanel(j, f);
+            playersP.add(new PlayerPanel(j, f));
         }
 
         //Set bounds for player panels
-        playersP[0].setBounds(PlayerPU.panel1_x, PlayerPU.panel1_4_y,
+        playersP.get(0).setBounds(PlayerPU.panel1_x, PlayerPU.panel1_4_y,
                 PlayerPU.width, PlayerPU.height);
-        playersP[1].setBounds(PlayerPU.panel2_x, PlayerPU.panel2_3_y,
+        playersP.get(1).setBounds(PlayerPU.panel2_x, PlayerPU.panel2_3_y,
                 PlayerPU.width, PlayerPU.height);
-        playersP[2].setBounds(PlayerPU.panel3_x, PlayerPU.panel2_3_y,
+        playersP.get(2).setBounds(PlayerPU.panel3_x, PlayerPU.panel2_3_y,
                 PlayerPU.width, PlayerPU.height);
-        playersP[3].setBounds(PlayerPU.panel4_x, PlayerPU.panel1_4_y,
+        playersP.get(3).setBounds(PlayerPU.panel4_x, PlayerPU.panel1_4_y,
                 PlayerPU.width, PlayerPU.height);
+
 
 //        playersP[4].setBounds(PlayerPU.panel5_x, PlayerPU.panel5_9_y,
 //                PlayerPU.width, PlayerPU.height);
@@ -91,13 +94,13 @@ public class GamePanel extends JPanel {
 
 
         //Add components
-        for (int j = 0; j < allPlayers.size(); j++) {
-            this.add(playersP[j]);
+        for (int j = 0; j < playersP.size(); j++) {
+            this.add(playersP.get(j));
         }
 
-//        callBut.setEnabled(false);
-//        foldBut.setEnabled(false);
-//        raiseBut.setEnabled(false);
+        callBut.setEnabled(false);
+        foldBut.setEnabled(false);
+        raiseBut.setEnabled(false);
 
         this.add(back);
         this.add(foldBut);
@@ -144,7 +147,7 @@ public class GamePanel extends JPanel {
         }
     }
 
-    public PlayerPanel[] getPlayersP() {
+    public ArrayList<PlayerPanel> getPlayersP() {
         return playersP;
     }
 
