@@ -18,6 +18,9 @@ public class GameCon {
 
         //Set ActionListener for back button
         this.f.getGamePanel().getBackBut().addActionListener(new BackButtonListener());
+        this.f.getGamePanel().getFoldBut().addActionListener(new FoldButtonListener());
+        this.f.getGamePanel().getCallBut().addActionListener(new CallButtonListener());
+        this.f.getGamePanel().getRaiseBut().addActionListener(new RaiseButtonListener());
     }
 
     private class BackButtonListener implements ActionListener {
@@ -33,5 +36,35 @@ public class GameCon {
             f.validate();
             f.repaint();
         }
+    }
+
+    private class FoldButtonListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            System.out.println("Fold");
+            f.getServer().write("Fold");
+            f.getGamePanel().setYourTurn(false);
+        }
+
+    }
+
+    private class CallButtonListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            System.out.println("Call");
+            f.getServer().write("Call");
+            f.getGamePanel().setYourTurn(false);
+        }
+
+    }
+
+    private class RaiseButtonListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            System.out.println("Raise");
+            f.getServer().write("Raise");
+            f.getGamePanel().setYourTurn(false);
+        }
+
     }
 }

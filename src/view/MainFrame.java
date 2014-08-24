@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.StringTokenizer;
 
 /**
@@ -39,6 +40,7 @@ public class MainFrame extends JFrame implements Runnable {
     private PlayerCommunicator server;
     private Account me;
     private String myCards, commuCards;
+    private ArrayList<String> usernames = new ArrayList<String>();
 
     public MainFrame() {
         //Customize MainFrame for loginPanel
@@ -100,18 +102,18 @@ public class MainFrame extends JFrame implements Runnable {
                 State s = (State) fromServer;
                 if (s == State.WrongAccount) {
                     loginPanel.getErrorMess().setText("*Wrong account");
-
-
                 } else if (s == State.Waiting) {
                     loginPanel.loadWaiting();
-                } else if(s==State.StartGame){
-                    System.out.println("Pop up GamePanel");
-                } else if(s==State.EndGame){
-//                    takeCard();
+
                 } else if (s == State.StartGame) {
                     takeCard();
-//                    initGamePanel();
+                    takePlayers();
+                    initGamePanel();
                     System.out.println("Pop up GamePanel");
+                    while (true){
+                        checkTurn();
+                        listenResponse();
+                    }
 
                 } else if (s == State.EndGame) {
 
@@ -140,6 +142,7 @@ public class MainFrame extends JFrame implements Runnable {
             //Initialized GamePanel & Game Controller
             gamePanel = new GamePanel(this);
             gameCon = new GameCon(this);
+//            gamePanel.setYourTurn(myTurn);
         }
 
         this.add(this.getGamePanel());
@@ -165,6 +168,46 @@ public class MainFrame extends JFrame implements Runnable {
         }
     }
 
+    public void takePlayers() {
+        server.write(State.SendPlayers);
+        Object fromServer = server.read();
+        if (fromServer instanceof ArrayList) {
+            usernames = (ArrayList<String>) fromServer;
+        } else {
+            System.out.println("Can not take players from server");
+        }
+    }
+
+    public void checkTurn() {
+        boolean myTurn = false;
+        Object fromServer = server.read();
+        int myPosition = 0;
+        if (fromServer instanceof String){
+            if (me.getUsername().equals(fromServer)){
+                System.out.println("This is: " + fromServer + " turn!!!!!!!!!!!!!!");
+                myPosition = usernames.indexOf(fromServer);
+                myTurn = true;
+            }
+        }
+        gamePanel.setYourTurn(myTurn);
+
+        for (int i = 0; i < usernames.size(); i ++) {
+            if (i != myPosition) {
+                gamePanel.getPlayersP().get(i).setTurn(myTurn);
+            }
+        }
+
+    }
+
+    public void listenResponse (){
+        Object fromServer = server.read();
+        if (fromServer instanceof String){
+            System.out.println(fromServer + " Receive a respose from a player");
+        }
+    }
+
+
+
     public LoginPanel getLoginPanel() {
         return loginPanel;
     }
@@ -185,7 +228,19 @@ public class MainFrame extends JFrame implements Runnable {
         return commuCards;
     }
 
-    public String getMyCards(){
+    public String getMyCards() {
         return myCards;
+    }
+
+    public ArrayList<String> getAllUsers() {
+        return usernames;
+    }
+
+    public void setMe(Account a) {
+        me = a;
+    }
+
+    public Account getMe() {
+        return me;
     }
 }
