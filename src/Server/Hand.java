@@ -13,7 +13,7 @@ public class Hand {
     private int id;
     private Card[] cards;
     private int[] values;
-    private Card[] bestHand;
+    private Card[] bestOfAHand;
 
     /*
     Every hand will have 5 same community cards and 2 random cards from the created deck
@@ -29,7 +29,7 @@ public class Hand {
         id = d.generateID();//Id of a specific Hand
 
         cards = new Card[7];
-        bestHand = new Card[5];//For display Purpose
+        bestOfAHand = new Card[5];//For display Purpose
         values = new int[6];//first index is the strongest combination of a hand
 
         //2 cards on Hand
@@ -96,11 +96,11 @@ public class Hand {
                 values[0] = 9;//9 = StraightFlush
                 values[1] = 14;//Ace as High card
 
-                //Store best hand for display
-                bestHand[0] = new Card(suitOfFlush, 1);
+                //Store best result of a hand
+                bestOfAHand[0] = new Card(suitOfFlush, 1);
                 int startFromKing = 13;
                 for (int i = 0; i < 4; i++) {
-                    bestHand[i] = new Card(suitOfFlush, startFromKing);
+                    bestOfAHand[i] = new Card(suitOfFlush, startFromKing);
                     startFromKing--;
                 }
 
@@ -118,10 +118,10 @@ public class Hand {
                         values[0] = 9;//9 = StraightFlush
                         values[1] = i;//Highest card
 
-                        //Store best hand for display purpose
+                        //Store best result of a hand
                         int startFromKing = 13;
                         for (int j = 0; j < 5; j++) {
-                            bestHand[j] = new Card(suitOfFlush, startFromKing);
+                            bestOfAHand[j] = new Card(suitOfFlush, startFromKing);
                             startFromKing--;
                         }
                         break;
@@ -132,14 +132,14 @@ public class Hand {
             /*
             Not Straight Flush -> Checking Flush
              */
-            if(values[0] != 9){
+            if (values[0] != 9) {
                 int cardsWithFlushSuit = 0;
                 for (int i = 13; i > 0; i--) {
-                    if(rank[i] == 1){
+                    if (rank[i] == 1) {
                         cardsWithFlushSuit++;
                     }
                     //at least 5 cards with same suit to make a Flush
-                    if(cardsWithFlushSuit >= 5){
+                    if (cardsWithFlushSuit >= 5) {
                         values[0] = 6;
                         /*
                         Break tie: Only need the highest hole card of a hand
@@ -153,145 +153,261 @@ public class Hand {
                         Community cards (Can have >= 0 cards) > Highest hole card of hand 1
                             > Community cards (Can have >= 0 cards) > Highest hole card of hand 2 > ... > Highest hole card of hand 3
                          */
-                        values[1] = cards[0].getRank() > cards[1].getRank() ? cards[0].getRank() : cards[1].getRank();
+                        //One of the Hole card is an Ace-> set Highest hole card Energy to 14 instead of its rank (1)
+                        if (cards[0].getRank() == 1 || cards[1].getRank() == 1) {
+                            values[1] = 14;
+                        } else {
+                            //Normal rank from 13 to 2
+                            values[1] = cards[0].getRank() > cards[1].getRank() ? cards[0].getRank() : cards[1].getRank();
+                        }
                         break;
                     }
                 }
-                //Store best hand for display
+                //Store best result of a hand
+                if (values[0] == 6) {
+                    bestOfAHand[0] = cards[0];
+                    bestOfAHand[1] = cards[1];
+                    //Avoid repicking the hole cards
+                    int hole1Rank = cards[0].getRank();
+                    int hole2Rank = cards[1].getRank();
+                    //2 slots occupied, then point the index to slot 3
+                    int index = 2;
+                    //Got an Ace but it is not a hole card, then 100% it will be included
+                    if ((hole1Rank != 1 && hole2Rank != 1) && rank[1] == 1) {
+                        bestOfAHand[index] = new Card(suitOfFlush, 1);
+                        index++;
+                    }
+                    for (int i = 13; i > 1; i--) {
+                        /*
+                        Ignore 2 hole cards, loop from top rank to lower rank to find available Commu cards
+                         */
+                        if ((i != hole1Rank && i != hole2Rank) && rank[i] == 1) {
+                            bestOfAHand[index] = new Card(suitOfFlush, i);
+                            index++;
+                        }
+                        //get enough Commu cards then ignore the remaining with lower Rank
+                        if (index > 4) {
+                            break;
+                        }
+                    }
+                }
             }
         }
 
         /*
         StraightFlush fails then find other combinations but still keep result of Flush
          */
-        int ranks[];
         if (values[0] != 9) {
-            /*
-            Eliminate StraightFlush but Flush can still be there
-             */
-
-            //Count cards of each rank but this time withour suit condition
-            ranks = new int[14];
-            for (int i = 0; i < 14; i++) {
-                ranks[i] = 0;
-            }
+            int rank[];
+            //Count cards of each rank but this time without Suit condition
+            rank = new int[14];
             for (int i = 0; i < 7; i++) {
-                ranks[cards[i].getRank()]++;
-            }
-
-            /*
-            Check Straight
-            Take 5 out of 7 to form a Straight which means that the remain 2 cards
-            can be on the same rank with any of the chosen 5
-
-            -> At least one card of each rank on a row to form a Straight
-
-            Break Tie:
-            Only need the leader (CArd with highest rank)
-             */
-            //The case with Ace
-            if (ranks[1] >= 1 && ranks[13] >= 1 && ranks[12] >= 1 && ranks[11] >= 1 && ranks[10] >= 1) {
-                values[0] = 5;
-                //Set leader to Ace
-                values[1] = 14;
-
-            } else {
-                for (int i = 13; i >= 5; i--) {
-                    if (ranks[i] >= 1 && ranks[i - 1] >= 1 && ranks[i - 2] >= 1 && ranks[i - 3] >= 1 && ranks[i - 4] >= 1) {
-                        values[0] = 5;
-                        values[1] = i;
-                        //Stop at the sight of Straight combo with trongest leader card
-                        break;
-                    }
-                }
+                rank[cards[i].getRank()]++;
             }
 
             /*
             Find 2 ranks which have the most cards
-            Quatity matters, rank does not matter
+            Quantity matters (4 of a kind is valuable! even if it has a rank of 2)
              */
-            int bigGroup = 1, smallGroup = 1;
-            int bigGroupRank = 0, smallGroupRank = 0;
-            for (int i = 13; i >= 1; i--) {
-                if (ranks[i] > bigGroup) {
-                    if (bigGroup != 1) {
-                        //Pass the old group to smallGroup
-                        smallGroup = bigGroup;
-                        smallGroupRank = bigGroupRank;
+            int bigQuan = 1, smallerQuan = 1;//Rank with big quantity, rank with smaller quantity
+            int bigQuanRank = 0, smallerQuanRank = 0;
+            for (int i = 13; i > 0; i--) {
+                if (rank[i] > bigQuan) {
+                    if (bigQuan != 1) {
+                        //Pass the old rank with less cards to smallerQuan
+                        smallerQuan = bigQuan;
+                        smallerQuanRank = bigQuanRank;
                     }
                     //Set to the rank with more cards
-                    bigGroupRank = i;
-                    bigGroup = ranks[i];
+                    bigQuan = rank[i];
+                    bigQuanRank = i;
 
-                } else if (ranks[i] > smallGroup) {
-                    smallGroupRank = i;
-                    smallGroup = ranks[i];
+                } else if (rank[i] > smallerQuan) {
+                    smallerQuan = rank[i];
+                    smallerQuanRank = i;
                 }
             }
 
             /*
             Check four of a kind
+            Big group has 4 cards but at least a hole card is in there.
+            Else cannot get 4 of them out and still get 2 hole cards out because it makes 6
              */
-            if (bigGroup == 4) {
+            if (bigQuan == 4 && (cards[0].getRank() == bigQuanRank || cards[1].getRank() == bigQuanRank)) {
                 values[0] = 8;
-                //Rank of the 4
-                if (bigGroupRank == 1) {
-                    values[1] = 14;//Ace
-                } else {
-                    values[1] = bigGroupRank;
+                /*
+                Break tie: Just need to know the Energy of the 4. Because of the involve of at least one hole card
+			    in there makes it inaccessible to other players (Careful Ace!)
+                 */
+                values[1] = bigQuanRank == 1 ? 14 : bigQuanRank;
+
+                /*
+                Store best result of a hand
+                 */
+                for (int i = 1; i <= 4; i++) {
+                    bestOfAHand[i-1] = new Card(i, bigQuanRank);
                 }
-                //The Final card with highest rank and not the same rank with four of a kind
-                if (bigGroupRank != 1 && ranks[1] >= 1) {
-                    values[2] = 14;
+                /*
+                Get the fifth card
+                1 of the hole card is not from group 4, this hole card will be the fifth
+                 */
+                if(cards[0].getRank() != cards[1].getRank()){
+                    bestOfAHand[4] = bigQuanRank == cards[0].getRank() ? cards[1] : cards[0];
                 } else {
-                    for (int i = 13; i >= 2; i--) {
-                        if (i != bigGroupRank && ranks[i] >= 1) {
-                            values[2] = i;
-                            break;
+                    //Fifth card from Community cards
+                    if(bigQuanRank != 1 && rank[1] > 0){
+                        //Know the card is available but we still need to know the suit of at least one Ace
+                        for (int i = 2; i <= 6; i++) {
+                            if(cards[i].getRank() == 1){
+                                bestOfAHand[4] = cards[i];
+                                break;
+                            }
+                        }
+                    } else {
+                        for (int i = 13; i > 1; i++){
+                            if(bigQuanRank != i && rank[i] > 0){
+                                //Get the suit of a card at that rank from Community
+                                for (int j = 2; j <= 6; j++) {
+                                    if(cards[j].getRank() == i){
+                                        bestOfAHand[4] = cards[j];
+                                        break;
+                                    }
+                                }
+                                break;
+                            }
                         }
                     }
                 }
 
                 /*
-                Check Full House
-
-                Weird cases:
-                bigGroup = 3, smallGroup = 3
-                 8 8 6 6 5
-                 Hole: 8 6
-
-                 Hand: 8 8 8 6 6 (Full House)
+                Activate checking Full House only if we have a group of 3 and at least another group >= 2
                  */
-            } else if (bigGroup == 3 && smallGroup >= 2) {
-                values[0] = 7;
+            } else if (bigQuan == 3 && smallerQuan >= 2) {
                 /*
-                Rank of triplet
+                bigQuan:3 - smallerQuan:3 - 1 stray card
+                Hole 1 & 2 must belong to any group of 3. Else, We only got 3 of a kind
                  */
-                if (smallGroup == 3 && smallGroupRank == 1) {
-                    /*
-                    Special case
-                    Big group: 3 rank 7, small group: 3 Ace => Should pick Ace for Triplet despite small group
-                     */
-                    values[1] = 14;
-                    values[2] = bigGroupRank;
+                if(bigQuan == 3 && smallerQuan == 3){
+                    if((cards[0].getRank() == bigQuanRank || cards[0].getRank() == smallerQuanRank)
+                            && (cards[1].getRank() == bigQuanRank || cards[1].getRank() == smallerQuanRank)){
 
-                } else {
-                    //Normal cases
-                    if (bigGroupRank == 1) {
-                        values[1] = 14;
-                    } else {
-                        values[1] = bigGroupRank;
+                        values[0] = 7;//is Full house now
+                        //Get energy of the Triple and the Pair
+                        /*
+                        bigQuanRank || smallerQuanRank at 1 then Energy will be 14 else there is no group 3 of Ace at all
+                        => bigQuanRank got normal rank, use it normally
+                         */
+                        values[1] = bigQuanRank == 1 ? 14 : smallerQuanRank == 1 ? 14 : bigQuanRank;
+                        /*
+                        smallerQuanRank is 1 then use bigQuan else in normal cases, we use smallerQuanRank
+                         */
+                        values[2] = smallerQuanRank == 1 ? bigQuanRank : smallerQuanRank;//get energy of Pair
+
+                        //Get display
+                        int index = 0;
+                        for (int j = 0; j < 2; j++) {
+                            int cardWithThisRank;
+                            if(j == 0){
+                                cardWithThisRank = bigQuanRank == 1 ? 14 : smallerQuanRank == 1 ? 14 : bigQuanRank;
+                            } else {
+                                cardWithThisRank = smallerQuanRank == 1 ? bigQuanRank : smallerQuanRank;
+                            }
+
+                            for (int i = 0; i < 7; i++) {
+                                if(cards[i].getRank() == cardWithThisRank){
+                                    bestOfAHand[index] = cards[i];
+                                    index++;
+                                }
+                                if(cardWithThisRank == bigQuanRank && index > 2){
+                                    break;
+                                } else if(cardWithThisRank == smallerQuanRank && index > 4) {
+                                    break;
+                                }
+                            }
+                        }
                     }
-                    /*
-                    Rank of pair
-                    */
-                    if (smallGroupRank == 1) {
-                        values[2] = 14;
-                    } else {
-                        values[2] = smallGroupRank;
+                /*
+                bigQuan:3 - smallerQuan:2
+                Possible combinations: 3 - 2 - 2, 3 - 2 - 2 stray cards
+                */
+                } else if (bigQuan == 3 && smallerQuanRank == 2) {
+                    //Both holes in the group 3
+                    if(cards[0].getRank() == bigQuanRank && cards[1].getRank() == bigQuanRank){
+                        values[0] = 7;
+                        values[1] = bigQuanRank == 1 ? 14 : bigQuanRank;
+                        //No Ace pair then even if we got 1 - 2 pairs, they will have normal ranks from 13 -> 2
+                        //=> smallerGroup will got the highest pair
+                        values[2] = rank[1] == 2 ? 14 : smallerQuanRank;
+
+                        //Get display
+                        int index = 0;
+                        //3 cards from big group
+                        for (int i = 0; i < 7; i++) {
+                            if(bigQuanRank == cards[i].getRank()){
+                                bestOfAHand[index] = cards[i];
+                                index++;
+                                if(index > 3) break;
+                            }
+                        }
+                        //Loop & get Highest Pair
+                        int highestPairRank = rank[1] == 2 ? 1 : smallerQuanRank;
+                        for (int i = 0; i < 7; i++) {
+                            if(highestPairRank == cards[i].getRank()){
+                                bestOfAHand[index] = cards[i];
+                                index++;
+                                if(index > 4)   break;
+                            }
+                        }
+                        //1 of the hole card is in the group of 3 -> the remaining hole must belong to a pair
+                    } else if(cards[0].getRank() == bigQuanRank || cards[1].getRank() == bigQuanRank) {
+                        int pairHoleCardRank = cards[0].getRank() == bigQuanRank ? cards[1].getRank() : cards[0].getRank();
+                        //the other hole card must belong to a pair
+                        if(rank[pairHoleCardRank] == 2){
+                            values[0] = 7;
+                            values[1] = bigQuanRank == 1 ? 14 : bigQuanRank;
+                            values[2] = pairHoleCardRank == 1 ? 14 : pairHoleCardRank;
+
+                            //Get display
+                            int index = 0;
+                            //3 cards from big group
+                            for (int i = 0; i < 7; i++) {
+                                if(bigQuanRank == cards[i].getRank()){
+                                    bestOfAHand[index] = cards[i];
+                                    index++;
+                                    if(index > 3) break;
+                                }
+                            }
+                            //Get the pair which contains the other hole card
+                            for (int i = 0; i < 7; i++) {
+                                if(pairHoleCardRank == cards[i].getRank()){
+                                    bestOfAHand[index] = cards[i];
+                                    index++;
+                                    if(index > 4)   break;
+                                }
+                            }
+                        }
+                        //Both hole cards is a pair
+                    } else if(cards[0].getRank() != bigQuanRank && cards[1].getRank() != bigQuanRank) {
+                        if(cards[0].getRank() == cards[1].getRank()){
+                            values[0] = 7;
+                            values[1] = bigQuanRank == 1 ? 14 : bigQuanRank;
+                            values[2] = cards[0].getRank() == 1 ? 14 : cards[0].getRank();
+
+                            //Get Display
+                            int index = 0;
+                            //3 cards from big group
+                            for (int i = 0; i < 7; i++) {
+                                if(bigQuanRank == cards[i].getRank()){
+                                    bestOfAHand[index] = cards[i];
+                                    index++;
+                                    if(index > 3) break;
+                                }
+                            }
+                            bestOfAHand[3] = cards[0];
+                            bestOfAHand[4] = cards[1];
+                        }
                     }
                 }
-
                 /*
                 Check if Flush has been found above
                  */
@@ -299,131 +415,160 @@ public class Hand {
                 //Do nothing
 
                 /*
-                Check if Straight has been found above
+                Check Straight
                  */
-            } else if (values[0] == 5) {
-                //Do Nothing
-
+            } else {
                 /*
-                Check 3 of a kind
-                 */
-            } else if (bigGroup == 3) {
-                values[0] = 4;
-                if (bigGroupRank == 1) {
-                    values[1] = 14;//Triple Ace
-                } else {
-                    values[1] = bigGroupRank;
-                }
-                //Get 2 highest cards
-                int index = 2;
-                //Not Ace then get Ace as first High Card
-                if (bigGroupRank != 1 && ranks[1] == 1) {
-                    values[index] = 14;
-                    index++;
-                }
-                //Normal cards
-                for (int i = 13; i >= 2; i--) {
-                    if (bigGroupRank != i && ranks[i] == 1) {
-                        values[index] = i;
-                        index++;
-                    }
-                    //Got 2 high cards then break
-                    if (index > 3) {
-                        break;
-                    }
-                }
+                Check Straight
+                Take 5 out of 7 to form a Straight which means that the remain 2 cards
+                can be on the same rank with any of the chosen 5
 
-                /*
-                Check 2 pairs
-                 */
-            } else if (bigGroup == 2 && smallGroup == 2) {
-                values[0] = 3;
-                /*
-                There is no big group or small group when we get 2 pairs
-                but the first pair will always go to bigGroup and the second go to smallGroup
+                -> At least one card of each rank on a row to form a Straight
 
-                But the end can be a pair of Ace which is the first strongest Pair
+                Break Tie:
+                Only need the leader (CArd with highest rank)
                  */
-                if (smallGroupRank == 1) {
-                    //Pair of Ace
+                //The case with Ace
+                if (rank[1] >= 1 && rank[13] >= 1 && rank[12] >= 1 && rank[11] >= 1 && rank[10] >= 1) {
+                    values[0] = 5;
+                    //Set leader to Ace
                     values[1] = 14;
-                    //Get the second pair
-                    values[2] = bigGroupRank;//13 -> 2
-                    //get the High card
-                    for (int i = 13; i >= 2; i--) {
-                        if (ranks[i] == 1) {
-                            values[3] = i;
+
+                } else {
+                    for (int i = 13; i >= 5; i--) {
+                        if (rank[i] >= 1 && rank[i - 1] >= 1 && rank[i - 2] >= 1 && rank[i - 3] >= 1 && rank[i - 4] >= 1) {
+                            values[0] = 5;
+                            values[1] = i;
+                            //Stop at the sight of Straight combo with trongest leader card
                             break;
                         }
                     }
+                }
 
-                } else {
-                    //No pair of Ace
-                    values[1] = bigGroupRank;
-                    values[2] = smallGroupRank;
-                    //FInal card
-                    if (ranks[1] == 1) {
-                        //There is an Ace
-                        values[3] = 14;
-                    } else {
-                        //No Ace - Find Normal
+                //No Straight - Proceed to other cases
+                if (values[0] != 5) {
+                    /*
+                    Check 3 of a kind
+                     */
+                    if (bigQuan == 3) {
+                        values[0] = 4;
+                        if (bigQuanRank == 1) {
+                            values[1] = 14;//Triple Ace
+                        } else {
+                            values[1] = bigQuanRank;
+                        }
+                        //Get 2 highest cards
+                        int index = 2;
+                        //Not Ace then get Ace as first High Card
+                        if (bigQuanRank != 1 && rank[1] == 1) {
+                            values[index] = 14;
+                            index++;
+                        }
+                        //Normal cards
                         for (int i = 13; i >= 2; i--) {
-                            if (ranks[i] == 1) {
-                                values[3] = i;
+                            if (bigQuanRank != i && rank[i] == 1) {
+                                values[index] = i;
+                                index++;
+                            }
+                            //Got 2 high cards then break
+                            if (index > 3) {
                                 break;
                             }
                         }
-                    }
-                }
-                /*
-                CHeck 1 pair
-                 */
-            } else if (bigGroup == 2) {
-                values[0] = 2;
-                //Rank of Pair
-                if (bigGroupRank == 1) {
-                    values[1] = 14;
-                } else {
-                    values[1] = bigGroupRank;
-                }
 
-                //Get 3 cards
-                int index = 2;
-                //There is an Ace???
-                if (ranks[1] == 1) {
-                    values[index] = 14;
-                    index++;
-                }
-                for (int i = 13; i >= 2; i--) {
-                    if (ranks[i] == 1) {
-                        values[index] = i;
-                        index++;
-                    }
-                    // Get enough 3
-                    if (index > 4) {
-                        break;
-                    }
-                }
+                        /*
+                        Check 2 pairs
+                         */
+                    } else if (bigQuan == 2 && smallerQuan == 2) {
+                        values[0] = 3;
+                        /*
+                        There is no big group or small group when we get 2 pairs
+                        but the first pair will always go to bigGroup and the second go to smallGroup
 
-                /*
-                High card
-                 */
-            } else {
-                values[0] = 1;
-                int index = 1;
-                //1 Ace
-                if (ranks[1] == 1) {
-                    values[index] = 14;
-                    index++;
-                }
-                //Remaining
-                for (int i = 13; i >= 2; i--) {
-                    if (ranks[i] == 1) {
-                        values[index] = i;
-                        index++;
-                    }
-                    if (index > 5) {
-                        break;
+                        But the end can be a pair of Ace which is the first strongest Pair
+                         */
+                        if (smallerQuanRank == 1) {
+                            //Pair of Ace
+                            values[1] = 14;
+                            //Get the second pair
+                            values[2] = bigQuanRank;//13 -> 2
+                            //get the High card
+                            for (int i = 13; i >= 2; i--) {
+                                if (rank[i] == 1) {
+                                    values[3] = i;
+                                    break;
+                                }
+                            }
+
+                        } else {
+                            //No pair of Ace
+                            values[1] = bigQuanRank;
+                            values[2] = smallerQuanRank;
+                            //FInal card
+                            if (rank[1] == 1) {
+                                //There is an Ace
+                                values[3] = 14;
+                            } else {
+                                //No Ace - Find Normal
+                                for (int i = 13; i >= 2; i--) {
+                                    if (rank[i] == 1) {
+                                        values[3] = i;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        /*
+                        Check 1 pair
+                         */
+                    } else if (bigQuan == 2) {
+                        values[0] = 2;
+                        //Rank of Pair
+                        if (bigQuanRank == 1) {
+                            values[1] = 14;
+                        } else {
+                            values[1] = bigQuanRank;
+                        }
+
+                        //Get 3 cards
+                        int index = 2;
+                        //There is an Ace???
+                        if (rank[1] == 1) {
+                            values[index] = 14;
+                            index++;
+                        }
+                        for (int i = 13; i >= 2; i--) {
+                            if (rank[i] == 1) {
+                                values[index] = i;
+                                index++;
+                            }
+                            // Get enough 3
+                            if (index > 4) {
+                                break;
+                            }
+                        }
+
+                        /*
+                        High card
+                         */
+                    } else {
+                        values[0] = 1;
+                        int index = 1;
+                        //1 Ace
+                        if (rank[1] == 1) {
+                            values[index] = 14;
+                            index++;
+                        }
+                        //Remaining
+                        for (int i = 13; i >= 2; i--) {
+                            if (rank[i] == 1) {
+                                values[index] = i;
+                                index++;
+                            }
+                            if (index > 5) {
+                                break;
+                            }
+                        }
                     }
                 }
             }
