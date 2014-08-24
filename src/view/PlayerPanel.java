@@ -118,11 +118,17 @@ public class PlayerPanel extends JPanel {
         }
     }
 
-    public void setTurn (boolean myTurn){
-        if (myTurn){
-            this.setBorder(PlayerPU.TurnBorder);
-        } else {
-            this.setBorder(PlayerPU.PanelBorder);
-        }
+    public void setMyTurn() {
+        this.setBorder(PlayerPU.TurnBorder);
     }
+
+    public void setOtherTurn() {
+        this.setBorder(PlayerPU.PanelBorder);
+    }
+
+    public String getUsername() {
+        return username.getText();
+    }
+
+
 }

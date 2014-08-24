@@ -135,7 +135,7 @@ public class GamePanel extends JPanel {
         return raiseBut;
     }
 
-    public void setYourTurn(boolean myTurn){
+    public void setTurn(boolean myTurn, String name){
         if (myTurn){
             callBut.setEnabled(true);
             foldBut.setEnabled(true);
@@ -144,6 +144,14 @@ public class GamePanel extends JPanel {
             callBut.setEnabled(false);
             foldBut.setEnabled(false);
             raiseBut.setEnabled(false);
+        }
+
+        for (int i = 0; i < playersP.size(); i++){
+            if (name.equals(playersP.get(i).getUsername())){
+                playersP.get(i).setMyTurn();
+            } else {
+                playersP.get(i).setOtherTurn();
+            }
         }
     }
 

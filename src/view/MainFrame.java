@@ -142,7 +142,7 @@ public class MainFrame extends JFrame implements Runnable {
             //Initialized GamePanel & Game Controller
             gamePanel = new GamePanel(this);
             gameCon = new GameCon(this);
-//            gamePanel.setYourTurn(myTurn);
+//            gamePanel.setTurn(myTurn);
         }
 
         this.add(this.getGamePanel());
@@ -180,23 +180,16 @@ public class MainFrame extends JFrame implements Runnable {
 
     public void checkTurn() {
         boolean myTurn = false;
+        String name = "";
         Object fromServer = server.read();
-        int myPosition = 0;
         if (fromServer instanceof String){
-            if (me.getUsername().equals(fromServer)){
-                System.out.println("This is: " + fromServer + " turn!!!!!!!!!!!!!!");
-                myPosition = usernames.indexOf(fromServer);
+            name = fromServer.toString();
+            if (me.getUsername().equals(name)){
+                System.out.println("This is: " + fromServer + " turn!");
                 myTurn = true;
             }
         }
-        gamePanel.setYourTurn(myTurn);
-
-        for (int i = 0; i < usernames.size(); i ++) {
-            if (i != myPosition) {
-                gamePanel.getPlayersP().get(i).setTurn(myTurn);
-            }
-        }
-
+        gamePanel.setTurn(myTurn, name);
     }
 
     public void listenResponse (){
