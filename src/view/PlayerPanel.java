@@ -17,7 +17,7 @@ public class PlayerPanel extends JPanel {
 
     private JLabel icon = new JLabel();
     private JLabel username = new JLabel();
-    private JLabel status = new JLabel("Status: Raise");
+    private JLabel status = new JLabel();
     private JLabel bet = new JLabel();
     //Cards
     private JLabel card1 = new JLabel();
@@ -130,5 +130,7 @@ public class PlayerPanel extends JPanel {
         return username.getText();
     }
 
-
+    public void setStatus(String status) {
+        this.status.setText(status);
+    }
 }

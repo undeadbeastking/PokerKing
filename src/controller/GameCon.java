@@ -43,7 +43,6 @@ public class GameCon {
         public void actionPerformed(ActionEvent e) {
             System.out.println("Fold");
             f.getServer().write("Fold");
-//            f.getGamePanel().setTurn(false);
         }
 
     }
@@ -53,7 +52,7 @@ public class GameCon {
         public void actionPerformed(ActionEvent e) {
             System.out.println("Call");
             f.getServer().write("Call");
-//            f.getGamePanel().setTurn(false);
+
         }
 
     }
@@ -63,7 +62,6 @@ public class GameCon {
         public void actionPerformed(ActionEvent e) {
             System.out.println("Raise");
             f.getServer().write("Raise");
-//            f.getGamePanel().setTurn(false);
         }
 
     }

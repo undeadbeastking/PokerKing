@@ -39,7 +39,7 @@ public class MainFrame extends JFrame implements Runnable {
     private String serverAddress = "localhost";
     private PlayerCommunicator server;
     private Account me;
-    private String myCards, commuCards;
+    private String myCards, commuCards, name;
     private ArrayList<String> usernames = new ArrayList<String>();
 
     public MainFrame() {
@@ -110,7 +110,7 @@ public class MainFrame extends JFrame implements Runnable {
                     takePlayers();
                     initGamePanel();
                     System.out.println("Pop up GamePanel");
-                    while (true){
+                    while (true) {
                         checkTurn();
                         listenResponse();
                     }
@@ -180,25 +180,31 @@ public class MainFrame extends JFrame implements Runnable {
 
     public void checkTurn() {
         boolean myTurn = false;
-        String name = "";
         Object fromServer = server.read();
-        if (fromServer instanceof String){
+        if (fromServer instanceof String) {
             name = fromServer.toString();
-            if (me.getUsername().equals(name)){
-                System.out.println("This is: " + fromServer + " turn!");
+            if (me.getUsername().equals(name)) {
                 myTurn = true;
             }
         }
-        gamePanel.setTurn(myTurn, name);
+        System.out.println("This is: " + fromServer + " turn!");
+        if (name != null) {
+            gamePanel.setTurn(myTurn, name);
+        }
+
+//        Object response = server.read();
+//        if (fromServer instanceof String) {
+//            gamePanel.processResponse(name, response.toString());
+//        }
     }
 
     public void listenResponse (){
+        String name = this.name;
         Object fromServer = server.read();
         if (fromServer instanceof String){
-            System.out.println(fromServer + " Receive a respose from a player");
+            gamePanel.processResponse(name, fromServer.toString());
         }
     }
-
 
 
     public LoginPanel getLoginPanel() {

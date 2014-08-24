@@ -20,7 +20,7 @@ public class GamePanel extends JPanel {
     private Image backGround;
     private int maxPlayersNum = 9;
     private ArrayList<PlayerPanel> playersP;
-//    private PlayerPanel[] playersP;
+    //    private PlayerPanel[] playersP;
     private CustBut back = new CustBut("back");
     //Function buttons
     private CustBut foldBut = new CustBut("Fold");
@@ -135,8 +135,8 @@ public class GamePanel extends JPanel {
         return raiseBut;
     }
 
-    public void setTurn(boolean myTurn, String name){
-        if (myTurn){
+    public void setTurn(boolean myTurn, String name) {
+        if (myTurn) {
             callBut.setEnabled(true);
             foldBut.setEnabled(true);
             raiseBut.setEnabled(true);
@@ -146,14 +146,23 @@ public class GamePanel extends JPanel {
             raiseBut.setEnabled(false);
         }
 
-        for (int i = 0; i < playersP.size(); i++){
-            if (name.equals(playersP.get(i).getUsername())){
+        for (int i = 0; i < playersP.size(); i++) {
+            if (name.equals(playersP.get(i).getUsername())) {
                 playersP.get(i).setMyTurn();
             } else {
                 playersP.get(i).setOtherTurn();
             }
         }
     }
+
+    public void processResponse(String name, String response) {
+        for (int i = 0; i < playersP.size(); i++) {
+            if (name.equals(playersP.get(i).getUsername())) {
+                playersP.get(i).setStatus(response);
+            }
+        }
+    }
+
 
     public ArrayList<PlayerPanel> getPlayersP() {
         return playersP;

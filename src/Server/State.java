@@ -9,9 +9,5 @@ public enum State {
     StartGame,
     SendCard,
     SendPlayers,
-    CurrentTurn,
-    NotYourTurn,
-    Bet,
-    Fold,
     EndGame
 }
