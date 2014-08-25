@@ -245,30 +245,30 @@ public class Hand {
                 Store best result of a hand
                  */
                 for (int i = 1; i <= 4; i++) {
-                    bestOfAHand[i-1] = new Card(i, bigQuanRank);
+                    bestOfAHand[i - 1] = new Card(i, bigQuanRank);
                 }
                 /*
                 Get the fifth card
                 1 of the hole card is not from group 4, this hole card will be the fifth
                  */
-                if(cards[0].getRank() != cards[1].getRank()){
+                if (cards[0].getRank() != cards[1].getRank()) {
                     bestOfAHand[4] = bigQuanRank == cards[0].getRank() ? cards[1] : cards[0];
                 } else {
                     //Fifth card from Community cards
-                    if(bigQuanRank != 1 && rank[1] > 0){
+                    if (bigQuanRank != 1 && rank[1] > 0) {
                         //Know the card is available but we still need to know the suit of at least one Ace
                         for (int i = 2; i <= 6; i++) {
-                            if(cards[i].getRank() == 1){
+                            if (cards[i].getRank() == 1) {
                                 bestOfAHand[4] = cards[i];
                                 break;
                             }
                         }
                     } else {
-                        for (int i = 13; i > 1; i++){
-                            if(bigQuanRank != i && rank[i] > 0){
+                        for (int i = 13; i > 1; i++) {
+                            if (bigQuanRank != i && rank[i] > 0) {
                                 //Get the suit of a card at that rank from Community
                                 for (int j = 2; j <= 6; j++) {
-                                    if(cards[j].getRank() == i){
+                                    if (cards[j].getRank() == i) {
                                         bestOfAHand[4] = cards[j];
                                         break;
                                     }
@@ -287,9 +287,9 @@ public class Hand {
                 bigQuan:3 - smallerQuan:3 - 1 stray card
                 Hole 1 & 2 must belong to any group of 3. Else, We only got 3 of a kind
                  */
-                if(bigQuan == 3 && smallerQuan == 3){
-                    if((cards[0].getRank() == bigQuanRank || cards[0].getRank() == smallerQuanRank)
-                            && (cards[1].getRank() == bigQuanRank || cards[1].getRank() == smallerQuanRank)){
+                if (bigQuan == 3 && smallerQuan == 3) {
+                    if ((cards[0].getRank() == bigQuanRank || cards[0].getRank() == smallerQuanRank)
+                            && (cards[1].getRank() == bigQuanRank || cards[1].getRank() == smallerQuanRank)) {
 
                         values[0] = 7;//is Full house now
                         //Get energy of the Triple and the Pair
@@ -307,20 +307,20 @@ public class Hand {
                         int index = 0;
                         for (int j = 0; j < 2; j++) {
                             int cardWithThisRank;
-                            if(j == 0){
+                            if (j == 0) {
                                 cardWithThisRank = bigQuanRank == 1 ? 14 : smallerQuanRank == 1 ? 14 : bigQuanRank;
                             } else {
                                 cardWithThisRank = smallerQuanRank == 1 ? bigQuanRank : smallerQuanRank;
                             }
 
                             for (int i = 0; i < 7; i++) {
-                                if(cards[i].getRank() == cardWithThisRank){
+                                if (cards[i].getRank() == cardWithThisRank) {
                                     bestOfAHand[index] = cards[i];
                                     index++;
                                 }
-                                if(cardWithThisRank == bigQuanRank && index > 2){
+                                if (cardWithThisRank == bigQuanRank && index > 2) {
                                     break;
-                                } else if(cardWithThisRank == smallerQuanRank && index > 4) {
+                                } else if (cardWithThisRank == smallerQuanRank && index > 4) {
                                     break;
                                 }
                             }
@@ -332,7 +332,7 @@ public class Hand {
                 */
                 } else if (bigQuan == 3 && smallerQuanRank == 2) {
                     //Both holes in the group 3
-                    if(cards[0].getRank() == bigQuanRank && cards[1].getRank() == bigQuanRank){
+                    if (cards[0].getRank() == bigQuanRank && cards[1].getRank() == bigQuanRank) {
                         values[0] = 7;
                         values[1] = bigQuanRank == 1 ? 14 : bigQuanRank;
                         //No Ace pair then even if we got 1 - 2 pairs, they will have normal ranks from 13 -> 2
@@ -343,26 +343,26 @@ public class Hand {
                         int index = 0;
                         //3 cards from big group
                         for (int i = 0; i < 7; i++) {
-                            if(bigQuanRank == cards[i].getRank()){
+                            if (bigQuanRank == cards[i].getRank()) {
                                 bestOfAHand[index] = cards[i];
                                 index++;
-                                if(index > 3) break;
+                                if (index > 3) break;
                             }
                         }
                         //Loop & get Highest Pair
                         int highestPairRank = rank[1] == 2 ? 1 : smallerQuanRank;
                         for (int i = 0; i < 7; i++) {
-                            if(highestPairRank == cards[i].getRank()){
+                            if (highestPairRank == cards[i].getRank()) {
                                 bestOfAHand[index] = cards[i];
                                 index++;
-                                if(index > 4)   break;
+                                if (index > 4) break;
                             }
                         }
                         //1 of the hole card is in the group of 3 -> the remaining hole must belong to a pair
-                    } else if(cards[0].getRank() == bigQuanRank || cards[1].getRank() == bigQuanRank) {
+                    } else if (cards[0].getRank() == bigQuanRank || cards[1].getRank() == bigQuanRank) {
                         int pairHoleCardRank = cards[0].getRank() == bigQuanRank ? cards[1].getRank() : cards[0].getRank();
                         //the other hole card must belong to a pair
-                        if(rank[pairHoleCardRank] == 2){
+                        if (rank[pairHoleCardRank] == 2) {
                             values[0] = 7;
                             values[1] = bigQuanRank == 1 ? 14 : bigQuanRank;
                             values[2] = pairHoleCardRank == 1 ? 14 : pairHoleCardRank;
@@ -371,24 +371,24 @@ public class Hand {
                             int index = 0;
                             //3 cards from big group
                             for (int i = 0; i < 7; i++) {
-                                if(bigQuanRank == cards[i].getRank()){
+                                if (bigQuanRank == cards[i].getRank()) {
                                     bestOfAHand[index] = cards[i];
                                     index++;
-                                    if(index > 3) break;
+                                    if (index > 3) break;
                                 }
                             }
                             //Get the pair which contains the other hole card
                             for (int i = 0; i < 7; i++) {
-                                if(pairHoleCardRank == cards[i].getRank()){
+                                if (pairHoleCardRank == cards[i].getRank()) {
                                     bestOfAHand[index] = cards[i];
                                     index++;
-                                    if(index > 4)   break;
+                                    if (index > 4) break;
                                 }
                             }
                         }
                         //Both hole cards is a pair
-                    } else if(cards[0].getRank() != bigQuanRank && cards[1].getRank() != bigQuanRank) {
-                        if(cards[0].getRank() == cards[1].getRank()){
+                    } else if (cards[0].getRank() != bigQuanRank && cards[1].getRank() != bigQuanRank) {
+                        if (cards[0].getRank() == cards[1].getRank()) {
                             values[0] = 7;
                             values[1] = bigQuanRank == 1 ? 14 : bigQuanRank;
                             values[2] = cards[0].getRank() == 1 ? 14 : cards[0].getRank();
@@ -397,10 +397,10 @@ public class Hand {
                             int index = 0;
                             //3 cards from big group
                             for (int i = 0; i < 7; i++) {
-                                if(bigQuanRank == cards[i].getRank()){
+                                if (bigQuanRank == cards[i].getRank()) {
                                     bestOfAHand[index] = cards[i];
                                     index++;
-                                    if(index > 3) break;
+                                    if (index > 3) break;
                                 }
                             }
                             bestOfAHand[3] = cards[0];
@@ -420,27 +420,83 @@ public class Hand {
             } else {
                 /*
                 Check Straight
-                Take 5 out of 7 to form a Straight which means that the remain 2 cards
-                can be on the same rank with any of the chosen 5
+                At least one card of each rank on a row to form a Straight
+                2 hole cards with same rank then we cannot summon a Straight since it will make a combination of 6
 
-                -> At least one card of each rank on a row to form a Straight
-
-                Break Tie:
-                Only need the leader (CArd with highest rank)
+                Break Tie: Card with highest rank
                  */
-                //The case with Ace
-                if (rank[1] >= 1 && rank[13] >= 1 && rank[12] >= 1 && rank[11] >= 1 && rank[10] >= 1) {
-                    values[0] = 5;
-                    //Set leader to Ace
-                    values[1] = 14;
+                if (cards[0].getRank() != cards[1].getRank()) {
+                    //The case with Ace
+                    if (rank[1] >= 1 && rank[13] >= 1 && rank[12] >= 1 && rank[11] >= 1 && rank[10] >= 1 &&
+                            //2 hole cards must be in this range
+                            (cards[0].getRank() == 1 || (10 <= cards[0].getRank() && cards[0].getRank() <= 13)) &&
+                            (cards[1].getRank() == 1 || (10 <= cards[1].getRank() && cards[1].getRank() <= 13))) {
 
-                } else {
-                    for (int i = 13; i >= 5; i--) {
-                        if (rank[i] >= 1 && rank[i - 1] >= 1 && rank[i - 2] >= 1 && rank[i - 3] >= 1 && rank[i - 4] >= 1) {
-                            values[0] = 5;
-                            values[1] = i;
-                            //Stop at the sight of Straight combo with trongest leader card
-                            break;
+                        //Get Energy
+                        values[0] = 5;
+                        values[1] = 14;
+
+                        //Get display cards
+                        bestOfAHand[0] = cards[0];
+                        bestOfAHand[1] = cards[1];
+                        int index = 2;
+                        //Both hole cards are not Ace. Then put Ace in there
+                        if(cards[0].getRank() != 1 && cards[1].getRank() != 1){
+                            for (int i = 2; i < 7; i++) {//ignore 2 hole cards
+                                if(cards[i].getRank() == 1){
+                                    bestOfAHand[index] = cards[i];
+                                    index++;
+                                    break;
+                                }
+                            }
+                        }
+                        for (int i = 13; i >= 10; i--) {
+                            //Skip cards which have the same rank with 2 hole cards (Already added)
+                            if(cards[0].getRank() != i && cards[1].getRank() != i){
+                                for (int j = 2; j < 7; j++) {//ignore 2 hole cards
+                                    if(cards[j].getRank() == i){
+                                        bestOfAHand[index] = cards[j];
+                                        index++;
+                                        break;
+                                    }
+                                }
+                            }
+                            if(index > 4)   break;
+                        }
+
+                    } else {
+                        for (int i = 13; i >= 5; i--) {
+                            if (rank[i] >= 1 && rank[i - 1] >= 1 && rank[i - 2] >= 1 && rank[i - 3] >= 1 && rank[i - 4] >= 1 &&
+                                    //2 hole cards must be in this range
+                                    (i-4 <= cards[0].getRank() && cards[0].getRank() <= i) &&
+                                    (i-4 <= cards[1].getRank() && cards[1].getRank() <= i)) {
+
+                                values[0] = 5;
+                                values[1] = i;
+
+                                //Get display cards
+                                bestOfAHand[0] = cards[0];
+                                bestOfAHand[1] = cards[1];
+                                int index = 2;
+                                /*
+                                At this state we know the range of Straight is from Rank i-4 -> i
+                                 */
+                                for (int j = i; j >= i-4; j--) {
+                                    //Skip cards which have the same rank with 2 hole cards (Already added)
+                                    if(cards[0].getRank() != j && cards[1].getRank() != j){
+                                        for (int x = 2; x < 7; x++) {//ignore 2 hole cards
+                                            if(cards[x].getRank() == j){
+                                                bestOfAHand[index] = cards[x];
+                                                index++;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    if(index > 4)   break;
+                                }
+
+                                break;
+                            }
                         }
                     }
                 }
@@ -449,31 +505,18 @@ public class Hand {
                 if (values[0] != 5) {
                     /*
                     Check 3 of a kind
+
+                    The 3 can be on the table only, on our hand we got 2 high cards which means will be used
+                    to break tie with other 3 of a kind hands
                      */
                     if (bigQuan == 3) {
                         values[0] = 4;
-                        if (bigQuanRank == 1) {
-                            values[1] = 14;//Triple Ace
-                        } else {
-                            values[1] = bigQuanRank;
-                        }
-                        //Get 2 highest cards
-                        int index = 2;
-                        //Not Ace then get Ace as first High Card
-                        if (bigQuanRank != 1 && rank[1] == 1) {
-                            values[index] = 14;
-                            index++;
-                        }
-                        //Normal cards
-                        for (int i = 13; i >= 2; i--) {
-                            if (bigQuanRank != i && rank[i] == 1) {
-                                values[index] = i;
-                                index++;
-                            }
-                            //Got 2 high cards then break
-                            if (index > 3) {
-                                break;
-                            }
+                        //Get Energy
+                        values[1] = bigQuanRank == 1 ? 14 : bigQuanRank;
+                        if(cards[0].getRank() != bigQuanRank && cards[1].getRank() != bigQuanRank){
+                            int biggerRank = cards[0].getRank() > cards[1].getRank() ? cards[0].getRank() : cards[1].getRank();
+                            values[2] = cards[0].getRank() == 1 ? 14 : cards[1].getRank() == 1 ? 14 : biggerRank;
+
                         }
 
                         /*
