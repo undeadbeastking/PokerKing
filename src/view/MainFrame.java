@@ -39,7 +39,7 @@ public class MainFrame extends JFrame implements Runnable {
     private String serverAddress = "localhost";
     private PlayerCommunicator server;
     private Account me;
-    private String myCards, commuCards;
+    private String myCards, commuCards, name;
     private ArrayList<String> usernames = new ArrayList<String>();
 
     public MainFrame() {
@@ -110,7 +110,7 @@ public class MainFrame extends JFrame implements Runnable {
                     takePlayers();
                     initGamePanel();
                     System.out.println("Pop up GamePanel");
-                    while (true){
+                    while (true) {
                         checkTurn();
                         listenResponse();
                     }
@@ -142,7 +142,7 @@ public class MainFrame extends JFrame implements Runnable {
             //Initialized GamePanel & Game Controller
             gamePanel = new GamePanel(this);
             gameCon = new GameCon(this);
-//            gamePanel.setYourTurn(myTurn);
+//            gamePanel.setTurn(myTurn);
         }
 
         this.add(this.getGamePanel());
@@ -181,31 +181,30 @@ public class MainFrame extends JFrame implements Runnable {
     public void checkTurn() {
         boolean myTurn = false;
         Object fromServer = server.read();
-        int myPosition = 0;
-        if (fromServer instanceof String){
-            if (me.getUsername().equals(fromServer)){
-                System.out.println("This is: " + fromServer + " turn!!!!!!!!!!!!!!");
-                myPosition = usernames.indexOf(fromServer);
+        if (fromServer instanceof String) {
+            name = fromServer.toString();
+            if (me.getUsername().equals(name)) {
                 myTurn = true;
             }
         }
-        gamePanel.setYourTurn(myTurn);
-
-        for (int i = 0; i < usernames.size(); i ++) {
-            if (i != myPosition) {
-                gamePanel.getPlayersP().get(i).setTurn(myTurn);
-            }
+        System.out.println("This is: " + fromServer + " turn!");
+        if (name != null) {
+            gamePanel.setTurn(myTurn, name);
         }
 
+//        Object response = server.read();
+//        if (fromServer instanceof String) {
+//            gamePanel.processResponse(name, response.toString());
+//        }
     }
 
     public void listenResponse (){
+        String name = this.name;
         Object fromServer = server.read();
         if (fromServer instanceof String){
-            System.out.println(fromServer + " Receive a respose from a player");
+            gamePanel.processResponse(name, fromServer.toString());
         }
     }
-
 
 
     public LoginPanel getLoginPanel() {
