@@ -27,6 +27,7 @@ public class GameHandler implements Runnable {
     private Deck deck;
     private LinkedList<Hand> hands = new LinkedList<Hand>();
 
+
     public GameHandler(int numberOfPlayers) {
         this.numberOfPlayers = numberOfPlayers;
         this.usernames = Server.getUsernames();
@@ -73,22 +74,15 @@ public class GameHandler implements Runnable {
 //        }
 
         //Handling Bets and stuffs
-        for (int i = 0; i < usernames.size();i++) {
-            System.out.println("Current turn: " + usernames.get(i));
-            //send whos turn
-            for (int j = 0; j < playersCom.size(); j++) {
-                playersCom.get(j).write(usernames.get(i));
+        for (int i = 0; i < playersCom.size(); i++) {
+            if (usernames.get(i) != null) {
+                //send whos turn
+                sendTurn(i);
+                //receive response from that player
+                handleReponse(i);
 
             }
-            //receive response from that player
-            Object fromClient = playersCom.get(i).read();
-            if (fromClient != null){
-                //send that response to everyone
-                for (int k = 0; k < playersCom.size(); k++) {
-                    playersCom.get(k).write(fromClient);
-                }
-            }
-            if(i == 3){
+            if (i == 3) {
                 i = -1;
             }
         }
@@ -111,6 +105,44 @@ public class GameHandler implements Runnable {
         Hand hand = new Hand(deck);
         p.write(hand.getCards());
         hands.add(hand);
+    }
+
+    public boolean allAreFold() {
+        int count = 0;
+        boolean allAreFold = false;
+        for (int i = 0; i < usernames.size(); i++) {
+            if (usernames.get(i) == null) {
+                count++;
+            }
+        }
+        if (count == usernames.size() - 1) {
+            allAreFold = true;
+        }
+
+        return allAreFold;
+    }
+
+    public void sendTurn(int i){
+        System.out.println("Current turn: " + usernames.get(i));
+        for (int j = 0; j < usernames.size(); j++) {
+            playersCom.get(j).write(usernames.get(i));
+
+        }
+    }
+    
+    public void handleReponse(int i) {
+        Object fromClient = playersCom.get(i).read();
+
+        if (fromClient != null) {
+            //send that response to everyone
+            for (int k = 0; k < playersCom.size(); k++) {
+                playersCom.get(k).write(fromClient);
+            }
+        }
+        //if a player fold, this username will be null
+        if (fromClient.equals("Fold")) {
+            usernames.set(i, null);
+        }
     }
 
 }
