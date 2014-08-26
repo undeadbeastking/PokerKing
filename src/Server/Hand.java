@@ -511,8 +511,28 @@ public class Hand {
                      */
                     if (bigQuan == 3) {
                         values[0] = 4;
+                        //Check to see if any hole card is in the Triple -> no then we don't need to find the other 2 high cards
+                        int neededCards = 0;
+                        if(cards[0].getRank() == bigQuanRank)   neededCards++;
+                        if(cards[1].getRank() == bigQuanRank)   neededCards++;
+
                         //Get Energy
                         values[1] = bigQuanRank == 1 ? 14 : bigQuanRank;
+                        //Get 2 hole cards as high cards
+                        if(neededCards == 0){
+                            Card higherHoleCard, lowerHoleCard;
+                            if(cards[0].getRank() > cards[1].getRank()){
+                                higherHoleCard = cards[0];
+                                lowerHoleCard = cards[1];
+                            } else {
+                                higherHoleCard = cards[1];
+                                lowerHoleCard = cards[0];
+                            }
+                            //No Ace then get energy from the higherCard normally
+                            values[2] = cards[0].getRank() == 1 ? 14 : cards[1].getRank() == 1 ? 14 : higherHoleCard.getRank();
+                            values[3] = lowerHoleCard.getRank() == 1 ? higherHoleCard.getRank() : lowerHoleCard.getRank();
+                        }
+
                         if(cards[0].getRank() != bigQuanRank && cards[1].getRank() != bigQuanRank){
                             int biggerRank = cards[0].getRank() > cards[1].getRank() ? cards[0].getRank() : cards[1].getRank();
                             values[2] = cards[0].getRank() == 1 ? 14 : cards[1].getRank() == 1 ? 14 : biggerRank;
