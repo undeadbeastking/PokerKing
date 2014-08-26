@@ -592,15 +592,49 @@ public class Hand {
 
                         //2 hole cards belong to the group 3 then get 2 high cards from Community
                         if(neededCards == 2){
-                            int higherRank, smallerRank;
-                            Card higherCard, smallerCard;
-                            int cardToFillIn = 0;//reach 2 then we got 2 community cards that we want
+                            int higherRank = -1, smallerRank = -1;
+                            Card higherCard = null, smallerCard = null;
+                            int cardToFillIn = 2;//reach 0 then we got 2 community cards that we want
                             if(rank[1] == 1 && bigQuanRank != 1){
                                 higherRank = 1;
-                                cardToFillIn++;
+                                cardToFillIn--;
                             }
                             for (int i = 13; i > 1; i++) {
+                                if(rank[i] == 1){
+                                    if(cardToFillIn == 1){
+                                        smallerRank = i;
+                                        cardToFillIn--;
+                                    } else if(cardToFillIn == 2) {
+                                        higherRank = i;
+                                        cardToFillIn--;
+                                    }
+                                }
+                                if(cardToFillIn == 0)   break;
                             }
+
+                            cardToFillIn = 2;
+                            //Now find these card suits
+                            for (int i = 2; i < 7; i++) {
+                                if(cards[i].getRank() == higherRank){
+                                    higherCard = cards[i];
+                                    cardToFillIn--;
+                                }
+                                if(cards[i].getRank() == smallerRank){
+                                    smallerCard = cards[i];
+                                    cardToFillIn--;
+                                }
+                                if(cardToFillIn == 0){
+                                    break;
+                                }
+                            }
+
+                            //Get Energy
+                            values[2] = higherRank == 1 ? 14 : smallerRank == 1 ? 14 : higherRank;
+                            values[3] = smallerRank == 1 ? higherRank : smallerRank;
+
+                            //Get Display
+                            bestOfAHand[3] = higherCard;
+                            bestOfAHand[4] = smallerCard;
                         }
 
                         /*
