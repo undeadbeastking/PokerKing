@@ -787,52 +787,260 @@ public class Hand {
                     */
                     } else if (bigQuan == 2) {
                         values[0] = 2;
-                        //Rank of Pair
-                        if (bigQuanRank == 1) {
-                            values[1] = 14;
+                        //On our hand is a Pair -> find 3 high cards from Community
+                        if(cards[0].getRank() == cards[1].getRank()){
+                            //Get Energy & Display within  the loop
+                            //The pair
+                            values[1] = cards[0].getRank() == 1 ? 14 : cards[0].getRank();
+                            bestOfAHand[0] = cards[0];
+                            bestOfAHand[1] = cards[1];
+                            //Need 3 high cards energies and for display as well
+                            int index = 2;
+                            if(rank[1] == 1) {
+                                values[index] = 14;
+                                for (int i = 2; i < 7; i++) {
+                                    if(cards[i].getRank() == 1){
+                                        bestOfAHand[index] = cards[i];
+                                        index++;
+                                        break;
+                                    }
+                                }
+                            }
+                            for (int i = 13; i > 1; i--) {
+                                if (rank[i] == 1) {
+                                    values[index] = i;
+                                    for (int j = 2; j < 7; j++) {
+                                        if (cards[j].getRank() == i) {
+                                            bestOfAHand[index] = cards[j];
+                                            index++;
+                                            break;
+                                        }
+                                    }
+                                    if (index > 4) break;
+                                }
+                            }
+                        //1 hole card is in the pair, the other hole card is counted as a high card
+                        } else if(cards[0].getRank() == bigQuanRank || cards[1].getRank() == bigQuanRank){
+                            Card pairHoleCard = cards[0].getRank() == bigQuanRank ? cards[0] : cards[1];
+                            Card highHoleCard = cards[0].getRank() == bigQuanRank ? cards[1] : cards[0];
+                            //Get energy and display for the pair
+                            values[1] = pairHoleCard.getRank() == 1 ? 14 : pairHoleCard.getRank();
+                            bestOfAHand[0] = pairHoleCard;
+                            for (int i = 2; i < 7; i++) {
+                                if(pairHoleCard.getRank() == cards[i].getRank()){
+                                    bestOfAHand[1] = cards[i];
+                                    break;
+                                }
+                            }
+                            //Get other 2 high cards but also arrange the hole card and other 2 in an order
+                            int index = 0;
+                            Card[] sortedHighCards = new Card[3];
+                            //The other hole card is an Ace then 2 Commu high cards will have normal rank
+                            if(highHoleCard.getRank() == 1){
+                                sortedHighCards[index] = highHoleCard;
+                                index++;
+                                for (int i = 13; i > 1; i--) {
+                                    if(rank[i] == 1){
+                                        for (int j = 2; j < 7; j++) {
+                                            if(cards[j].getRank() == i){
+                                                sortedHighCards[index] = cards[j];
+                                                index++;
+                                                break;
+                                            }
+                                        }
+                                        if(index > 2) break;
+                                    }
+                                }
+
+                            } else {
+                                int neededCard = 2;
+                                if(rank[1] == 1){
+                                    neededCard--;
+                                    for (int i = 2; i < 7; i++) {
+                                        if(cards[i].getRank() == 1){
+                                            sortedHighCards[index] = cards[i];
+                                            index++;
+                                            break;
+                                        }
+                                    }
+                                }
+                                for (int i = 13; i > highHoleCard.getRank(); i--) {
+                                    if(rank[i] == 1){
+                                        neededCard--;
+                                        for (int j = 2; j < 7; j++) {
+                                            if(cards[j].getRank() == i){
+                                                sortedHighCards[index] = cards[j];
+                                                index++;
+                                                break;
+                                            }
+                                        }
+                                        if(neededCard == 0){
+                                            break;
+                                        }
+                                    }
+                                }
+                                if(neededCard == 0){
+                                    sortedHighCards[index] = highHoleCard;
+                                } else {
+                                    sortedHighCards[index] = highHoleCard;
+                                    index++;
+                                    for (int i = highHoleCard.getRank()-1; i > 1; i--) {
+                                        if(rank[i] == 1){
+                                            neededCard--;
+                                            for (int j = 2; j < 7; j++) {
+                                                if(cards[j].getRank() == i){
+                                                    sortedHighCards[index] = cards[j];
+                                                    index++;
+                                                }
+                                            }
+                                            if(neededCard == 0) break;
+                                        }
+                                    }
+                                }
+                            }
+                            //Energy of other 3 high cards
+                            values[2] = sortedHighCards[0].getRank() == 1 ? 14 : sortedHighCards[0].getRank();
+                            values[3] = sortedHighCards[1].getRank();
+                            values[4] = sortedHighCards[2].getRank();
+                            //Display of other 3 high cards
+                            bestOfAHand[2] = sortedHighCards[0];
+                            bestOfAHand[3] = sortedHighCards[1];
+                            bestOfAHand[4] = sortedHighCards[2];
+
+                        //2 holes are both high cards, pair is from Community
                         } else {
-                            values[1] = bigQuanRank;
-                        }
+                            //Get energy and display for the pair
+                            values[1] = bigQuanRank == 1 ? 14 : bigQuanRank;
+                            int index = 0;
+                            for (int i = 2; i < 7; i++) {
+                                if(bigQuanRank == cards[i].getRank()){
+                                    bestOfAHand[index] = cards[i];
+                                    index++;
+                                    if(index > 1)   break;
+                                }
+                            }
+                            //Get Energy and display for the other 3 high cards
+                            Card higherHoleCard = cards[0].getRank() > cards[1].getRank() ? cards[0] : cards[1];
+                            Card lowerHoleCard = cards[0].getRank() > cards[1].getRank() ? cards[1] : cards[0];
+                            int neededCard = 1;
+                            index = 0;
+                            Card[] sortedHighCards = new Card[3];
 
-                        //Get 3 cards
-                        int index = 2;
-                        //There is an Ace???
-                        if (rank[1] == 1) {
-                            values[index] = 14;
-                            index++;
-                        }
-                        for (int i = 13; i >= 2; i--) {
-                            if (rank[i] == 1) {
-                                values[index] = i;
+                            //Ace
+                            if(rank[1] == 1 && lowerHoleCard.getRank() == 1){
+                                sortedHighCards[index] = lowerHoleCard;
                                 index++;
+
+                                for (int i = 13; i > higherHoleCard.getRank(); i++) {
+                                    if(rank[i] == 1){
+                                        neededCard--;
+                                        for (int j = 2; j < 7; j++) {
+                                            if(cards[j].getRank() == i){
+                                                sortedHighCards[index] = cards[j];
+                                                break;
+                                            }
+                                        }
+                                        break;
+                                    }
+                                }
+
+                                sortedHighCards[index] = higherHoleCard;
+                                index++;
+
+                                if(neededCard != 0){
+                                    for (int i = higherHoleCard.getRank()-1; i > 1; i--) {
+                                        if(rank[i] == 1){
+                                            neededCard--;
+                                            for (int j = 2; j < 7; j++) {
+                                                if(cards[j].getRank() == i){
+                                                    sortedHighCards[index] = cards[j];
+                                                    break;
+                                                }
+                                            }
+                                            break;
+                                        }
+                                    }
+                                }
+                            } else if(rank[1] == 1){
+                                for (int i = 2; i < 7; i++) {
+                                    if(cards[i].getRank() == 1){
+                                        sortedHighCards[index] = cards[i];
+                                        index++;
+                                        break;
+                                    }
+                                }
+                                sortedHighCards[index] = cards[0].getRank() > cards[1].getRank() ? cards[0] : cards[1];
+                                index++;
+                                sortedHighCards[index] = cards[0].getRank() > cards[1].getRank() ? cards[1] : cards[0];
+
+                            //No ace at all
+                            } else {
+                                for (int i = 13; i > higherHoleCard.getRank(); i--) {
+                                    if(rank[i] == 1){
+                                        neededCard--;
+                                        for (int j = 2; j < 7; j++) {
+                                            if(cards[j].getRank() == i){
+                                                sortedHighCards[index] = cards[j];
+                                                index++;
+                                                break;
+                                            }
+                                        }
+                                        if(neededCard == 0) break;
+                                    }
+                                }
+                                sortedHighCards[index] = higherHoleCard;
+                                index++;
+
+                                if(neededCard!= 0){
+                                    for (int i = higherHoleCard.getRank()-1; i > lowerHoleCard.getRank(); i--) {
+                                        if(rank[i] == 1){
+                                            neededCard--;
+                                            for (int j = 2; j < 7; j++) {
+                                                if(cards[j].getRank() == i){
+                                                    sortedHighCards[index] = cards[j];
+                                                    index++;
+                                                    break;
+                                                }
+                                            }
+                                            if(neededCard == 0) break;
+                                        }
+                                    }
+                                }
+                                sortedHighCards[index] = lowerHoleCard;
+                                index++;
+
+                                if(neededCard!= 0){
+                                    for (int i = lowerHoleCard.getRank()-1; i > 1; i--) {
+                                        if(rank[i] == 1){
+                                            neededCard--;
+                                            for (int j = 2; j < 7; j++) {
+                                                if(cards[j].getRank() == i){
+                                                    sortedHighCards[index] = cards[j];
+                                                    index++;
+                                                    break;
+                                                }
+                                            }
+                                            if(neededCard == 0) break;
+                                        }
+                                    }
+                                }
                             }
-                            // Get enough 3
-                            if (index > 4) {
-                                break;
-                            }
+
+                            //Energy of other 3 high cards
+                            values[2] = sortedHighCards[0].getRank() == 1 ? 14 : sortedHighCards[0].getRank();
+                            values[3] = sortedHighCards[1].getRank();
+                            values[4] = sortedHighCards[2].getRank();
+                            //Display of other 3 high cards
+                            bestOfAHand[2] = sortedHighCards[0];
+                            bestOfAHand[3] = sortedHighCards[1];
+                            bestOfAHand[4] = sortedHighCards[2];
                         }
 
-                        /*
-                        High card
-                         */
+                    /*
+                    High card
+                    */
                     } else {
-                        values[0] = 1;
-                        int index = 1;
-                        //1 Ace
-                        if (rank[1] == 1) {
-                            values[index] = 14;
-                            index++;
-                        }
-                        //Remaining
-                        for (int i = 13; i >= 2; i--) {
-                            if (rank[i] == 1) {
-                                values[index] = i;
-                                index++;
-                            }
-                            if (index > 5) {
-                                break;
-                            }
-                        }
+                        
                     }
                 }
             }
