@@ -506,8 +506,8 @@ public class Hand {
                     /*
                     Check 3 of a kind
 
-                    The 3 can be on the table only, on our hand we got 2 high cards which means will be used
-                    to break tie with other 3 of a kind hands
+                    Reaching this state means that we only have 3 of a kind as a best hand. Whether 2 holes
+                    are in the group 3 or not or even 1 of them is in then we will always have a 3 of a kind Hand.
                      */
                     if (bigQuan == 3) {
                         values[0] = 4;
@@ -518,6 +518,16 @@ public class Hand {
 
                         //Get Energy
                         values[1] = bigQuanRank == 1 ? 14 : bigQuanRank;
+                        //Get the 3 into display array
+                        int index = 0;
+                        for (int i = 0; i < 7; i++) {
+                            if(cards[i].getRank() == bigQuanRank){
+                                bestOfAHand[index] = cards[i];
+                                index++;
+                                if(index > 2)   break;
+                            }
+                        }
+
                         //Get 2 hole cards as high cards
                         if(neededCards == 0){
                             Card higherHoleCard, lowerHoleCard;
@@ -531,12 +541,100 @@ public class Hand {
                             //No Ace then get energy from the higherCard normally
                             values[2] = cards[0].getRank() == 1 ? 14 : cards[1].getRank() == 1 ? 14 : higherHoleCard.getRank();
                             values[3] = lowerHoleCard.getRank() == 1 ? higherHoleCard.getRank() : lowerHoleCard.getRank();
+
+                            //get 2 hole cards into display array
+                            bestOfAHand[3] = cards[0];
+                            bestOfAHand[4] = cards[1];
                         }
 
-                        if(cards[0].getRank() != bigQuanRank && cards[1].getRank() != bigQuanRank){
-                            int biggerRank = cards[0].getRank() > cards[1].getRank() ? cards[0].getRank() : cards[1].getRank();
-                            values[2] = cards[0].getRank() == 1 ? 14 : cards[1].getRank() == 1 ? 14 : biggerRank;
+                        //1 hole card is in group 3, get the other hole card as high card and find one remaining high card in Community
+                        if(neededCards == 1){
+                            Card theOtherHoleCard = cards[0].getRank() == bigQuanRank ? cards[1] : cards[0];
+                            int communityHighCardRank = -1;
+                            Card communityHighCard = null;
+                            //There is an Ace and it is not a Hole card
+                            if(rank[1] == 1 && theOtherHoleCard.getRank() != 1){
+                                communityHighCardRank = 1;
+                            } else {
+                                //Loop community cards with normal rank to find the best one
+                                for (int i = 13; i > 1; i--) {
+                                    if(rank[i] == 1 && theOtherHoleCard.getRank() != i){
+                                        communityHighCardRank = i;
+                                        break;
+                                    }
+                                }
+                            }
+                            //Find that card Suit
+                            for (int i = 0; i < 7; i++) {
+                                if(cards[i].getRank() == communityHighCardRank){
+                                    communityHighCard = cards[i];
+                                    break;
+                                }
+                            }
 
+                            //Arrange smaller and bigger high cards
+                            Card biggerCard, smallerCard;
+                            if(theOtherHoleCard.getRank() > communityHighCardRank){
+                                biggerCard = theOtherHoleCard;
+                                smallerCard = communityHighCard;
+                            } else {
+                                biggerCard = communityHighCard;
+                                smallerCard = theOtherHoleCard;
+                            }
+
+                            //Get energy
+                            values[2] = biggerCard.getRank() == 1 ? 14 : smallerCard.getRank() == 1 ? 14 : biggerCard.getRank();
+                            values[3] = smallerCard.getRank() == 1 ? biggerCard.getRank() : smallerCard.getRank();
+                            //get Display
+                            bestOfAHand[3] = biggerCard;
+                            bestOfAHand[4] = smallerCard;
+                        }
+
+                        //2 hole cards belong to the group 3 then get 2 high cards from Community
+                        if(neededCards == 2){
+                            int higherRank = -1, smallerRank = -1;
+                            Card higherCard = null, smallerCard = null;
+                            int cardToFillIn = 2;//reach 0 then we got 2 community cards that we want
+                            if(rank[1] == 1 && bigQuanRank != 1){
+                                higherRank = 1;
+                                cardToFillIn--;
+                            }
+                            for (int i = 13; i > 1; i++) {
+                                if(rank[i] == 1){
+                                    if(cardToFillIn == 1){
+                                        smallerRank = i;
+                                        cardToFillIn--;
+                                    } else if(cardToFillIn == 2) {
+                                        higherRank = i;
+                                        cardToFillIn--;
+                                    }
+                                }
+                                if(cardToFillIn == 0)   break;
+                            }
+
+                            cardToFillIn = 2;
+                            //Now find these card suits
+                            for (int i = 2; i < 7; i++) {
+                                if(cards[i].getRank() == higherRank){
+                                    higherCard = cards[i];
+                                    cardToFillIn--;
+                                }
+                                if(cards[i].getRank() == smallerRank){
+                                    smallerCard = cards[i];
+                                    cardToFillIn--;
+                                }
+                                if(cardToFillIn == 0){
+                                    break;
+                                }
+                            }
+
+                            //Get Energy
+                            values[2] = higherRank == 1 ? 14 : smallerRank == 1 ? 14 : higherRank;
+                            values[3] = smallerRank == 1 ? higherRank : smallerRank;
+
+                            //Get Display
+                            bestOfAHand[3] = higherCard;
+                            bestOfAHand[4] = smallerCard;
                         }
 
                         /*
