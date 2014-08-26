@@ -18,7 +18,7 @@ public class PlayerPanel extends JPanel {
     private JLabel icon = new JLabel();
     private JLabel username = new JLabel();
     private JLabel status = new JLabel();
-    private JLabel bet = new JLabel();
+    private JLabel cash = new JLabel();
     //Cards
     private JLabel card1 = new JLabel();
     private JLabel card2 = new JLabel();
@@ -48,7 +48,7 @@ public class PlayerPanel extends JPanel {
                 PlayerPU.label_w, PlayerPU.label_h);
         status.setBounds(PlayerPU.label_x, PlayerPU.status_y,
                 PlayerPU.label_w, PlayerPU.label_h);
-        bet.setBounds(PlayerPU.label_x, PlayerPU.bet_y,
+        cash.setBounds(PlayerPU.label_x, PlayerPU.cash_y,
                 PlayerPU.label_w, PlayerPU.label_h);
         card1.setBounds(PlayerPU.card1_x, PlayerPU.card_y,
                 PlayerPU.card_w, PlayerPU.card_h);
@@ -58,11 +58,11 @@ public class PlayerPanel extends JPanel {
         //Customize displays
 
         username.setFont(PlayerPU.label_font);
-        bet.setText("Bet: $" + 5000000);
-        bet.setFont(PlayerPU.label_font);
+        cash.setText("Cash: $" + 1000);
+        cash.setFont(PlayerPU.label_font);
         status.setFont(PlayerPU.label_font);
         status.setForeground(PlayerPU.label_Color);
-        bet.setForeground(PlayerPU.label_Color);
+        cash.setForeground(PlayerPU.label_Color);
 
         allPlayers = f.getAllUsers();
         if (allPlayers.get(p).equals(f.getMe().getUsername())) {
@@ -82,7 +82,7 @@ public class PlayerPanel extends JPanel {
         //Add component
         this.add(icon);
         this.add(username);
-        this.add(bet);
+        this.add(cash);
         this.add(status);
         this.add(card1);
         this.add(card2);

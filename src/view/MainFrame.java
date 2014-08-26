@@ -17,6 +17,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.StringTokenizer;
 
 /**
@@ -41,6 +42,7 @@ public class MainFrame extends JFrame implements Runnable {
     private Account me;
     private String myCards, commuCards, name;
     private ArrayList<String> usernames = new ArrayList<String>();
+    private boolean isNotStop = true;
 
     public MainFrame() {
         //Customize MainFrame for loginPanel
@@ -110,7 +112,9 @@ public class MainFrame extends JFrame implements Runnable {
                     takePlayers();
                     initGamePanel();
                     System.out.println("Pop up GamePanel");
-                    while (true) {
+                    while (isNotStop) {
+                        System.out.println("process game");
+//                        processGame();
                         checkTurn();
                         listenResponse();
                     }
@@ -179,33 +183,50 @@ public class MainFrame extends JFrame implements Runnable {
     }
 
     public void checkTurn() {
-        boolean myTurn = false;
-        Object fromServer = server.read();
-        if (fromServer instanceof String) {
-            name = fromServer.toString();
-            if (me.getUsername().equals(name)) {
-                myTurn = true;
+        if (isNotStop) {
+            boolean myTurn = false;
+            Object fromServer = server.read();
+            if (fromServer instanceof String) {
+                if (fromServer.toString().equals("Stop")) {
+                    isNotStop = false;
+                    System.out.println("Stop game");
+                } else {
+                    name = fromServer.toString();
+                    if (me.getUsername().equals(name)) {
+                        myTurn = true;
+                    }
+                    System.out.println("This is: " + fromServer + " turn!");
+                    if (name != null) {
+                        gamePanel.setTurn(myTurn, name);
+                    }
+                }
             }
         }
-        System.out.println("This is: " + fromServer + " turn!");
-        if (name != null) {
-            gamePanel.setTurn(myTurn, name);
-        }
+    }
 
-//        Object response = server.read();
-//        if (fromServer instanceof String) {
-//            gamePanel.processResponse(name, response.toString());
+    public void listenResponse() {
+        if (isNotStop) {
+            Object fromServer = server.read();
+            if (fromServer instanceof String) {
+                gamePanel.processResponse(name, fromServer.toString());
+            }
+        }
+    }
+
+//    public void processGame (){
+//        Object fromServer = server.read();
+//        System.out.println(fromServer);
+//        if (fromServer instanceof String){
+//            String s = fromServer.toString();
+//            if (s.equals("Stop")){
+//                isNotStop = false;
+//                System.out.println("Stop game");
+////            } else {
+////                checkTurn();
+////                listenResponse();
+//            }
 //        }
-    }
-
-    public void listenResponse (){
-        String name = this.name;
-        Object fromServer = server.read();
-        if (fromServer instanceof String){
-            gamePanel.processResponse(name, fromServer.toString());
-        }
-    }
-
+//    }
 
     public LoginPanel getLoginPanel() {
         return loginPanel;

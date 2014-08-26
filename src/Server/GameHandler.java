@@ -74,16 +74,21 @@ public class GameHandler implements Runnable {
 //        }
 
         //Handling Bets and stuffs
-        for (int i = 0; i < playersCom.size(); i++) {
-            if (usernames.get(i) != null) {
-                //send whos turn
-                sendTurn(i);
-                //receive response from that player
-                handleReponse(i);
 
-            }
-            if (i == 3) {
-                i = -1;
+        for (int i = 0; i < playersCom.size(); i++) {
+            if (!allAreFold()) {
+                if (usernames.get(i) != null) {
+                    //send whos turn
+                    sendTurn(i);
+                    //receive response from that player
+                    handleReponse(i);
+
+                }
+                if (i == (playersCom.size() - 1)) {
+                    i = -1;
+                }
+            } else {
+                break;
             }
         }
 
@@ -115,21 +120,28 @@ public class GameHandler implements Runnable {
                 count++;
             }
         }
-        if (count == usernames.size() - 1) {
+        System.out.println("number of folded players" + count);
+        if (count == playersCom.size() - 1) {
             allAreFold = true;
+            for (int k = 0; k < playersCom.size(); k++) {
+                playersCom.get(k).write("Stop");
+            }
+//        } else {
+//            for (int k = 0; k < playersCom.size(); k++) {
+//                playersCom.get(k).write("wtf");
+//            }
         }
-
         return allAreFold;
     }
 
-    public void sendTurn(int i){
+    public void sendTurn(int i) {
         System.out.println("Current turn: " + usernames.get(i));
         for (int j = 0; j < usernames.size(); j++) {
             playersCom.get(j).write(usernames.get(i));
 
         }
     }
-    
+
     public void handleReponse(int i) {
         Object fromClient = playersCom.get(i).read();
 
@@ -144,5 +156,6 @@ public class GameHandler implements Runnable {
             usernames.set(i, null);
         }
     }
+
 
 }

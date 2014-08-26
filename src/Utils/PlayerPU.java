@@ -51,7 +51,7 @@ public class PlayerPU {
     public static final int label_h = 20;//Combine bound
     public static final int username_y = 3;
     public static final int status_y = 105;
-    public static final int bet_y = 118;
+    public static final int cash_y = 118;
 
     //CArds
     public static final String pathPrefix = "cards/";
