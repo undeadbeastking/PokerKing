@@ -1040,7 +1040,124 @@ public class Hand {
                     High card
                     */
                     } else {
-                        
+                        values[0] = 1;
+                        Card[] sortedHighCards = new Card[5];
+                        Card higherHoleCard = cards[0].getRank() > cards[1].getRank() ? cards[0] : cards[1];
+                        Card lowerHoleCard = cards[0].getRank() > cards[1].getRank() ? cards[1] : cards[0];
+
+                        if(lowerHoleCard.getRank() == 1){
+                            sortedHighCards[0] = lowerHoleCard;
+
+                            int neededCards = 3, index = 1;
+                            for (int i = 13; i > higherHoleCard.getRank(); i--) {
+                                if(rank[i] == 1){
+                                    neededCards--;
+                                    for (int j = 2; j < 7; j++) {
+                                        if(cards[j].getRank() == i){
+                                            sortedHighCards[index] = cards[j];
+                                            index++;
+                                            break;
+                                        }
+                                    }
+                                    if(neededCards == 0)    break;
+                                }
+                            }
+
+                            sortedHighCards[index] = higherHoleCard;
+                            index++;
+
+                            if(neededCards != 0){
+                                for (int i = higherHoleCard.getRank()-1; i > 1; i--) {
+                                    if(rank[i] == 1){
+                                        neededCards--;
+                                        for (int j = 2; j < 7; j++) {
+                                            if(cards[j].getRank() == i){
+                                                sortedHighCards[index] = cards[j];
+                                                index++;
+                                                break;
+                                            }
+                                        }
+                                        if(neededCards == 0)    break;
+                                    }
+                                }
+                            }
+                        } else {
+                            int index = 0, neededCards = 3;
+                            if(rank[1] == 1){
+                                for (int i = 2; i < 7; i++) {
+                                    if(cards[i].getRank() == 1){
+                                        sortedHighCards[index] = cards[i];
+                                        index++;
+                                        neededCards--;
+                                        break;
+                                    }
+                                }
+                            }
+
+                            for (int i = 13; i > higherHoleCard.getRank(); i--) {
+                                if(rank[i] == 1){
+                                    neededCards--;
+                                    for (int j = 2; j < 7; j++) {
+                                        if(cards[j].getRank() == i){
+                                            sortedHighCards[index] = cards[j];
+                                            index++;
+                                            break;
+                                        }
+                                    }
+                                    if(neededCards == 0)    break;
+                                }
+                            }
+
+                            sortedHighCards[index] = higherHoleCard;
+                            index++;
+
+                            if(neededCards != 0){
+                                for (int i = higherHoleCard.getRank()-1; i > lowerHoleCard.getRank(); i--) {
+                                    if(rank[i] == 1){
+                                        neededCards--;
+                                        for (int j = 2; j < 7; j++) {
+                                            if(cards[j].getRank() == i){
+                                                sortedHighCards[index] = cards[j];
+                                                index++;
+                                                break;
+                                            }
+                                        }
+                                        if(neededCards == 0)    break;
+                                    }
+                                }
+                            }
+
+                            sortedHighCards[index] = lowerHoleCard;
+                            index++;
+
+                            if(neededCards != 0){
+                                for (int i = lowerHoleCard.getRank()-1; i > 1; i--) {
+                                    if(rank[i] == 1){
+                                        neededCards--;
+                                        for (int j = 2; j < 7; j++) {
+                                            if(cards[j].getRank() == i){
+                                                sortedHighCards[index] = cards[j];
+                                                index++;
+                                                break;
+                                            }
+                                        }
+                                        if(neededCards == 0)    break;
+                                    }
+                                }
+                            }
+                        }
+
+                        //Get energy
+                        values[1] = sortedHighCards[0].getRank() == 1 ? 14 : sortedHighCards[0].getRank();
+                        values[2] = sortedHighCards[1].getRank();
+                        values[3] = sortedHighCards[2].getRank();
+                        values[4] = sortedHighCards[3].getRank();
+                        values[5] = sortedHighCards[4].getRank();
+
+                        //Get Display
+                        for (int i = 0; i < 5; i++) {
+                            bestOfAHand[i] = sortedHighCards[i];
+                        }
                     }
                 }
             }
