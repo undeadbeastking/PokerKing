@@ -441,9 +441,9 @@ public class Hand {
                         bestOfAHand[1] = cards[1];
                         int index = 2;
                         //Both hole cards are not Ace. Then put Ace in there
-                        if(cards[0].getRank() != 1 && cards[1].getRank() != 1){
+                        if (cards[0].getRank() != 1 && cards[1].getRank() != 1) {
                             for (int i = 2; i < 7; i++) {//ignore 2 hole cards
-                                if(cards[i].getRank() == 1){
+                                if (cards[i].getRank() == 1) {
                                     bestOfAHand[index] = cards[i];
                                     index++;
                                     break;
@@ -452,24 +452,24 @@ public class Hand {
                         }
                         for (int i = 13; i >= 10; i--) {
                             //Skip cards which have the same rank with 2 hole cards (Already added)
-                            if(cards[0].getRank() != i && cards[1].getRank() != i){
+                            if (cards[0].getRank() != i && cards[1].getRank() != i) {
                                 for (int j = 2; j < 7; j++) {//ignore 2 hole cards
-                                    if(cards[j].getRank() == i){
+                                    if (cards[j].getRank() == i) {
                                         bestOfAHand[index] = cards[j];
                                         index++;
                                         break;
                                     }
                                 }
                             }
-                            if(index > 4)   break;
+                            if (index > 4) break;
                         }
 
                     } else {
                         for (int i = 13; i >= 5; i--) {
                             if (rank[i] >= 1 && rank[i - 1] >= 1 && rank[i - 2] >= 1 && rank[i - 3] >= 1 && rank[i - 4] >= 1 &&
                                     //2 hole cards must be in this range
-                                    (i-4 <= cards[0].getRank() && cards[0].getRank() <= i) &&
-                                    (i-4 <= cards[1].getRank() && cards[1].getRank() <= i)) {
+                                    (i - 4 <= cards[0].getRank() && cards[0].getRank() <= i) &&
+                                    (i - 4 <= cards[1].getRank() && cards[1].getRank() <= i)) {
 
                                 values[0] = 5;
                                 values[1] = i;
@@ -481,18 +481,18 @@ public class Hand {
                                 /*
                                 At this state we know the range of Straight is from Rank i-4 -> i
                                  */
-                                for (int j = i; j >= i-4; j--) {
+                                for (int j = i; j >= i - 4; j--) {
                                     //Skip cards which have the same rank with 2 hole cards (Already added)
-                                    if(cards[0].getRank() != j && cards[1].getRank() != j){
+                                    if (cards[0].getRank() != j && cards[1].getRank() != j) {
                                         for (int x = 2; x < 7; x++) {//ignore 2 hole cards
-                                            if(cards[x].getRank() == j){
+                                            if (cards[x].getRank() == j) {
                                                 bestOfAHand[index] = cards[x];
                                                 index++;
                                                 break;
                                             }
                                         }
                                     }
-                                    if(index > 4)   break;
+                                    if (index > 4) break;
                                 }
 
                                 break;
@@ -513,25 +513,25 @@ public class Hand {
                         values[0] = 4;
                         //Check to see if any hole card is in the Triple -> no then we don't need to find the other 2 high cards
                         int neededCards = 0;
-                        if(cards[0].getRank() == bigQuanRank)   neededCards++;
-                        if(cards[1].getRank() == bigQuanRank)   neededCards++;
+                        if (cards[0].getRank() == bigQuanRank) neededCards++;
+                        if (cards[1].getRank() == bigQuanRank) neededCards++;
 
                         //Get Energy
                         values[1] = bigQuanRank == 1 ? 14 : bigQuanRank;
                         //Get the 3 into display array
                         int index = 0;
                         for (int i = 0; i < 7; i++) {
-                            if(cards[i].getRank() == bigQuanRank){
+                            if (cards[i].getRank() == bigQuanRank) {
                                 bestOfAHand[index] = cards[i];
                                 index++;
-                                if(index > 2)   break;
+                                if (index > 2) break;
                             }
                         }
 
                         //Get 2 hole cards as high cards
-                        if(neededCards == 0){
+                        if (neededCards == 0) {
                             Card higherHoleCard, lowerHoleCard;
-                            if(cards[0].getRank() > cards[1].getRank()){
+                            if (cards[0].getRank() > cards[1].getRank()) {
                                 higherHoleCard = cards[0];
                                 lowerHoleCard = cards[1];
                             } else {
@@ -548,17 +548,17 @@ public class Hand {
                         }
 
                         //1 hole card is in group 3, get the other hole card as high card and find one remaining high card in Community
-                        if(neededCards == 1){
+                        if (neededCards == 1) {
                             Card theOtherHoleCard = cards[0].getRank() == bigQuanRank ? cards[1] : cards[0];
                             int communityHighCardRank = -1;
                             Card communityHighCard = null;
                             //There is an Ace and it is not a Hole card
-                            if(rank[1] == 1 && theOtherHoleCard.getRank() != 1){
+                            if (rank[1] == 1 && theOtherHoleCard.getRank() != 1) {
                                 communityHighCardRank = 1;
                             } else {
                                 //Loop community cards with normal rank to find the best one
                                 for (int i = 13; i > 1; i--) {
-                                    if(rank[i] == 1 && theOtherHoleCard.getRank() != i){
+                                    if (rank[i] == 1 && theOtherHoleCard.getRank() != i) {
                                         communityHighCardRank = i;
                                         break;
                                     }
@@ -566,7 +566,7 @@ public class Hand {
                             }
                             //Find that card Suit
                             for (int i = 0; i < 7; i++) {
-                                if(cards[i].getRank() == communityHighCardRank){
+                                if (cards[i].getRank() == communityHighCardRank) {
                                     communityHighCard = cards[i];
                                     break;
                                 }
@@ -574,7 +574,7 @@ public class Hand {
 
                             //Arrange smaller and bigger high cards
                             Card biggerCard, smallerCard;
-                            if(theOtherHoleCard.getRank() > communityHighCardRank){
+                            if (theOtherHoleCard.getRank() > communityHighCardRank) {
                                 biggerCard = theOtherHoleCard;
                                 smallerCard = communityHighCard;
                             } else {
@@ -591,39 +591,39 @@ public class Hand {
                         }
 
                         //2 hole cards belong to the group 3 then get 2 high cards from Community
-                        if(neededCards == 2){
+                        if (neededCards == 2) {
                             int higherRank = -1, smallerRank = -1;
                             Card higherCard = null, smallerCard = null;
                             int cardToFillIn = 2;//reach 0 then we got 2 community cards that we want
-                            if(rank[1] == 1 && bigQuanRank != 1){
+                            if (rank[1] == 1 && bigQuanRank != 1) {
                                 higherRank = 1;
                                 cardToFillIn--;
                             }
                             for (int i = 13; i > 1; i++) {
-                                if(rank[i] == 1){
-                                    if(cardToFillIn == 1){
+                                if (rank[i] == 1) {
+                                    if (cardToFillIn == 1) {
                                         smallerRank = i;
                                         cardToFillIn--;
-                                    } else if(cardToFillIn == 2) {
+                                    } else if (cardToFillIn == 2) {
                                         higherRank = i;
                                         cardToFillIn--;
                                     }
                                 }
-                                if(cardToFillIn == 0)   break;
+                                if (cardToFillIn == 0) break;
                             }
 
                             cardToFillIn = 2;
                             //Now find these card suits
                             for (int i = 2; i < 7; i++) {
-                                if(cards[i].getRank() == higherRank){
+                                if (cards[i].getRank() == higherRank) {
                                     higherCard = cards[i];
                                     cardToFillIn--;
                                 }
-                                if(cards[i].getRank() == smallerRank){
+                                if (cards[i].getRank() == smallerRank) {
                                     smallerCard = cards[i];
                                     cardToFillIn--;
                                 }
-                                if(cardToFillIn == 0){
+                                if (cardToFillIn == 0) {
                                     break;
                                 }
                             }
@@ -639,96 +639,524 @@ public class Hand {
 
                         /*
                         Check 2 pairs
+                        2 available pairs and 3 Strays or 3 available pairs and 1 Stray
                          */
                     } else if (bigQuan == 2 && smallerQuan == 2) {
-                        values[0] = 3;
-                        /*
-                        There is no big group or small group when we get 2 pairs
-                        but the first pair will always go to bigGroup and the second go to smallGroup
+                        //2 pairs but both of them do not involve with any hole card
+                        if (!(rank[cards[0].getRank()] == 1 && rank[cards[1].getRank()] == 1)) {
+                            values[0] = 3;
+                            //Both of them belong to pairs
+                            if (rank[cards[0].getRank()] == 2 && rank[cards[1].getRank()] == 2) {
+                                //2 hole card is a pair then find a pair from Commu and also the fifth card
+                                if (cards[0].getRank() == cards[1].getRank()) {
+                                    //FInd other pair rank
+                                    int otherPairRank = -1;
+                                    if (rank[1] == 2 && cards[0].getRank() != 1) {
+                                        otherPairRank = 1;
+                                    } else {
+                                        for (int i = 13; i > 1; i--) {
+                                            if (rank[i] == 2 && cards[0].getRank() != i) {
+                                                otherPairRank = i;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    //Find the fifth card rank
+                                    int fifthCardRank = -1;
+                                    if (rank[1] == 1) {
+                                        fifthCardRank = 1;
+                                    } else {
+                                        for (int i = 13; i > 1; i--) {
+                                            if (rank[i] == 1) {
+                                                fifthCardRank = i;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    //Get energy
+                                    values[1] = cards[0].getRank() == 1 ? 14 : otherPairRank == 1 ? 14
+                                            : cards[0].getRank() > otherPairRank ? cards[0].getRank() : otherPairRank;
+                                    values[2] = cards[0].getRank() == 1 ? otherPairRank : otherPairRank == 1 ? cards[0].getRank()
+                                            : cards[0].getRank() > otherPairRank ? otherPairRank : cards[0].getRank();
+                                    values[3] = fifthCardRank == 1 ? 14 : fifthCardRank;
 
-                        But the end can be a pair of Ace which is the first strongest Pair
-                         */
-                        if (smallerQuanRank == 1) {
-                            //Pair of Ace
-                            values[1] = 14;
-                            //Get the second pair
-                            values[2] = bigQuanRank;//13 -> 2
-                            //get the High card
-                            for (int i = 13; i >= 2; i--) {
-                                if (rank[i] == 1) {
-                                    values[3] = i;
-                                    break;
+                                    //get Display
+                                    bestOfAHand[0] = cards[0];
+                                    bestOfAHand[1] = cards[1];
+                                    int index = 2;
+                                    for (int i = 2; i < 7; i++) {
+                                        if (cards[i].getRank() == otherPairRank) {
+                                            bestOfAHand[index] = cards[i];
+                                            index++;
+                                            if (index > 3) break;
+                                        }
+                                    }
+                                    for (int i = 2; i < 7; i++) {
+                                        if (cards[i].getRank() == fifthCardRank) {
+                                            bestOfAHand[4] = cards[i];
+                                            break;
+                                        }
+                                    }
+
+                                } else {
+                                    //2 hole cards attach to different pair
+                                    int higherRank = -1, smallerRank = -1;
+                                    if (cards[0].getRank() > cards[1].getRank()) {
+                                        higherRank = cards[0].getRank();
+                                        smallerRank = cards[1].getRank();
+                                    } else {
+                                        higherRank = cards[1].getRank();
+                                        smallerRank = cards[0].getRank();
+                                    }
+                                    //Find the fifth card rank
+                                    int fifthCardRank = -1;
+                                    if (rank[1] == 1) {
+                                        fifthCardRank = 1;
+                                    } else {
+                                        for (int i = 13; i > 1; i--) {
+                                            if (rank[i] == 1) {
+                                                fifthCardRank = i;
+                                                break;
+                                            }
+                                        }
+                                    }
+
+                                    //Get the energy
+                                    values[1] = higherRank == 1 ? 14 : smallerRank == 1 ? 14 : higherRank;
+                                    values[2] = smallerRank == 1 ? higherRank : smallerRank;
+                                    values[3] = fifthCardRank == 1 ? 14 : fifthCardRank;
+                                    //Get Display
+                                    bestOfAHand[0] = cards[0];
+                                    bestOfAHand[1] = cards[1];
+                                    //Each case can only occur one time
+                                    for (int i = 0; i < 7; i++) {
+                                        if (cards[i].getRank() == cards[0].getRank() && cards[i].getSuit() != cards[0].getSuit()) {
+                                            bestOfAHand[2] = cards[i];
+                                        }
+                                        if (cards[i].getRank() == cards[1].getRank() && cards[i].getSuit() != cards[1].getSuit()) {
+                                            bestOfAHand[3] = cards[i];
+                                        }
+                                        if (cards[i].getRank() == fifthCardRank) {
+                                            bestOfAHand[4] = cards[i];
+                                        }
+                                    }
                                 }
-                            }
+                                //Only 1 of them belong to a pair
+                            } else if (rank[cards[0].getRank()] == 2 || rank[cards[1].getRank()] == 2) {
+                                //one will belong to a pair, the other hole card will be the fifth card
+                                int holePairRank = rank[cards[0].getRank()] == 2 ? cards[0].getRank() : cards[1].getRank();
+                                Card fifthCard = rank[cards[0].getRank()] == 2 ? cards[1] : cards[0];
+                                //Find the highest community Pair
+                                int communityPairRank = -1;
+                                if(rank[1] == 2 && holePairRank != 1){
+                                    communityPairRank = 1;
+                                } else {
+                                    for (int i = 13; i > 1; i--) {
+                                        if(rank[i] == 2 && holePairRank != i){
+                                            communityPairRank = i;
+                                            break;
+                                        }
+                                    }
+                                }
+                                //Get energy
+                                values[1] = holePairRank == 1 ? 14 : communityPairRank == 1 ? 14
+                                        : holePairRank > communityPairRank ? holePairRank : communityPairRank;
+                                values[2] = holePairRank == 1 ? communityPairRank : communityPairRank == 1 ? holePairRank
+                                        : holePairRank > communityPairRank ? communityPairRank : holePairRank;
+                                values[3] = fifthCard.getRank() == 1 ? 14 : fifthCard.getRank();
 
-                        } else {
-                            //No pair of Ace
-                            values[1] = bigQuanRank;
-                            values[2] = smallerQuanRank;
-                            //FInal card
-                            if (rank[1] == 1) {
-                                //There is an Ace
-                                values[3] = 14;
-                            } else {
-                                //No Ace - Find Normal
-                                for (int i = 13; i >= 2; i--) {
-                                    if (rank[i] == 1) {
-                                        values[3] = i;
-                                        break;
+                                //Get display
+                                int enoughHolePair = 2, enoughCommuPair = 2;
+                                bestOfAHand[4] = fifthCard;
+                                //Get 2 pairs
+                                for (int i = 0; i < 7; i++) {
+                                    if(enoughCommuPair != 0 && communityPairRank == cards[i].getRank()){
+                                        bestOfAHand[enoughCommuPair+1] = cards[i];
+                                        enoughCommuPair--;
+                                    }
+                                    if(enoughHolePair != 0 && holePairRank == cards[i].getRank()){
+                                        bestOfAHand[enoughHolePair-1] = cards[i];
+                                        enoughCommuPair--;
                                     }
                                 }
                             }
                         }
-                        /*
-                        Check 1 pair
-                         */
+
+                    /*
+                    Check 1 pair
+                    */
                     } else if (bigQuan == 2) {
                         values[0] = 2;
-                        //Rank of Pair
-                        if (bigQuanRank == 1) {
-                            values[1] = 14;
-                        } else {
-                            values[1] = bigQuanRank;
-                        }
-
-                        //Get 3 cards
-                        int index = 2;
-                        //There is an Ace???
-                        if (rank[1] == 1) {
-                            values[index] = 14;
-                            index++;
-                        }
-                        for (int i = 13; i >= 2; i--) {
-                            if (rank[i] == 1) {
-                                values[index] = i;
+                        //On our hand is a Pair -> find 3 high cards from Community
+                        if(cards[0].getRank() == cards[1].getRank()){
+                            //Get Energy & Display within  the loop
+                            //The pair
+                            values[1] = cards[0].getRank() == 1 ? 14 : cards[0].getRank();
+                            bestOfAHand[0] = cards[0];
+                            bestOfAHand[1] = cards[1];
+                            //Need 3 high cards energies and for display as well
+                            int index = 2;
+                            if(rank[1] == 1) {
+                                values[index] = 14;
+                                for (int i = 2; i < 7; i++) {
+                                    if(cards[i].getRank() == 1){
+                                        bestOfAHand[index] = cards[i];
+                                        index++;
+                                        break;
+                                    }
+                                }
+                            }
+                            for (int i = 13; i > 1; i--) {
+                                if (rank[i] == 1) {
+                                    values[index] = i;
+                                    for (int j = 2; j < 7; j++) {
+                                        if (cards[j].getRank() == i) {
+                                            bestOfAHand[index] = cards[j];
+                                            index++;
+                                            break;
+                                        }
+                                    }
+                                    if (index > 4) break;
+                                }
+                            }
+                        //1 hole card is in the pair, the other hole card is counted as a high card
+                        } else if(cards[0].getRank() == bigQuanRank || cards[1].getRank() == bigQuanRank){
+                            Card pairHoleCard = cards[0].getRank() == bigQuanRank ? cards[0] : cards[1];
+                            Card highHoleCard = cards[0].getRank() == bigQuanRank ? cards[1] : cards[0];
+                            //Get energy and display for the pair
+                            values[1] = pairHoleCard.getRank() == 1 ? 14 : pairHoleCard.getRank();
+                            bestOfAHand[0] = pairHoleCard;
+                            for (int i = 2; i < 7; i++) {
+                                if(pairHoleCard.getRank() == cards[i].getRank()){
+                                    bestOfAHand[1] = cards[i];
+                                    break;
+                                }
+                            }
+                            //Get other 2 high cards but also arrange the hole card and other 2 in an order
+                            int index = 0;
+                            Card[] sortedHighCards = new Card[3];
+                            //The other hole card is an Ace then 2 Commu high cards will have normal rank
+                            if(highHoleCard.getRank() == 1){
+                                sortedHighCards[index] = highHoleCard;
                                 index++;
+                                for (int i = 13; i > 1; i--) {
+                                    if(rank[i] == 1){
+                                        for (int j = 2; j < 7; j++) {
+                                            if(cards[j].getRank() == i){
+                                                sortedHighCards[index] = cards[j];
+                                                index++;
+                                                break;
+                                            }
+                                        }
+                                        if(index > 2) break;
+                                    }
+                                }
+
+                            } else {
+                                int neededCard = 2;
+                                if(rank[1] == 1){
+                                    neededCard--;
+                                    for (int i = 2; i < 7; i++) {
+                                        if(cards[i].getRank() == 1){
+                                            sortedHighCards[index] = cards[i];
+                                            index++;
+                                            break;
+                                        }
+                                    }
+                                }
+                                for (int i = 13; i > highHoleCard.getRank(); i--) {
+                                    if(rank[i] == 1){
+                                        neededCard--;
+                                        for (int j = 2; j < 7; j++) {
+                                            if(cards[j].getRank() == i){
+                                                sortedHighCards[index] = cards[j];
+                                                index++;
+                                                break;
+                                            }
+                                        }
+                                        if(neededCard == 0){
+                                            break;
+                                        }
+                                    }
+                                }
+                                if(neededCard == 0){
+                                    sortedHighCards[index] = highHoleCard;
+                                } else {
+                                    sortedHighCards[index] = highHoleCard;
+                                    index++;
+                                    for (int i = highHoleCard.getRank()-1; i > 1; i--) {
+                                        if(rank[i] == 1){
+                                            neededCard--;
+                                            for (int j = 2; j < 7; j++) {
+                                                if(cards[j].getRank() == i){
+                                                    sortedHighCards[index] = cards[j];
+                                                    index++;
+                                                }
+                                            }
+                                            if(neededCard == 0) break;
+                                        }
+                                    }
+                                }
                             }
-                            // Get enough 3
-                            if (index > 4) {
-                                break;
+                            //Energy of other 3 high cards
+                            values[2] = sortedHighCards[0].getRank() == 1 ? 14 : sortedHighCards[0].getRank();
+                            values[3] = sortedHighCards[1].getRank();
+                            values[4] = sortedHighCards[2].getRank();
+                            //Display of other 3 high cards
+                            bestOfAHand[2] = sortedHighCards[0];
+                            bestOfAHand[3] = sortedHighCards[1];
+                            bestOfAHand[4] = sortedHighCards[2];
+
+                        //2 holes are both high cards, pair is from Community
+                        } else {
+                            //Get energy and display for the pair
+                            values[1] = bigQuanRank == 1 ? 14 : bigQuanRank;
+                            int index = 0;
+                            for (int i = 2; i < 7; i++) {
+                                if(bigQuanRank == cards[i].getRank()){
+                                    bestOfAHand[index] = cards[i];
+                                    index++;
+                                    if(index > 1)   break;
+                                }
                             }
+                            //Get Energy and display for the other 3 high cards
+                            Card higherHoleCard = cards[0].getRank() > cards[1].getRank() ? cards[0] : cards[1];
+                            Card lowerHoleCard = cards[0].getRank() > cards[1].getRank() ? cards[1] : cards[0];
+                            int neededCard = 1;
+                            index = 0;
+                            Card[] sortedHighCards = new Card[3];
+
+                            //Ace
+                            if(rank[1] == 1 && lowerHoleCard.getRank() == 1){
+                                sortedHighCards[index] = lowerHoleCard;
+                                index++;
+
+                                for (int i = 13; i > higherHoleCard.getRank(); i++) {
+                                    if(rank[i] == 1){
+                                        neededCard--;
+                                        for (int j = 2; j < 7; j++) {
+                                            if(cards[j].getRank() == i){
+                                                sortedHighCards[index] = cards[j];
+                                                break;
+                                            }
+                                        }
+                                        break;
+                                    }
+                                }
+
+                                sortedHighCards[index] = higherHoleCard;
+                                index++;
+
+                                if(neededCard != 0){
+                                    for (int i = higherHoleCard.getRank()-1; i > 1; i--) {
+                                        if(rank[i] == 1){
+                                            neededCard--;
+                                            for (int j = 2; j < 7; j++) {
+                                                if(cards[j].getRank() == i){
+                                                    sortedHighCards[index] = cards[j];
+                                                    break;
+                                                }
+                                            }
+                                            break;
+                                        }
+                                    }
+                                }
+                            } else if(rank[1] == 1){
+                                for (int i = 2; i < 7; i++) {
+                                    if(cards[i].getRank() == 1){
+                                        sortedHighCards[index] = cards[i];
+                                        index++;
+                                        break;
+                                    }
+                                }
+                                sortedHighCards[index] = cards[0].getRank() > cards[1].getRank() ? cards[0] : cards[1];
+                                index++;
+                                sortedHighCards[index] = cards[0].getRank() > cards[1].getRank() ? cards[1] : cards[0];
+
+                            //No ace at all
+                            } else {
+                                for (int i = 13; i > higherHoleCard.getRank(); i--) {
+                                    if(rank[i] == 1){
+                                        neededCard--;
+                                        for (int j = 2; j < 7; j++) {
+                                            if(cards[j].getRank() == i){
+                                                sortedHighCards[index] = cards[j];
+                                                index++;
+                                                break;
+                                            }
+                                        }
+                                        if(neededCard == 0) break;
+                                    }
+                                }
+                                sortedHighCards[index] = higherHoleCard;
+                                index++;
+
+                                if(neededCard!= 0){
+                                    for (int i = higherHoleCard.getRank()-1; i > lowerHoleCard.getRank(); i--) {
+                                        if(rank[i] == 1){
+                                            neededCard--;
+                                            for (int j = 2; j < 7; j++) {
+                                                if(cards[j].getRank() == i){
+                                                    sortedHighCards[index] = cards[j];
+                                                    index++;
+                                                    break;
+                                                }
+                                            }
+                                            if(neededCard == 0) break;
+                                        }
+                                    }
+                                }
+                                sortedHighCards[index] = lowerHoleCard;
+                                index++;
+
+                                if(neededCard!= 0){
+                                    for (int i = lowerHoleCard.getRank()-1; i > 1; i--) {
+                                        if(rank[i] == 1){
+                                            neededCard--;
+                                            for (int j = 2; j < 7; j++) {
+                                                if(cards[j].getRank() == i){
+                                                    sortedHighCards[index] = cards[j];
+                                                    index++;
+                                                    break;
+                                                }
+                                            }
+                                            if(neededCard == 0) break;
+                                        }
+                                    }
+                                }
+                            }
+
+                            //Energy of other 3 high cards
+                            values[2] = sortedHighCards[0].getRank() == 1 ? 14 : sortedHighCards[0].getRank();
+                            values[3] = sortedHighCards[1].getRank();
+                            values[4] = sortedHighCards[2].getRank();
+                            //Display of other 3 high cards
+                            bestOfAHand[2] = sortedHighCards[0];
+                            bestOfAHand[3] = sortedHighCards[1];
+                            bestOfAHand[4] = sortedHighCards[2];
                         }
 
-                        /*
-                        High card
-                         */
+                    /*
+                    High card
+                    */
                     } else {
                         values[0] = 1;
-                        int index = 1;
-                        //1 Ace
-                        if (rank[1] == 1) {
-                            values[index] = 14;
+                        Card[] sortedHighCards = new Card[5];
+                        Card higherHoleCard = cards[0].getRank() > cards[1].getRank() ? cards[0] : cards[1];
+                        Card lowerHoleCard = cards[0].getRank() > cards[1].getRank() ? cards[1] : cards[0];
+
+                        if(lowerHoleCard.getRank() == 1){
+                            sortedHighCards[0] = lowerHoleCard;
+
+                            int neededCards = 3, index = 1;
+                            for (int i = 13; i > higherHoleCard.getRank(); i--) {
+                                if(rank[i] == 1){
+                                    neededCards--;
+                                    for (int j = 2; j < 7; j++) {
+                                        if(cards[j].getRank() == i){
+                                            sortedHighCards[index] = cards[j];
+                                            index++;
+                                            break;
+                                        }
+                                    }
+                                    if(neededCards == 0)    break;
+                                }
+                            }
+
+                            sortedHighCards[index] = higherHoleCard;
                             index++;
+
+                            if(neededCards != 0){
+                                for (int i = higherHoleCard.getRank()-1; i > 1; i--) {
+                                    if(rank[i] == 1){
+                                        neededCards--;
+                                        for (int j = 2; j < 7; j++) {
+                                            if(cards[j].getRank() == i){
+                                                sortedHighCards[index] = cards[j];
+                                                index++;
+                                                break;
+                                            }
+                                        }
+                                        if(neededCards == 0)    break;
+                                    }
+                                }
+                            }
+                        } else {
+                            int index = 0, neededCards = 3;
+                            if(rank[1] == 1){
+                                for (int i = 2; i < 7; i++) {
+                                    if(cards[i].getRank() == 1){
+                                        sortedHighCards[index] = cards[i];
+                                        index++;
+                                        neededCards--;
+                                        break;
+                                    }
+                                }
+                            }
+
+                            for (int i = 13; i > higherHoleCard.getRank(); i--) {
+                                if(rank[i] == 1){
+                                    neededCards--;
+                                    for (int j = 2; j < 7; j++) {
+                                        if(cards[j].getRank() == i){
+                                            sortedHighCards[index] = cards[j];
+                                            index++;
+                                            break;
+                                        }
+                                    }
+                                    if(neededCards == 0)    break;
+                                }
+                            }
+
+                            sortedHighCards[index] = higherHoleCard;
+                            index++;
+
+                            if(neededCards != 0){
+                                for (int i = higherHoleCard.getRank()-1; i > lowerHoleCard.getRank(); i--) {
+                                    if(rank[i] == 1){
+                                        neededCards--;
+                                        for (int j = 2; j < 7; j++) {
+                                            if(cards[j].getRank() == i){
+                                                sortedHighCards[index] = cards[j];
+                                                index++;
+                                                break;
+                                            }
+                                        }
+                                        if(neededCards == 0)    break;
+                                    }
+                                }
+                            }
+
+                            sortedHighCards[index] = lowerHoleCard;
+                            index++;
+
+                            if(neededCards != 0){
+                                for (int i = lowerHoleCard.getRank()-1; i > 1; i--) {
+                                    if(rank[i] == 1){
+                                        neededCards--;
+                                        for (int j = 2; j < 7; j++) {
+                                            if(cards[j].getRank() == i){
+                                                sortedHighCards[index] = cards[j];
+                                                index++;
+                                                break;
+                                            }
+                                        }
+                                        if(neededCards == 0)    break;
+                                    }
+                                }
+                            }
                         }
-                        //Remaining
-                        for (int i = 13; i >= 2; i--) {
-                            if (rank[i] == 1) {
-                                values[index] = i;
-                                index++;
-                            }
-                            if (index > 5) {
-                                break;
-                            }
+
+                        //Get energy
+                        values[1] = sortedHighCards[0].getRank() == 1 ? 14 : sortedHighCards[0].getRank();
+                        values[2] = sortedHighCards[1].getRank();
+                        values[3] = sortedHighCards[2].getRank();
+                        values[4] = sortedHighCards[3].getRank();
+                        values[5] = sortedHighCards[4].getRank();
+
+                        //Get Display
+                        for (int i = 0; i < 5; i++) {
+                            bestOfAHand[i] = sortedHighCards[i];
                         }
                     }
                 }
