@@ -14,12 +14,12 @@ import java.util.*;
  */
 public class RoomHandler implements Runnable {
 
-    //All users of a room
+    //All username of a room
+    private int numberOfPlayers;
     private ArrayList<String> usernames;
 
-    //Server connection
+    //Communication of each player in a Room
     private ArrayList<PlayerCommunicator> playersCom;
-    private int numberOfPlayers;
 
     //Game
     private Deck deck;
@@ -41,7 +41,6 @@ public class RoomHandler implements Runnable {
 
     @Override
     public void run() {
-        System.out.println("Wrong.");
         for (PlayerCommunicator p : playersCom) {
             //Send first hand info
             p.write(State.StartGame);
@@ -89,7 +88,6 @@ public class RoomHandler implements Runnable {
     }
 
     public void sendCards(PlayerCommunicator p) {
-
         Hand hand = new Hand(deck);
         p.write(hand.getCards());
         hands.add(hand);

@@ -4,8 +4,8 @@ import model.Account;
 import model.Data;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.*;
+import java.awt.event.*;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -18,114 +18,114 @@ public class Server extends JFrame implements Runnable {
     private static final int PORT = 9000;
     private static Thread serverThread = null;
     private static ServerSocket server = null;
-    private int room = 1;//Count how many rooms the server is controlling
+    private int roomNumber = 1;//Count how many rooms the server is controlling
     public static int numberOfPlayersInARoom = 4;
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         //Load users data
         Data.loadAccounts();
 
-        Server s = new Server();
-
-        if(server != null){
-            serverThread = new Thread(s);
+        if(initServerSocket()){
+            serverThread = new Thread(new Server());
             serverThread.start();
+
+        } else {
+            System.out.println("Fail to establish a server Connection.\nExit Program.");
         }
+    }
+
+    public static boolean initServerSocket(){
+        try{
+            server = new ServerSocket(PORT);
+
+            //Print out server ip
+            try {
+                System.out.println("Server is running. The IP is: \n" + Inet4Address.getLocalHost().getHostAddress() + "\n\n");
+
+            } catch (Exception e) {
+                System.out.println("Can not find server ip!");
+            }
+
+        } catch(IOException e){
+            System.out.println("Cannot init ServerSocket.");
+            return false;
+        }
+        return true;
     }
 
     public Server() {
-        //print out server ip
-        try {
-            System.out.println("Server is running. The IP is: \n" + Inet4Address.getLocalHost().getHostAddress());
-
-        } catch (Exception e) {
-            System.out.println("Can not find server ip!");
-        }
-
-        //Create ServerSocket
-        try {
-            server = new ServerSocket(PORT);
-
-        } catch (IOException e) {
-            System.out.println("Cannot create ServerSocket.");
-            return;
-        }
-
         //Server UI
-        setSize(200, 100);
         setTitle("Server");
         setResizable(false);
-        setLocationRelativeTo(null);//Set center
-        setVisible(true);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        //Diconnect Button
-        JButton disconnectBut = new JButton("Disconnect from Server");
-        disconnectBut.setHorizontalAlignment(SwingConstants.CENTER);
-        add(disconnectBut);
-        disconnectBut.addActionListener(new ActionListener() {
+        //Saving accounts before exiting the program
+        this.addWindowListener(new WindowAdapter() {
             @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    server.close();
-                    System.out.println("Server stopped.");
-
-                } catch (IOException i) {
-                    System.out.println("Cannot close server socket.");
-
-                } finally {
-                    //Save accounts
-                    System.out.println("Saving accounts successfully.");
-                    Data.saveAccounts();
-
-                    //Stop receiving connection from clients
-                    serverThread.interrupt();
-                }
+            public void windowClosing(WindowEvent e) {
+                //Save accounts
+                System.out.println("\n\nTerminate the program.");
+                System.out.println("Saving accounts successfully.");
+                Data.saveAccounts();
             }
         });
+
+        //JLabel info
+        JLabel serverState = new JLabel("<html>Port: " + PORT +
+                "<br>Number of players allowed in a Room: " + numberOfPlayersInARoom +
+                "<br>Server is running." + "</html>", SwingConstants.CENTER);
+        serverState.setOpaque(true);
+        serverState.setBackground(Color.YELLOW);
+        add(serverState);
+
+        //Repack the JLabel, reSet the Frame resolution and Position
+        pack();
+        setSize(270, 130);
+        setLocationRelativeTo(null);//Set center
+        setVisible(true);
     }
 
     @Override
-    public void run() {
+    public synchronized void run() {
 
-        while (!Thread.interrupted()) {
-            RoomHandler g = new RoomHandler(numberOfPlayersInARoom);
+        while (true) {
+            RoomHandler roomHandler = new RoomHandler(numberOfPlayersInARoom);
             for (int j = 0; j < numberOfPlayersInARoom; j++) {
-                if(Thread.interrupted()){
-                    System.out.println("Stop receiving client connection requests.");
-                    break;
-                }
 
                 Socket socket = null;
                 try {
                     socket = server.accept();
-                    PlayerCommunicator player = new PlayerCommunicator(
+                    System.out.println("Player " + (j+1) + " of Room " + roomNumber + " established the connection successfully.");
+                    PlayerCommunicator playerCom = new PlayerCommunicator(
                             socket,
                             new ObjectInputStream(socket.getInputStream()),
                             new ObjectOutputStream(socket.getOutputStream())
                     );
-                    //Avoid the situation when a player is Taking over the attention of the server
-                    //and other players must wait for this player to login successfully first to be able to login next
-                    new Thread(new WaitingForValidation(g, player, (j + 1), room)).start();
+                    /*
+                    Avoid listening to one Player and fail to process messages from others
+                    Throw out a thread Validating for that player, Move on receive connect info from the others
+                     */
+                    new Thread(new WaitingForValidation(roomHandler, playerCom, (j + 1), roomNumber)).start();
 
                 } catch (IOException e) {
                     System.out.println("Fail to connect to client socket.");
+                    break;
                 }
             }
-            System.out.println("Enough players, Create another Room.");
-            //Enough players then we start a thread handling for that room
+            System.out.println("\n\nEnough players, Create another Room.");
             System.out.println("~~~~~~~~~~~~~~~//////~~~~~~~~~~~~~~");
         }
     }
 
     public class WaitingForValidation implements Runnable {
 
-        private RoomHandler room;
+        private RoomHandler roomHandler;
         private PlayerCommunicator playerCom;
         private int playerNum;
         private int roomNum;
 
-        public WaitingForValidation(RoomHandler g, PlayerCommunicator p, int playerNum, int roomNum) {
-            this.room = g;
+        public WaitingForValidation(RoomHandler r, PlayerCommunicator p, int playerNum, int roomNum) {
+            this.roomHandler = r;
             this.playerCom = p;
             this.playerNum = playerNum;
             this.roomNum = roomNum;
@@ -134,36 +134,42 @@ public class Server extends JFrame implements Runnable {
         @Override
         public void run() {
             //Waiting for account obj and send back validation result
-            while (!Thread.interrupted()) {
-                System.out.println("Waiting for login info..." + "Player " + playerNum + " of Room: " + roomNum);
-                Object o;
+            while (true) {
+                System.out.println("Waiting for login info... from " + "Player " + playerNum + " of Room " + roomNum);
+                Object obj;
                 try {
-                    o = playerCom.read();
+                    obj = playerCom.read();
 
                 } catch (RuntimeException e) {
-                    //A player fails to login and disconnect from the game -> this room will listen
-                    //to a new player connection instead
-                    System.out.println("Player " + playerNum + "in Room " + roomNum + " has disconnected.");
+                    /*
+                    A player fails to login and disconnect from the game -> this roomNumber will listen
+                    to a new player connection instead
+                     */
+                    System.out.println("Player " + playerNum + " in Room " + roomNum + " has disconnected.");
                     Socket socket = null;
                     try {
                         socket = server.accept();
+                        System.out.println("Player " + playerNum + " of Room " + roomNum + " established the connection successfully.");
                         PlayerCommunicator player = new PlayerCommunicator(
                                 socket,
                                 new ObjectInputStream(socket.getInputStream()),
                                 new ObjectOutputStream(socket.getOutputStream())
                         );
-                        new Thread(new WaitingForValidation(room, player, playerNum, roomNum)).start();
+                        new Thread(new WaitingForValidation(roomHandler, player, playerNum, roomNum)).start();
 
                     } catch (IOException e1) {
-                        System.out.println("Room cannot find another player");
+                        System.out.println("Room cannot find another player.");
                     }
 
+                    //Finish creating a new validation thread for the new player. Stop this thread
                     break;
                 }
+
+                //Validation
                 boolean rightAccount = false;
 
-                if (o instanceof Account) {
-                    Account acc = (Account) o;
+                if (obj instanceof Account) {
+                    Account acc = (Account) obj;
                     String username = acc.getUsername();
                     String pass = acc.getPassword();
 
@@ -177,15 +183,19 @@ public class Server extends JFrame implements Runnable {
                             break;
                         }
                     }
-                    //Account is currently in used
-                    if (room.getUsernames().contains(username)) {
+                    /*
+                    Get the room info and see if a user with this account has already entered
+                    this room then prompt the current user to enter another account
+                     */
+                    if (roomHandler.getUsernames().contains(username)) {
                         rightAccount = false;
-                        System.out.println("Someone is using this account.");
+                        System.out.println("Someone is using this account!!!");
                     }
+
                     //Send validation result back to Client
                     if (rightAccount) {
-                        System.out.println(username + " login successfully");
-                        room.addPlayer(playerCom, username);
+                        System.out.println(username + " login successfully.");
+                        roomHandler.addPlayer(playerCom, username);
                         playerCom.write(State.Waiting);
                         break;
 
@@ -196,9 +206,12 @@ public class Server extends JFrame implements Runnable {
                 }
             }
 
-            //Start the game if everyone logs in successfully
-            if (room.getUsernames().size() == numberOfPlayersInARoom) {
-                new Thread(room).start();
+            /*
+            Start the game if everyone logs in successfully
+            The final thread will invoke this thread
+             */
+            if (roomHandler.getUsernames().size() == numberOfPlayersInARoom) {
+                new Thread(roomHandler).start();
             }
         }
     }
