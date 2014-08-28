@@ -5,3 +5,6 @@ kelly,123
 undead,123
 naga,123
 ahri,123
+robin,123
+tiger,123
+lion,123

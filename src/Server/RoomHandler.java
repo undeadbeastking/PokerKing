@@ -12,40 +12,36 @@ import java.util.*;
 /**
  * Created by Agatha Wood Beyond on 8/16/2014.
  */
-public class GameHandler implements Runnable {
+public class RoomHandler implements Runnable {
 
-    //accounts
+    //All users of a room
     private ArrayList<String> usernames;
-    private String account;
-    private String username, pass;
+
     //Server connection
     private ArrayList<PlayerCommunicator> playersCom;
-    private BufferedReader in;
-    private PrintWriter out;
-    private int numberOfPlayers, pot;
-    private ShowHand showHand;
+    private int numberOfPlayers;
+
+    //Game
     private Deck deck;
     private LinkedList<Hand> hands = new LinkedList<Hand>();
+    private ShowHand showHand;
+    private int pot;
 
-
-    public GameHandler(int numberOfPlayers) {
+    public RoomHandler(int numberOfPlayers) {
         this.numberOfPlayers = numberOfPlayers;
-        this.usernames = Server.getUsernames();
         playersCom = new ArrayList<PlayerCommunicator>();
+        usernames = new ArrayList<String>();
         deck = new Deck();
-
     }
 
-    public void addPlayer(PlayerCommunicator p) {
+    public void addPlayer(PlayerCommunicator p, String username) {
         playersCom.add(p);
-    }
-
-    public void setPot(int pot) {
-        this.pot = pot;
+        usernames.add(username);
     }
 
     @Override
     public void run() {
+        System.out.println("Wrong.");
         for (PlayerCommunicator p : playersCom) {
             //Send first hand info
             p.write(State.StartGame);
@@ -62,19 +58,7 @@ public class GameHandler implements Runnable {
             }
         }
 
-        //Send role
-//        int role = 0;
-//        while(role < playersCom.size() ){
-//            playersCom.get(role).write("D");
-//            playersCom.get(role+1).write("SB");
-//            playersCom.get(role+2).write("BB");
-//            for (int j = role+3; j < playersCom.size(); j++) {
-//                playersCom.get(j).write("Com");
-//            }
-//        }
-
         //Handling Bets and stuffs
-
         for (int i = 0; i < playersCom.size(); i++) {
             if (!allAreFold()) {
                 if (usernames.get(i) != null) {
@@ -91,7 +75,6 @@ public class GameHandler implements Runnable {
                 break;
             }
         }
-
 
         //Test closing game
         for (PlayerCommunicator p : playersCom) {
@@ -126,10 +109,6 @@ public class GameHandler implements Runnable {
             for (int k = 0; k < playersCom.size(); k++) {
                 playersCom.get(k).write("Stop");
             }
-//        } else {
-//            for (int k = 0; k < playersCom.size(); k++) {
-//                playersCom.get(k).write("wtf");
-//            }
         }
         return allAreFold;
     }
@@ -157,5 +136,11 @@ public class GameHandler implements Runnable {
         }
     }
 
+    public ArrayList<String> getUsernames() {
+        return usernames;
+    }
 
+    public void setPot(int pot) {
+        this.pot = pot;
+    }
 }

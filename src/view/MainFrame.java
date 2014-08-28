@@ -76,10 +76,8 @@ public class MainFrame extends JFrame implements Runnable {
 
         //Make connection and initialize streams
         Socket socket = new Socket(serverAddress, PORT);
-        ObjectOutputStream oos = new ObjectOutputStream(
-                socket.getOutputStream());
-        ObjectInputStream ois = new ObjectInputStream(
-                socket.getInputStream());
+        ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
+        ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
 
         server = new PlayerCommunicator(socket, ois, oos);
     }
@@ -104,6 +102,7 @@ public class MainFrame extends JFrame implements Runnable {
                 State s = (State) fromServer;
                 if (s == State.WrongAccount) {
                     loginPanel.getErrorMess().setText("*Wrong account");
+
                 } else if (s == State.Waiting) {
                     loginPanel.loadWaiting();
 
