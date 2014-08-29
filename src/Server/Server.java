@@ -214,7 +214,7 @@ public class Server extends JFrame implements Runnable {
             Start the game if everyone logs in successfully
             The final thread will invoke this thread
              */
-            if (roomHandler.getUsernames().size() == numberOfPlayersInARoom) {
+            if (roomHandler.getAllUsernames().size() == numberOfPlayersInARoom) {
                 new Thread(roomHandler).start();
             }
         }
