@@ -45,10 +45,11 @@ public class LoginCon {
             //Local cast
             LoginPanel local = f.getLoginPanel();
 
-            //Extract inputs
+            //Extract inputs from UI
             String username = local.getUsernameF().getText();
             String password = String.valueOf(local.getPasswordF().getPassword());
 
+            //Pack account and send to server
             Account temp = new Account(username, password);
             f.setMe(temp);
             f.getServer().write(temp);

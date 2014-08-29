@@ -1205,9 +1205,6 @@ public class Hand {
         System.out.println();
     }
 
-    //    public Card[] getCards() {
-//        return cards;
-//    }
     public String getCards() {
         String myCards = cards[0].toString() + "-" + cards[1].toString();
         String commuCards = cards[2].toString() + "-" + cards[3].toString() + "-" + cards[4].toString() + "-" + cards[5].toString() + "-" + cards[6].toString();

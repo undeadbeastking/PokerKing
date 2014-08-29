@@ -17,7 +17,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Objects;
 import java.util.StringTokenizer;
 
 /**
@@ -28,7 +27,7 @@ public class MainFrame extends JFrame implements Runnable {
     //All panels
     private LoginPanel loginPanel = new LoginPanel(this);
     private SignUpPanel signUpPanel = new SignUpPanel();
-    private GamePanel gamePanel = null;//Need a user to initialize
+    private GamePanel gamePanel = null;//Need a user before initializing
 
     //Controllers
     private LoginCon loginCon;
@@ -41,7 +40,7 @@ public class MainFrame extends JFrame implements Runnable {
     private PlayerCommunicator server;
     private Account me;
     private String myCards, commuCards, name;
-    private ArrayList<String> usernames = new ArrayList<String>();
+    private ArrayList<String> usernames;
     private boolean isNotStop = true;
 
     public MainFrame() {
@@ -76,10 +75,8 @@ public class MainFrame extends JFrame implements Runnable {
 
         //Make connection and initialize streams
         Socket socket = new Socket(serverAddress, PORT);
-        ObjectOutputStream oos = new ObjectOutputStream(
-                socket.getOutputStream());
-        ObjectInputStream ois = new ObjectInputStream(
-                socket.getInputStream());
+        ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
+        ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
 
         server = new PlayerCommunicator(socket, ois, oos);
     }
@@ -104,23 +101,26 @@ public class MainFrame extends JFrame implements Runnable {
                 State s = (State) fromServer;
                 if (s == State.WrongAccount) {
                     loginPanel.getErrorMess().setText("*Wrong account");
+
                 } else if (s == State.Waiting) {
                     loginPanel.loadWaiting();
 
                 } else if (s == State.StartGame) {
-                    takeCard();
-                    takePlayers();
-                    initGamePanel();
+                    //Receive necessary info before pop up the Game
+                    receiveCards();
+                    receiveAllPlayerNames();
+
+                    //Pop Up GamePanel
                     System.out.println("Pop up GamePanel");
+                    initGamePanel();
+
                     while (isNotStop) {
-                        System.out.println("process game");
-//                        processGame();
+                        System.out.println("Process game...");
                         checkTurn();
                         listenResponse();
                     }
 
                 } else if (s == State.EndGame) {
-
                     System.out.println("End game. No longer reading signal from server.");
                     break;
                 }
@@ -128,37 +128,9 @@ public class MainFrame extends JFrame implements Runnable {
             System.out.println("Read signal...");
             fromServer = server.read();
         }
-        System.out.println("No longer reading signal from the server.");
     }
 
-    /*
-    Because the need of switching account, GamePanel and GameCon need to
-    be initialized later so it can receive the logged in user
-     */
-    public void initGamePanel() {
-
-        //Refresh LoginPanel for next Login
-        loginPanel.refreshPanel();
-        //Replace Login Panel with Game Panel
-        this.remove(loginPanel);
-
-        if (this.getGamePanel() == null) {
-            //Initialized GamePanel & Game Controller
-            gamePanel = new GamePanel(this);
-            gameCon = new GameCon(this);
-//            gamePanel.setTurn(myTurn);
-        }
-
-        this.add(this.getGamePanel());
-        //Set suitable size for the frame and relocate it to center
-        this.setSize(GamePU.width, GamePU.height);
-        this.setLocationRelativeTo(null);
-        //Notify MainFrame
-        this.validate();
-        this.repaint();
-    }
-
-    public void takeCard() {
+    public void receiveCards() {
         server.write(State.SendCard);
         Object fromServer = server.read();
         if (fromServer != null) {
@@ -172,7 +144,7 @@ public class MainFrame extends JFrame implements Runnable {
         }
     }
 
-    public void takePlayers() {
+    public void receiveAllPlayerNames() {
         server.write(State.SendPlayers);
         Object fromServer = server.read();
         if (fromServer instanceof ArrayList) {
@@ -180,6 +152,30 @@ public class MainFrame extends JFrame implements Runnable {
         } else {
             System.out.println("Can not take players from server");
         }
+    }
+
+    /*
+    Because the need of switching account, GamePanel and GameCon need to
+    be initialized later so it can receive the logged in user
+     */
+    public void initGamePanel() {
+
+        //Refresh LoginPanel for next Login
+        loginPanel.refreshPanel();
+        //Replace Login Panel with Game Panel
+        this.remove(loginPanel);
+
+        //Initialized new GamePanel & Game Controller whenever login in
+        gamePanel = new GamePanel(this);
+        gameCon = new GameCon(this);
+        this.add(gamePanel);
+
+        //Set suitable size for the frame and relocate it to center
+        this.setSize(GamePU.width, GamePU.height);
+        this.setLocationRelativeTo(null);
+        //Notify MainFrame
+        this.validate();
+        this.repaint();
     }
 
     public void checkTurn() {
