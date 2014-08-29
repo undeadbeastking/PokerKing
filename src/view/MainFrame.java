@@ -39,7 +39,7 @@ public class MainFrame extends JFrame implements Runnable {
     private String serverAddress = "localhost";
     private PlayerCommunicator server;
     private Account me;
-    private String myCards, commuCards, name;
+    private String myCards, commuCards, username;
     private ArrayList<String> usernames;
     private boolean isNotStop = true;
 
@@ -180,20 +180,20 @@ public class MainFrame extends JFrame implements Runnable {
 
     public void checkTurn() {
         if (isNotStop) {
-            boolean myTurn = false;
+            boolean isMyTurn = false;
             Object fromServer = server.read();
             if (fromServer instanceof String) {
                 if (fromServer.toString().equals("Stop")) {
                     isNotStop = false;
                     System.out.println("Stop game");
                 } else {
-                    name = fromServer.toString();
-                    if (me.getUsername().equals(name)) {
-                        myTurn = true;
+                    username = fromServer.toString();
+                    if (me.getUsername().equals(username)) {
+                        isMyTurn = true;
                     }
                     System.out.println("This is: " + fromServer + " turn!");
-                    if (name != null) {
-                        gamePanel.setTurn(myTurn, name);
+                    if (username != null) {
+                        gamePanel.setTurn(isMyTurn, username);
                     }
                 }
             }
@@ -204,25 +204,10 @@ public class MainFrame extends JFrame implements Runnable {
         if (isNotStop) {
             Object fromServer = server.read();
             if (fromServer instanceof String) {
-                gamePanel.processResponse(name, fromServer.toString());
+                gamePanel.processResponse(username, fromServer.toString());
             }
         }
     }
-
-//    public void processGame (){
-//        Object fromServer = server.read();
-//        System.out.println(fromServer);
-//        if (fromServer instanceof String){
-//            String s = fromServer.toString();
-//            if (s.equals("Stop")){
-//                isNotStop = false;
-//                System.out.println("Stop game");
-////            } else {
-////                checkTurn();
-////                listenResponse();
-//            }
-//        }
-//    }
 
     public LoginPanel getLoginPanel() {
         return loginPanel;
@@ -248,7 +233,7 @@ public class MainFrame extends JFrame implements Runnable {
         return myCards;
     }
 
-    public ArrayList<String> getAllUsers() {
+    public ArrayList<String> getUsernames() {
         return usernames;
     }
 
@@ -256,7 +241,7 @@ public class MainFrame extends JFrame implements Runnable {
         me = a;
     }
 
-    public Account getMe() {
+    public Account getMyAccount() {
         return me;
     }
 }

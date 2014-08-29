@@ -52,7 +52,6 @@ public class GameCon {
         public void actionPerformed(ActionEvent e) {
             System.out.println("Call");
             f.getServer().write("Call");
-
         }
 
     }

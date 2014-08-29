@@ -15,7 +15,6 @@ public class PlayerPU {
     //PlayerPanel Utilities
     public static final Border PanelBorder = new LineBorder(Color.red, 2, false);
     public static final Border TurnBorder = new LineBorder(Color.green, 2, false);
-    public static final Color Transparent_background = new Color(0, 0, 0, 125);
 
     //Player panels' bounds
     //Resolutions

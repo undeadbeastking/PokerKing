@@ -41,6 +41,19 @@ public class RoomHandler implements Runnable {
 
     @Override
     public void run() {
+        initNewGame();
+
+        //Handling Bets and stuffs
+        betting();
+
+        //Test closing game
+        endGame();
+
+        //Close connection of every player in the room
+        disconnect();
+    }
+
+    public void initNewGame(){
         for (PlayerCommunicator playerCom : playersCom) {
             //Send Client's Hand and identities of all players
             playerCom.write(State.StartGame);
@@ -56,14 +69,22 @@ public class RoomHandler implements Runnable {
                 }
             }
         }
+    }
 
-        //Handling Bets and stuffs
+    public void sendCards(PlayerCommunicator p) {
+        Hand hand = new Hand(deck);
+        p.write(hand.getCards());
+        //The order of each hand is similar to the order of each username in the list || Arraylist
+        hands.add(hand);
+    }
+
+    public void betting(){
         for (int i = 0; i < playersCom.size(); i++) {
             if (!allAreFold()) {
                 if (usernames.get(i) != null) {
                     //send whos turn
                     sendTurn(i);
-                    //receive response from that player
+                    //receive response from that player socket
                     handleReponse(i);
 
                 }
@@ -74,24 +95,6 @@ public class RoomHandler implements Runnable {
                 break;
             }
         }
-
-        //Test closing game
-        for (PlayerCommunicator p : playersCom) {
-            //Send first hand info
-            p.write(State.EndGame);
-        }
-
-        //Close connection of every player in the room
-        for (PlayerCommunicator p : playersCom) {
-            p.close();
-        }
-    }
-
-    public void sendCards(PlayerCommunicator p) {
-        Hand hand = new Hand(deck);
-        p.write(hand.getCards());
-        //The order of each hand is similar to the order of each username in the list || Arraylist
-        hands.add(hand);
     }
 
     public boolean allAreFold() {
@@ -116,7 +119,6 @@ public class RoomHandler implements Runnable {
         System.out.println("Current turn: " + usernames.get(i));
         for (int j = 0; j < usernames.size(); j++) {
             playersCom.get(j).write(usernames.get(i));
-
         }
     }
 
@@ -132,6 +134,19 @@ public class RoomHandler implements Runnable {
         //if a player fold, this username will be null
         if (fromClient.equals("Fold")) {
             usernames.set(i, null);
+        }
+    }
+
+    public void endGame(){
+        for (PlayerCommunicator p : playersCom) {
+            //Send first hand info
+            p.write(State.EndGame);
+        }
+    }
+
+    public void disconnect(){
+        for (PlayerCommunicator p : playersCom) {
+            p.close();
         }
     }
 

@@ -24,13 +24,12 @@ public class PlayerPanel extends JPanel {
     private JLabel card2 = new JLabel();
     private MainFrame f;
     //Players info
-    private ArrayList<String> allPlayers;
+    private ArrayList<String> usernames;
 
-    public PlayerPanel(int p, MainFrame frame) {
+    public PlayerPanel(int orderInArray, MainFrame frame) {
         //Customize player panel
         this.setLayout(null);
-//        this.setBorder(PlayerPU.PanelBorder);
-        this.setBackground(PlayerPU.Transparent_background);
+        this.setOpaque(false);
         this.f = frame;
 
         //Read player image into JLabel icon
@@ -42,21 +41,16 @@ public class PlayerPanel extends JPanel {
         }
 
         //Bounds
-        icon.setBounds(PlayerPU.icon_x, PlayerPU.icon_y,
-                PlayerPU.icon_w, PlayerPU.icon_h);
-        username.setBounds(PlayerPU.label_x, PlayerPU.username_y,
-                PlayerPU.label_w, PlayerPU.label_h);
-        status.setBounds(PlayerPU.label_x, PlayerPU.status_y,
-                PlayerPU.label_w, PlayerPU.label_h);
-        cash.setBounds(PlayerPU.label_x, PlayerPU.cash_y,
-                PlayerPU.label_w, PlayerPU.label_h);
-        card1.setBounds(PlayerPU.card1_x, PlayerPU.card_y,
-                PlayerPU.card_w, PlayerPU.card_h);
-        card2.setBounds(PlayerPU.card2_x, PlayerPU.card_y,
-                PlayerPU.card_w, PlayerPU.card_h);
+        icon.setBounds(PlayerPU.icon_x, PlayerPU.icon_y, PlayerPU.icon_w, PlayerPU.icon_h);
+        username.setBounds(PlayerPU.label_x, PlayerPU.username_y, PlayerPU.label_w, PlayerPU.label_h);
+        status.setBounds(PlayerPU.label_x, PlayerPU.status_y, PlayerPU.label_w, PlayerPU.label_h);
+        cash.setBounds(PlayerPU.label_x, PlayerPU.cash_y, PlayerPU.label_w, PlayerPU.label_h);
+        card1.setBounds(PlayerPU.card1_x, PlayerPU.card_y, PlayerPU.card_w, PlayerPU.card_h);
+        card2.setBounds(PlayerPU.card2_x, PlayerPU.card_y, PlayerPU.card_w, PlayerPU.card_h);
+        //Set Player Panel Bound
+        setPanelBound(orderInArray);
 
         //Customize displays
-
         username.setFont(PlayerPU.label_font);
         cash.setText("Cash: $" + 1000);
         cash.setFont(PlayerPU.label_font);
@@ -64,18 +58,20 @@ public class PlayerPanel extends JPanel {
         status.setForeground(PlayerPU.label_Color);
         cash.setForeground(PlayerPU.label_Color);
 
-        allPlayers = f.getAllUsers();
-        if (allPlayers.get(p).equals(f.getMe().getUsername())) {
-            username.setText(f.getMe().getUsername());
+        usernames = f.getUsernames();
+        //If the current username == Client username then Highlight his or her Panel
+        if (usernames.get(orderInArray).equals(f.getMyAccount().getUsername())) {
+            username.setText(f.getMyAccount().getUsername());
             //Customize player statistics
             username.setForeground(PlayerPU.pUsername_Color);
-            setCards(true);
+            setHoleCards(true);
 
+        //For other users, Face down the hole cards
         } else {
-            username.setText(allPlayers.get(p));
+            username.setText(usernames.get(orderInArray));
             //Customize player statistics
             username.setForeground(PlayerPU.username_Color);
-            setCards(false);
+            setHoleCards(false);
 
         }
 
@@ -88,8 +84,61 @@ public class PlayerPanel extends JPanel {
         this.add(card2);
     }
 
+    //Set PlayerPanel Bound & Resolution
+    private void setPanelBound(int index){
+        switch(index){
+            case 0:
+                this.setBounds(PlayerPU.panel1_x, PlayerPU.panel1_4_y,
+                        PlayerPU.width, PlayerPU.height);
+                break;
+
+            case 1:
+                this.setBounds(PlayerPU.panel2_x, PlayerPU.panel2_3_y,
+                        PlayerPU.width, PlayerPU.height);
+                break;
+
+            case 2:
+                this.setBounds(PlayerPU.panel3_x, PlayerPU.panel2_3_y,
+                        PlayerPU.width, PlayerPU.height);
+                break;
+
+            case 3:
+                this.setBounds(PlayerPU.panel4_x, PlayerPU.panel1_4_y,
+                        PlayerPU.width, PlayerPU.height);
+                break;
+
+            case 4:
+                this.setBounds(PlayerPU.panel5_x, PlayerPU.panel5_9_y,
+                        PlayerPU.width, PlayerPU.height);
+                break;
+
+            case 5:
+                this.setBounds(PlayerPU.panel6_x, PlayerPU.panel6_8_y,
+                        PlayerPU.width, PlayerPU.height);
+                break;
+
+            case 6:
+                this.setBounds(PlayerPU.panel7_x, PlayerPU.panel7_y,
+                        PlayerPU.width, PlayerPU.height);
+                break;
+
+            case 7:
+                this.setBounds(PlayerPU.panel8_x, PlayerPU.panel6_8_y,
+                        PlayerPU.width, PlayerPU.height);
+                break;
+
+            case 8:
+                this.setBounds(PlayerPU.panel9_x, PlayerPU.panel5_9_y,
+                        PlayerPU.width, PlayerPU.height);
+                break;
+
+            default:
+                System.out.println("Cannot find the Panel to set bound.");
+        }
+    }
+
     //Set hole cards
-    public void setCards(boolean thisPlayer) {
+    public void setHoleCards(boolean thisPlayer) {
 
         String path1 = PlayerPU.pathPrefix + "0.png";
         String path2 = PlayerPU.pathPrefix + "0.png";
@@ -102,7 +151,6 @@ public class PlayerPanel extends JPanel {
 
         Image img1 = ImageGetter.getInstance().getImage(path1);
         Image img2 = ImageGetter.getInstance().getImage(path2);
-
 
         //Drop images
         Image cardI1 = createImage(new FilteredImageSource(img1.getSource(),
@@ -118,11 +166,11 @@ public class PlayerPanel extends JPanel {
         }
     }
 
-    public void setMyTurn() {
+    public void highlightMyTurn() {
         this.setBorder(PlayerPU.TurnBorder);
     }
 
-    public void setOtherTurn() {
+    public void highlightOtherTurn() {
         this.setBorder(PlayerPU.PanelBorder);
     }
 
