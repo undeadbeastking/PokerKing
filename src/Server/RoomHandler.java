@@ -41,18 +41,18 @@ public class RoomHandler implements Runnable {
 
     @Override
     public void run() {
-        for (PlayerCommunicator p : playersCom) {
-            //Send first hand info
-            p.write(State.StartGame);
-            Object fromClient = p.read();
+        for (PlayerCommunicator playerCom : playersCom) {
+            //Send Client's Hand and identities of all players
+            playerCom.write(State.StartGame);
+            Object fromClient = playerCom.read();
             if (fromClient instanceof State) {
                 State s = (State) fromClient;
                 if (s == State.SendCard) {
-                    sendCards(p);
+                    sendCards(playerCom);
                 }
-                s = (State) p.read();
+                s = (State) playerCom.read();
                 if (s == State.SendPlayers) {
-                    p.write(usernames);
+                    playerCom.write(usernames);
                 }
             }
         }
@@ -90,6 +90,7 @@ public class RoomHandler implements Runnable {
     public void sendCards(PlayerCommunicator p) {
         Hand hand = new Hand(deck);
         p.write(hand.getCards());
+        //The order of each hand is similar to the order of each username in the list || Arraylist
         hands.add(hand);
     }
 

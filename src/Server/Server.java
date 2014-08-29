@@ -12,6 +12,7 @@ import java.io.ObjectOutputStream;
 import java.net.Inet4Address;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 
 public class Server extends JFrame implements Runnable {
 
@@ -20,6 +21,7 @@ public class Server extends JFrame implements Runnable {
     private static ServerSocket server = null;
     private int roomNumber = 1;//Count how many rooms the server is controlling
     public static int numberOfPlayersInARoom = 4;
+    private static ArrayList<String> inUsedUsernames = new ArrayList<String>();
 
     public static void main(String[] args) {
         //Load users data
@@ -113,7 +115,8 @@ public class Server extends JFrame implements Runnable {
                 }
             }
             System.out.println("\n\nEnough players, Create another Room.");
-            System.out.println("~~~~~~~~~~~~~~~//////~~~~~~~~~~~~~~");
+            roomNumber++;
+            System.out.println("~~~~~~~~~~~~~~~//////~~~~~~~~~~~~~~\n\n");
         }
     }
 
@@ -187,7 +190,7 @@ public class Server extends JFrame implements Runnable {
                     Get the room info and see if a user with this account has already entered
                     this room then prompt the current user to enter another account
                      */
-                    if (roomHandler.getUsernames().contains(username)) {
+                    if (inUsedUsernames.contains(username)) {
                         rightAccount = false;
                         System.out.println("Someone is using this account!!!");
                     }
@@ -196,6 +199,7 @@ public class Server extends JFrame implements Runnable {
                     if (rightAccount) {
                         System.out.println(username + " login successfully.");
                         roomHandler.addPlayer(playerCom, username);
+                        inUsedUsernames.add(username);
                         playerCom.write(State.Waiting);
                         break;
 

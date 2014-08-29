@@ -17,23 +17,23 @@ import java.util.StringTokenizer;
  */
 public class GamePanel extends JPanel {
 
-    private Image backGround;
     private int maxPlayersNum = 9;
-    private ArrayList<PlayerPanel> playersP;
-    //    private PlayerPanel[] playersP;
-    private CustBut back = new CustBut("back");
-    //Function buttons
-    private CustBut foldBut = new CustBut("Fold");
-    private CustBut callBut = new CustBut("Call");
-    private CustBut raiseBut = new CustBut("Raise");
-    private MainFrame f;
     private ArrayList<String> allPlayers;
+    private ArrayList<PlayerPanel> playersP;
+
+    private MainFrame f;
+    private Image backGround;
     private JLabel card1 = new JLabel();
     private JLabel card2 = new JLabel();
     private JLabel card3 = new JLabel();
     private JLabel card4 = new JLabel();
     private JLabel card5 = new JLabel();
+    private CustBut back = new CustBut("back");
 
+    //Function buttons
+    private CustBut foldBut = new CustBut("Fold");
+    private CustBut callBut = new CustBut("Call");
+    private CustBut raiseBut = new CustBut("Raise");
 
     public GamePanel(MainFrame frame) {
         //Customize Game Panel
@@ -43,7 +43,6 @@ public class GamePanel extends JPanel {
         setCards();
         //Create all players panels - real player will be added
         playersP = new ArrayList<PlayerPanel>();
-//        playersP = new PlayerPanel[maxPlayersNum];
         allPlayers = f.getAllUsers();
         for (int j = 0; j < allPlayers.size(); j++) {
             playersP.add(new PlayerPanel(j, f));
@@ -163,7 +162,6 @@ public class GamePanel extends JPanel {
         }
     }
 
-
     public ArrayList<PlayerPanel> getPlayersP() {
         return playersP;
     }
@@ -172,7 +170,6 @@ public class GamePanel extends JPanel {
 
         String path1, path2, path3, path4, path5;
 
-
         StringTokenizer tokenizer = new StringTokenizer(f.getCommuCards(), "-");
         path1 = PlayerPU.pathPrefix + tokenizer.nextToken() + ".png";
         path2 = PlayerPU.pathPrefix + tokenizer.nextToken() + ".png";
@@ -180,13 +177,11 @@ public class GamePanel extends JPanel {
         path4 = PlayerPU.pathPrefix + tokenizer.nextToken() + ".png";
         path5 = PlayerPU.pathPrefix + tokenizer.nextToken() + ".png";
 
-
         Image img1 = ImageGetter.getInstance().getImage(path1);
         Image img2 = ImageGetter.getInstance().getImage(path2);
         Image img3 = ImageGetter.getInstance().getImage(path3);
         Image img4 = ImageGetter.getInstance().getImage(path4);
         Image img5 = ImageGetter.getInstance().getImage(path5);
-
 
         if (img1 != null && img2 != null && img3 != null && img4 != null && img5 != null) {
             ImageIcon imageIcon;
