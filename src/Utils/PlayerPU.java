@@ -15,7 +15,6 @@ public class PlayerPU {
     //PlayerPanel Utilities
     public static final Border PanelBorder = new LineBorder(Color.red, 2, false);
     public static final Border TurnBorder = new LineBorder(Color.green, 2, false);
-    public static final Color Transparent_background = new Color(0, 0, 0, 125);
 
     //Player panels' bounds
     //Resolutions
@@ -64,7 +63,7 @@ public class PlayerPU {
 
     //Color & Style
     public static final Font label_font = new Font("Consolas", Font.BOLD, 13);//Combine
-    public static final Color label_Color = Color.green;//Combine
+    public static final Color label_Color = Color.GREEN;//Combine
     //Username
     public static final Color username_Color = Color.GREEN;
     public static final Color pUsername_Color = Color.YELLOW;

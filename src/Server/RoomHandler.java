@@ -1,12 +1,5 @@
 package Server;
 
-import model.Data;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.Socket;
 import java.util.*;
 
 /**
@@ -15,11 +8,11 @@ import java.util.*;
 public class RoomHandler implements Runnable {
 
     //All username of a room
-    private int numberOfPlayers;
-    private ArrayList<String> usernames;
+    private int numberOfPlayersInARoom;
+    private ArrayList<String> allUsernames;
 
     //Communication of each player in a Room
-    private ArrayList<PlayerCommunicator> playersCom;
+    private ArrayList<PlayerCommunicator> playerComs;
 
     //Game
     private Deck deck;
@@ -27,21 +20,34 @@ public class RoomHandler implements Runnable {
     private ShowHand showHand;
     private int pot;
 
-    public RoomHandler(int numberOfPlayers) {
-        this.numberOfPlayers = numberOfPlayers;
-        playersCom = new ArrayList<PlayerCommunicator>();
-        usernames = new ArrayList<String>();
+    public RoomHandler(int numberOfPlayersInARoom) {
+        this.numberOfPlayersInARoom = numberOfPlayersInARoom;
+        playerComs = new ArrayList<PlayerCommunicator>();
+        allUsernames = new ArrayList<String>();
         deck = new Deck();
     }
 
     public void addPlayer(PlayerCommunicator p, String username) {
-        playersCom.add(p);
-        usernames.add(username);
+        playerComs.add(p);
+        allUsernames.add(username);
     }
 
     @Override
     public void run() {
-        for (PlayerCommunicator playerCom : playersCom) {
+        initNewGame();
+
+        //Handling Bets and stuffs
+        processingBets();
+
+        //Test closing game
+        endGame();
+
+        //Close connection of every player in the room
+        disconnect();
+    }
+
+    public void initNewGame(){
+        for (PlayerCommunicator playerCom : playerComs) {
             //Send Client's Hand and identities of all players
             playerCom.write(State.StartGame);
             Object fromClient = playerCom.read();
@@ -52,91 +58,131 @@ public class RoomHandler implements Runnable {
                 }
                 s = (State) playerCom.read();
                 if (s == State.SendPlayers) {
-                    playerCom.write(usernames);
+                    playerCom.write(allUsernames);
                 }
             }
-        }
-
-        //Handling Bets and stuffs
-        for (int i = 0; i < playersCom.size(); i++) {
-            if (!allAreFold()) {
-                if (usernames.get(i) != null) {
-                    //send whos turn
-                    sendTurn(i);
-                    //receive response from that player
-                    handleReponse(i);
-
-                }
-                if (i == (playersCom.size() - 1)) {
-                    i = -1;
-                }
-            } else {
-                break;
-            }
-        }
-
-        //Test closing game
-        for (PlayerCommunicator p : playersCom) {
-            //Send first hand info
-            p.write(State.EndGame);
-        }
-
-        //Close connection of every player in the room
-        for (PlayerCommunicator p : playersCom) {
-            p.close();
         }
     }
 
     public void sendCards(PlayerCommunicator p) {
         Hand hand = new Hand(deck);
         p.write(hand.getCards());
-        //The order of each hand is similar to the order of each username in the list || Arraylist
+        //Each username will have a similar index with his or her Hand
         hands.add(hand);
     }
 
-    public boolean allAreFold() {
+    public void processingBets(){
+        //Loop 4 Betting States
+        for (int j = 0; j < 4; j++) {
+            //Notify all the players about bet states
+            for (PlayerCommunicator com : playerComs){
+                switch(j){
+                    case 0:
+                        com.write(BetState.FirstBet);
+                        break;
+                    case 1:
+                        com.write(BetState.SecondBet);
+                        break;
+                    case 2:
+                        com.write(BetState.ThirdBet);
+                        break;
+                    case 3:
+                        com.write(BetState.FourBet);
+                        break;
+
+                    default:
+                        System.out.println("Unknown Bet State.");
+                }
+            }
+
+            //Need a while here and will loop if there is still a RAISE
+            for (int i = 0; i < playerComs.size(); i++) {
+                //if there is only one player left in the room who does not fold then he is the Winner
+                if (!onlyOneDoesNotFold()) {
+                    //If a username is not null then his turn is sent and the server will listen to the response of his socket
+                    if (allUsernames.get(i) != null) {
+                        //send whos turn
+                        sendTurn(i);
+                        //receive response from that player socket
+                        handleReponse(i);
+                    }
+                } else {
+                    break;
+
+                }
+
+                //The final turn has been processed, send end turn to every player
+                if(i == playerComs.size()-1){
+                    for (int x = 0; x < playerComs.size(); x++) {
+                        playerComs.get(x).write(BetState.EndState);
+                    }
+                }
+            }
+        }
+
+        //ShowDown
+        for (PlayerCommunicator com : playerComs){
+            com.write(BetState.ShowDown);
+        }
+    }
+
+    public boolean onlyOneDoesNotFold() {
         int count = 0;
-        boolean allAreFold = false;
-        for (int i = 0; i < usernames.size(); i++) {
-            if (usernames.get(i) == null) {
+        boolean result = false;
+        for (int i = 0; i < allUsernames.size(); i++) {
+            if (allUsernames.get(i) == null) {
                 count++;
             }
         }
-        System.out.println("number of folded players" + count);
-        if (count == playersCom.size() - 1) {
-            allAreFold = true;
-            for (int k = 0; k < playersCom.size(); k++) {
-                playersCom.get(k).write("Stop");
+        System.out.println("Number of folded players" + count);
+        if (count == playerComs.size() - 1) {
+            result = true;
+            //Send Stop signal to clients, tell them that a winner has been found
+            for (int i = 0; i < playerComs.size(); i++) {
+                playerComs.get(i).write("Stop");
             }
         }
-        return allAreFold;
+        return result;
     }
 
     public void sendTurn(int i) {
-        System.out.println("Current turn: " + usernames.get(i));
-        for (int j = 0; j < usernames.size(); j++) {
-            playersCom.get(j).write(usernames.get(i));
-
+        System.out.println("Current turn: " + allUsernames.get(i));
+        //All player will receive the username of the current player's turn
+        for (int j = 0; j < allUsernames.size(); j++) {
+            playerComs.get(j).write(allUsernames.get(i));
         }
     }
 
     public void handleReponse(int i) {
-        Object fromClient = playersCom.get(i).read();
+        Object fromClient = playerComs.get(i).read();
 
         if (fromClient != null) {
             //send that response to everyone
-            for (int k = 0; k < playersCom.size(); k++) {
-                playersCom.get(k).write(fromClient);
+            for (int j = 0; j < playerComs.size(); j++) {
+                playerComs.get(j).write(fromClient);
             }
         }
         //if a player fold, this username will be null
         if (fromClient.equals("Fold")) {
-            usernames.set(i, null);
+            allUsernames.set(i, null);
         }
     }
 
-    public ArrayList<String> getUsernames() {
-        return usernames;
+    public void endGame(){
+        for (PlayerCommunicator p : playerComs) {
+            //Send first hand info
+            p.write(State.EndGame);
+        }
+    }
+
+    public void disconnect(){
+        for (PlayerCommunicator p : playerComs) {
+            p.close();
+        }
+    }
+
+    public ArrayList<String> getAllUsernames() {
+        return allUsernames;
     }
 
     public void setPot(int pot) {

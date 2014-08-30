@@ -7,8 +7,6 @@ import Utils.PlayerPU;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.image.CropImageFilter;
-import java.awt.image.FilteredImageSource;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
@@ -18,17 +16,20 @@ import java.util.StringTokenizer;
 public class GamePanel extends JPanel {
 
     private int maxPlayersNum = 9;
-    private ArrayList<String> allPlayers;
-    private ArrayList<PlayerPanel> playersP;
+    private ArrayList<String> usernames;
+    private ArrayList<PlayerPanel> playerPanels;
 
     private MainFrame f;
     private Image backGround;
+    private CustBut betRound = new CustBut("Start a game");
+    private CustBut back = new CustBut("back");
+
+    //5 Community cards
     private JLabel card1 = new JLabel();
     private JLabel card2 = new JLabel();
     private JLabel card3 = new JLabel();
     private JLabel card4 = new JLabel();
     private JLabel card5 = new JLabel();
-    private CustBut back = new CustBut("back");
 
     //Function buttons
     private CustBut foldBut = new CustBut("Fold");
@@ -38,69 +39,38 @@ public class GamePanel extends JPanel {
     public GamePanel(MainFrame frame) {
         //Customize Game Panel
         this.backGround = ImageGetter.getInstance().getImage(GamePU.backGround);
-        setLayout(null);
         this.f = frame;
-        setCards();
+        setLayout(null);
+        setCommunityCards();
+
         //Create all players panels - real player will be added
-        playersP = new ArrayList<PlayerPanel>();
-        allPlayers = f.getAllUsers();
-        for (int j = 0; j < allPlayers.size(); j++) {
-            playersP.add(new PlayerPanel(j, f));
+        playerPanels = new ArrayList<PlayerPanel>();
+        usernames = f.getUsernames();
+        for (int j = 0; j < usernames.size(); j++) {
+            playerPanels.add(new PlayerPanel(j, f));
         }
 
-        //Set bounds for player panels
-        playersP.get(0).setBounds(PlayerPU.panel1_x, PlayerPU.panel1_4_y,
-                PlayerPU.width, PlayerPU.height);
-        playersP.get(1).setBounds(PlayerPU.panel2_x, PlayerPU.panel2_3_y,
-                PlayerPU.width, PlayerPU.height);
-        playersP.get(2).setBounds(PlayerPU.panel3_x, PlayerPU.panel2_3_y,
-                PlayerPU.width, PlayerPU.height);
-        playersP.get(3).setBounds(PlayerPU.panel4_x, PlayerPU.panel1_4_y,
-                PlayerPU.width, PlayerPU.height);
+        //Set bounds for components - fcr = Fall Call Raise
+        back.setBounds(GamePU.backBut_x, GamePU.backBut_y, GamePU.backBut_w, GamePU.backBut_h);
+        foldBut.setBounds(GamePU.fold_x, GamePU.fcr_y, GamePU.fcr_w, GamePU.fcr_h);
+        callBut.setBounds(GamePU.call_x, GamePU.fcr_y, GamePU.fcr_w, GamePU.fcr_h);
+        raiseBut.setBounds(GamePU.raise_x, GamePU.fcr_y, GamePU.fcr_w, GamePU.fcr_h);
 
+        //Community cards
+        card1.setBounds(GamePU.card_x, GamePU.card_y, GamePU.card_w, GamePU.card_h);
+        card2.setBounds(GamePU.card_x + 120, GamePU.card_y, GamePU.card_w, GamePU.card_h);
+        card3.setBounds(GamePU.card_x + 240, GamePU.card_y, GamePU.card_w, GamePU.card_h);
+        card4.setBounds(GamePU.card_x + 360, GamePU.card_y, GamePU.card_w, GamePU.card_h);
+        card5.setBounds(GamePU.card_x + 480, GamePU.card_y, GamePU.card_w, GamePU.card_h);
 
-//        playersP[4].setBounds(PlayerPU.panel5_x, PlayerPU.panel5_9_y,
-//                PlayerPU.width, PlayerPU.height);
-//        playersP[8].setBounds(PlayerPU.panel9_x, PlayerPU.panel5_9_y,
-//                PlayerPU.width, PlayerPU.height);
-//
-//        playersP[5].setBounds(PlayerPU.panel6_x, PlayerPU.panel6_8_y,
-//                PlayerPU.width, PlayerPU.height);
-//        playersP[7].setBounds(PlayerPU.panel8_x, PlayerPU.panel6_8_y,
-//                PlayerPU.width, PlayerPU.height);
-//        //Center player
-//        playersP[6].setBounds(PlayerPU.panel7_x, PlayerPU.panel7_y,
-//                PlayerPU.width, PlayerPU.height);
-        //Other components
-        back.setBounds(GamePU.backBut_x, GamePU.backBut_y,
-                GamePU.backBut_w, GamePU.backBut_h);
-        foldBut.setBounds(GamePU.fold_x, GamePU.fcr_y,
-                GamePU.fcr_w, GamePU.fcr_h);
-        callBut.setBounds(GamePU.call_x, GamePU.fcr_y,
-                GamePU.fcr_w, GamePU.fcr_h);
-        raiseBut.setBounds(GamePU.raise_x, GamePU.fcr_y,
-                GamePU.fcr_w, GamePU.fcr_h);
-        card1.setBounds(GamePU.card_x, GamePU.card_y,
-                GamePU.card_w, GamePU.card_h);
-        card2.setBounds(GamePU.card_x + 120, GamePU.card_y,
-                GamePU.card_w, GamePU.card_h);
-        card3.setBounds(GamePU.card_x + 240, GamePU.card_y,
-                GamePU.card_w, GamePU.card_h);
-        card4.setBounds(GamePU.card_x + 360, GamePU.card_y,
-                GamePU.card_w, GamePU.card_h);
-        card5.setBounds(GamePU.card_x + 480, GamePU.card_y,
-                GamePU.card_w, GamePU.card_h);
+        //Custom Bet round info and set Bound
+        betRound.setBounds(GamePU.betRound_x, GamePU.betRound_y, GamePU.betRound_w, GamePU.betRound_h);
+        betRound.setFont(GamePU.betRoundFont);
 
-
-        //Add components
-        for (int j = 0; j < playersP.size(); j++) {
-            this.add(playersP.get(j));
+        //Add components - PlayerPanels
+        for (int j = 0; j < playerPanels.size(); j++) {
+            this.add(playerPanels.get(j));
         }
-
-        callBut.setEnabled(false);
-        foldBut.setEnabled(false);
-        raiseBut.setEnabled(false);
-
         this.add(back);
         this.add(foldBut);
         this.add(callBut);
@@ -110,7 +80,12 @@ public class GamePanel extends JPanel {
         this.add(card3);
         this.add(card4);
         this.add(card5);
+        this.add(betRound);
 
+        //Disable buttons
+        callBut.setEnabled(false);
+        foldBut.setEnabled(false);
+        raiseBut.setEnabled(false);
     }
 
     //Draw panel image
@@ -118,24 +93,8 @@ public class GamePanel extends JPanel {
         g.drawImage(backGround, 0, 0, null);
     }
 
-    public CustBut getBackBut() {
-        return back;
-    }
-
-    public CustBut getFoldBut() {
-        return foldBut;
-    }
-
-    public CustBut getCallBut() {
-        return callBut;
-    }
-
-    public CustBut getRaiseBut() {
-        return raiseBut;
-    }
-
-    public void setTurn(boolean myTurn, String name) {
-        if (myTurn) {
+    public void setTurn(boolean isMyTurn, String currentTurnUsername) {
+        if (isMyTurn) {
             callBut.setEnabled(true);
             foldBut.setEnabled(true);
             raiseBut.setEnabled(true);
@@ -145,28 +104,24 @@ public class GamePanel extends JPanel {
             raiseBut.setEnabled(false);
         }
 
-        for (int i = 0; i < playersP.size(); i++) {
-            if (name.equals(playersP.get(i).getUsername())) {
-                playersP.get(i).setMyTurn();
+        for (int i = 0; i < playerPanels.size(); i++) {
+            if (currentTurnUsername.equals(playerPanels.get(i).getUsername())) {
+                playerPanels.get(i).highlightMyTurn();
             } else {
-                playersP.get(i).setOtherTurn();
+                playerPanels.get(i).highlightOtherTurn();
             }
         }
     }
 
     public void processResponse(String name, String response) {
-        for (int i = 0; i < playersP.size(); i++) {
-            if (name.equals(playersP.get(i).getUsername())) {
-                playersP.get(i).setStatus(response);
+        for (int i = 0; i < playerPanels.size(); i++) {
+            if (name.equals(playerPanels.get(i).getUsername())) {
+                playerPanels.get(i).setStatus(response);
             }
         }
     }
 
-    public ArrayList<PlayerPanel> getPlayersP() {
-        return playersP;
-    }
-
-    public void setCards() {
+    public void setCommunityCards() {
 
         String path1, path2, path3, path4, path5;
 
@@ -196,5 +151,56 @@ public class GamePanel extends JPanel {
             imageIcon = new ImageIcon(img5);
             card5.setIcon(imageIcon);
         }
+
+        //Hide all 5 Community cards
+        card1.setVisible(false);
+        card2.setVisible(false);
+        card3.setVisible(false);
+        card4.setVisible(false);
+        card5.setVisible(false);
+    }
+
+    public ArrayList<PlayerPanel> getPlayerPanels() {
+        return playerPanels;
+    }
+
+    public CustBut getBackBut() {
+        return back;
+    }
+
+    public CustBut getFoldBut() {
+        return foldBut;
+    }
+
+    public CustBut getCallBut() {
+        return callBut;
+    }
+
+    public CustBut getRaiseBut() {
+        return raiseBut;
+    }
+
+    public CustBut getBetRound() {
+        return betRound;
+    }
+
+    public JLabel getCard1() {
+        return card1;
+    }
+
+    public JLabel getCard2() {
+        return card2;
+    }
+
+    public JLabel getCard3() {
+        return card3;
+    }
+
+    public JLabel getCard4() {
+        return card4;
+    }
+
+    public JLabel getCard5() {
+        return card5;
     }
 }

@@ -20,7 +20,7 @@ public class Server extends JFrame implements Runnable {
     private static Thread serverThread = null;
     private static ServerSocket server = null;
     private int roomNumber = 1;//Count how many rooms the server is controlling
-    public static int numberOfPlayersInARoom = 4;
+    public static int numberOfPlayersInARoom = 2;
     private static ArrayList<String> inUsedUsernames = new ArrayList<String>();
 
     public static void main(String[] args) {
@@ -214,7 +214,7 @@ public class Server extends JFrame implements Runnable {
             Start the game if everyone logs in successfully
             The final thread will invoke this thread
              */
-            if (roomHandler.getUsernames().size() == numberOfPlayersInARoom) {
+            if (roomHandler.getAllUsernames().size() == numberOfPlayersInARoom) {
                 new Thread(roomHandler).start();
             }
         }
