@@ -1,5 +1,6 @@
 package view;
 
+import Server.BetState;
 import Server.PlayerCommunicator;
 import Server.State;
 import Utils.GamePU;
@@ -39,9 +40,9 @@ public class MainFrame extends JFrame implements Runnable {
     private String serverAddress = "localhost";
     private PlayerCommunicator server;
     private Account me;
-    private String myCards, commuCards, username;
+    private String myCards, commuCards, currentTurnUsername;
     private ArrayList<String> usernames;
-    private boolean isNotStop = true;
+    private boolean winnerFound = false;
 
     public MainFrame() {
         //Customize MainFrame for loginPanel
@@ -114,10 +115,41 @@ public class MainFrame extends JFrame implements Runnable {
                     System.out.println("Pop up GamePanel");
                     initGamePanel();
 
-                    while (isNotStop) {
-                        System.out.println("Process game...");
-                        checkTurn();
-                        listenResponse();
+                    for (int i = 0; i < 5; i++) {
+                        //Break when fold happens
+                        if (winnerFound) break;
+
+                        //Read the Bet State
+                        Object betState = server.read();
+                        if (betState instanceof BetState) {
+                            BetState e = (BetState) betState;
+
+                            if (e == BetState.FirstBet) {
+                                gamePanel.getBetRound().setText("Pre-Flop");
+
+                            } else if (e == BetState.SecondBet) {
+                                gamePanel.getBetRound().setText("The Flop");
+                                gamePanel.getCard1().setVisible(true);
+                                gamePanel.getCard2().setVisible(true);
+                                gamePanel.getCard3().setVisible(true);
+
+                            } else if (e == BetState.ThirdBet) {
+                                gamePanel.getBetRound().setText("The Turn");
+                                gamePanel.getCard4().setVisible(true);
+
+                            } else if (e == BetState.FourBet) {
+                                gamePanel.getBetRound().setText("The River");
+                                gamePanel.getCard5().setVisible(true);
+
+                            } else if(e == BetState.FourBet.ShowDown){
+                                gamePanel.getBetRound().setText("ShowDown");
+                            }
+                        }
+
+                        if(i!=4){
+                            System.out.println("Process a bet State...");
+                            processABetState();
+                        }
                     }
 
                 } else if (s == State.EndGame) {
@@ -178,33 +210,45 @@ public class MainFrame extends JFrame implements Runnable {
         this.repaint();
     }
 
-    public void checkTurn() {
-        if (isNotStop) {
-            boolean isMyTurn = false;
+    public void processABetState() {
+        while (true) {
+            System.out.println("Enter Processing Bet State.");
+            boolean isMyTurn = false;//false as default
             Object fromServer = server.read();
+
+            if(fromServer instanceof BetState){
+                BetState s = (BetState) fromServer;
+                if(s == BetState.EndState){
+                    break;
+                }
+            }
+
             if (fromServer instanceof String) {
+                //Find a winner before the game ends
                 if (fromServer.toString().equals("Stop")) {
-                    isNotStop = false;
+                    winnerFound = true;
                     System.out.println("Stop game");
-                } else {
-                    username = fromServer.toString();
-                    if (me.getUsername().equals(username)) {
+
+                } else if(fromServer instanceof String) {
+                    currentTurnUsername = fromServer.toString();
+                    if (me.getUsername().equals(currentTurnUsername)) {
                         isMyTurn = true;
                     }
                     System.out.println("This is: " + fromServer + " turn!");
-                    if (username != null) {
-                        gamePanel.setTurn(isMyTurn, username);
-                    }
+                    gamePanel.setTurn(isMyTurn, currentTurnUsername);
                 }
             }
+
+            listenResponse();
+            if(winnerFound)   break;
         }
     }
 
     public void listenResponse() {
-        if (isNotStop) {
+        if (!winnerFound) {
             Object fromServer = server.read();
             if (fromServer instanceof String) {
-                gamePanel.processResponse(username, fromServer.toString());
+                gamePanel.processResponse(currentTurnUsername, fromServer.toString());
             }
         }
     }

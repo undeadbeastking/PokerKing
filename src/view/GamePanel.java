@@ -21,6 +21,7 @@ public class GamePanel extends JPanel {
 
     private MainFrame f;
     private Image backGround;
+    private CustBut betRound = new CustBut("Start a game");
     private CustBut back = new CustBut("back");
 
     //5 Community cards
@@ -38,8 +39,8 @@ public class GamePanel extends JPanel {
     public GamePanel(MainFrame frame) {
         //Customize Game Panel
         this.backGround = ImageGetter.getInstance().getImage(GamePU.backGround);
-        setLayout(null);
         this.f = frame;
+        setLayout(null);
         setCommunityCards();
 
         //Create all players panels - real player will be added
@@ -54,12 +55,17 @@ public class GamePanel extends JPanel {
         foldBut.setBounds(GamePU.fold_x, GamePU.fcr_y, GamePU.fcr_w, GamePU.fcr_h);
         callBut.setBounds(GamePU.call_x, GamePU.fcr_y, GamePU.fcr_w, GamePU.fcr_h);
         raiseBut.setBounds(GamePU.raise_x, GamePU.fcr_y, GamePU.fcr_w, GamePU.fcr_h);
+
         //Community cards
         card1.setBounds(GamePU.card_x, GamePU.card_y, GamePU.card_w, GamePU.card_h);
         card2.setBounds(GamePU.card_x + 120, GamePU.card_y, GamePU.card_w, GamePU.card_h);
         card3.setBounds(GamePU.card_x + 240, GamePU.card_y, GamePU.card_w, GamePU.card_h);
         card4.setBounds(GamePU.card_x + 360, GamePU.card_y, GamePU.card_w, GamePU.card_h);
         card5.setBounds(GamePU.card_x + 480, GamePU.card_y, GamePU.card_w, GamePU.card_h);
+
+        //Custom Bet round info and set Bound
+        betRound.setBounds(GamePU.betRound_x, GamePU.betRound_y, GamePU.betRound_w, GamePU.betRound_h);
+        betRound.setFont(GamePU.betRoundFont);
 
         //Add components - PlayerPanels
         for (int j = 0; j < playerPanels.size(); j++) {
@@ -74,6 +80,7 @@ public class GamePanel extends JPanel {
         this.add(card3);
         this.add(card4);
         this.add(card5);
+        this.add(betRound);
 
         //Disable buttons
         callBut.setEnabled(false);
@@ -86,23 +93,7 @@ public class GamePanel extends JPanel {
         g.drawImage(backGround, 0, 0, null);
     }
 
-    public CustBut getBackBut() {
-        return back;
-    }
-
-    public CustBut getFoldBut() {
-        return foldBut;
-    }
-
-    public CustBut getCallBut() {
-        return callBut;
-    }
-
-    public CustBut getRaiseBut() {
-        return raiseBut;
-    }
-
-    public void setTurn(boolean isMyTurn, String username) {
+    public void setTurn(boolean isMyTurn, String currentTurnUsername) {
         if (isMyTurn) {
             callBut.setEnabled(true);
             foldBut.setEnabled(true);
@@ -114,7 +105,7 @@ public class GamePanel extends JPanel {
         }
 
         for (int i = 0; i < playerPanels.size(); i++) {
-            if (username.equals(playerPanels.get(i).getUsername())) {
+            if (currentTurnUsername.equals(playerPanels.get(i).getUsername())) {
                 playerPanels.get(i).highlightMyTurn();
             } else {
                 playerPanels.get(i).highlightOtherTurn();
@@ -171,5 +162,45 @@ public class GamePanel extends JPanel {
 
     public ArrayList<PlayerPanel> getPlayerPanels() {
         return playerPanels;
+    }
+
+    public CustBut getBackBut() {
+        return back;
+    }
+
+    public CustBut getFoldBut() {
+        return foldBut;
+    }
+
+    public CustBut getCallBut() {
+        return callBut;
+    }
+
+    public CustBut getRaiseBut() {
+        return raiseBut;
+    }
+
+    public CustBut getBetRound() {
+        return betRound;
+    }
+
+    public JLabel getCard1() {
+        return card1;
+    }
+
+    public JLabel getCard2() {
+        return card2;
+    }
+
+    public JLabel getCard3() {
+        return card3;
+    }
+
+    public JLabel getCard4() {
+        return card4;
+    }
+
+    public JLabel getCard5() {
+        return card5;
     }
 }

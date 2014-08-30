@@ -44,7 +44,6 @@ public class GameCon {
             System.out.println("Fold");
             f.getServer().write("Fold");
         }
-
     }
 
     private class CallButtonListener implements ActionListener {
@@ -53,7 +52,6 @@ public class GameCon {
             System.out.println("Call");
             f.getServer().write("Call");
         }
-
     }
 
     private class RaiseButtonListener implements ActionListener {
@@ -62,6 +60,5 @@ public class GameCon {
             System.out.println("Raise");
             f.getServer().write("Raise");
         }
-
     }
 }

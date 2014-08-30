@@ -8,5 +8,6 @@ public enum BetState {
     SecondBet,
     ThirdBet,
     FourBet,
-    ShowHand
+    EndState,
+    ShowDown
 }
