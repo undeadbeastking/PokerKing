@@ -22,12 +22,14 @@ public class Server extends JFrame implements Runnable {
     private int roomNumber = 1;//Count how many rooms the server is controlling
     public static int numberOfPlayersInARoom = 2;
     private static ArrayList<String> inUsedUsernames = new ArrayList<String>();
+    private static String IP;
+    static AutoObtainIP autoObtainIP = new AutoObtainIP();
 
     public static void main(String[] args) {
         //Load users data
         Data.loadAccounts();
 
-        if(initServerSocket()){
+        if (initServerSocket()) {
             serverThread = new Thread(new Server());
             serverThread.start();
 
@@ -36,19 +38,22 @@ public class Server extends JFrame implements Runnable {
         }
     }
 
-    public static boolean initServerSocket(){
-        try{
+    public static boolean initServerSocket() {
+        try {
             server = new ServerSocket(PORT);
 
             //Print out server ip
             try {
                 System.out.println("Server is running. The IP is: \n" + Inet4Address.getLocalHost().getHostAddress() + "\n\n");
+                IP = Inet4Address.getLocalHost().getHostAddress();
+                autoObtainIP.delete(IP);
+                autoObtainIP.create(IP);
 
             } catch (Exception e) {
                 System.out.println("Can not find server ip!");
             }
 
-        } catch(IOException e){
+        } catch (IOException e) {
             System.out.println("Cannot init ServerSocket.");
             return false;
         }
@@ -69,11 +74,17 @@ public class Server extends JFrame implements Runnable {
                 System.out.println("\n\nTerminate the program.");
                 System.out.println("Saving accounts successfully.");
                 Data.saveAccounts();
+                try {
+                    autoObtainIP.delete(IP);
+                } catch (Exception e1) {
+                    System.out.println("cant not delete server");
+                }
             }
         });
 
         //JLabel info
         JLabel serverState = new JLabel("<html>Port: " + PORT +
+                "<br>Server IP: " + IP +
                 "<br>Number of players allowed in a Room: " + numberOfPlayersInARoom +
                 "<br>Server is running." + "</html>", SwingConstants.CENTER);
         serverState.setOpaque(true);
@@ -97,7 +108,7 @@ public class Server extends JFrame implements Runnable {
                 Socket socket = null;
                 try {
                     socket = server.accept();
-                    System.out.println("Player " + (j+1) + " of Room " + roomNumber + " established the connection successfully.");
+                    System.out.println("Player " + (j + 1) + " of Room " + roomNumber + " established the connection successfully.");
                     PlayerCommunicator playerCom = new PlayerCommunicator(
                             socket,
                             new ObjectInputStream(socket.getInputStream()),

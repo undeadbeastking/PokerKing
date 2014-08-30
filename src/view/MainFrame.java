@@ -1,6 +1,7 @@
 package view;
 
 import Server.BetState;
+import Server.AutoObtainIP;
 import Server.PlayerCommunicator;
 import Server.State;
 import Utils.GamePU;
@@ -43,8 +44,14 @@ public class MainFrame extends JFrame implements Runnable {
     private String myCards, commuCards, currentTurnUsername;
     private ArrayList<String> usernames;
     private boolean winnerFound = false;
+    static AutoObtainIP autoObtainIP = new AutoObtainIP();
 
     public MainFrame() {
+        try {
+            serverAddress = autoObtainIP.obtainIP();
+        }catch(Exception e){
+            System.out.println("Server is currently down!");
+        }
         //Customize MainFrame for loginPanel
         this.setSize(LoginPU.width, LoginPU.height);
         this.setTitle("Poker King - The Game");
