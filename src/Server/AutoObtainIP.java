@@ -121,7 +121,6 @@ public class AutoObtainIP {
 
         //print result
         System.out.println(response.toString());
-
     }
 
 }

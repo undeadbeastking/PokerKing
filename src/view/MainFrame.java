@@ -44,14 +44,15 @@ public class MainFrame extends JFrame implements Runnable {
     private String myCards, commuCards, currentTurnUsername;
     private ArrayList<String> usernames;
     private boolean winnerFound = false;
-    static AutoObtainIP autoObtainIP = new AutoObtainIP();
+     AutoObtainIP autoObtainIP = new AutoObtainIP();
 
     public MainFrame() {
-        try {
-            serverAddress = autoObtainIP.obtainIP();
-        }catch(Exception e){
-            System.out.println("Server is currently down!");
-        }
+//        try {
+//            serverAddress = autoObtainIP.obtainIP();
+//        } catch(Exception e){
+//            System.out.println("Server is currently down!");
+//        }
+
         //Customize MainFrame for loginPanel
         this.setSize(LoginPU.width, LoginPU.height);
         this.setTitle("Poker King - The Game");
@@ -82,6 +83,11 @@ public class MainFrame extends JFrame implements Runnable {
     private void initSocket() throws IOException {
 
         //Make connection and initialize streams
+        try {
+            serverAddress = autoObtainIP.obtainIP();
+        } catch (Exception e) {
+            System.out.println("cant obtain");
+        }
         Socket socket = new Socket(serverAddress, PORT);
         ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
         ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());

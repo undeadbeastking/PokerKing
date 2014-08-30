@@ -220,7 +220,6 @@ public class Server extends JFrame implements Runnable {
                     }
                 }
             }
-
             /*
             Start the game if everyone logs in successfully
             The final thread will invoke this thread
