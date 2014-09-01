@@ -72,6 +72,7 @@ public class MainFrame extends JFrame implements Runnable {
 
         } catch (IOException e) {
             System.out.println("Cannot connect to server");
+
         }
     }
 
@@ -79,9 +80,15 @@ public class MainFrame extends JFrame implements Runnable {
 
         //Make connection and initialize streams
         try {
-            serverAddress = autoObtainIP.obtainIP();
+            if (autoObtainIP.obtainIP().length() > 0) {
+                serverAddress = autoObtainIP.obtainIP();
+                System.out.println("Obtained server IP");
+            } else {
+                System.out.println("Can not obtain server ip");
+                System.exit(0);
+            }
         } catch (Exception e) {
-            System.out.println("cant obtain");
+
         }
         Socket socket = new Socket(serverAddress, PORT);
         ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
