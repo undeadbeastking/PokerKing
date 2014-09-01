@@ -52,10 +52,6 @@ public class PlayerPU {
     public static final int status_y = 105;
     public static final int cash_y = 118;
 
-    //Bet
-    public static final int bet_x = 115;
-    public static final int bet_y = 90;
-
     //Cards
     public static final String pathPrefix = "cards/";
     //cards bounds

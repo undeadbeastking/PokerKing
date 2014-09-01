@@ -42,7 +42,7 @@ public class GamePanel extends JPanel {
     //Money Betting UI
     private CustBut decreaseMon = new CustBut("decrease");
     private CustBut increaseMon = new CustBut("increase");
-    private JLabel betAmount = new JLabel("150$");
+    private JLabel betAmount = new JLabel("$100");
 
     public GamePanel(MainFrame frame) {
         //Customize Game Panel
@@ -153,6 +153,16 @@ public class GamePanel extends JPanel {
                 playerPanels.get(i).setStatus(response);
             }
         }
+
+        //Set current highestRaise
+        if(response.startsWith("Raise")) {
+            StringTokenizer bet = new StringTokenizer(response, "$");
+            bet.nextToken();
+            f.setCurrentHighestBet(Integer.valueOf(bet.nextToken()));
+            System.out.println(f.getCurrentHighestBet());
+        }
+
+        betAmount.setText("$" + f.getCurrentHighestBet());
     }
 
     public void setCommunityCards() {
@@ -236,5 +246,21 @@ public class GamePanel extends JPanel {
 
     public JLabel getCard5() {
         return card5;
+    }
+
+    public JLabel getBetAmount() {
+        return betAmount;
+    }
+
+    public CustBut getIncreaseMon() {
+        return increaseMon;
+    }
+
+    public CustBut getDecreaseMon() {
+        return decreaseMon;
+    }
+
+    public JLabel getPotLabel() {
+        return potLabel;
     }
 }

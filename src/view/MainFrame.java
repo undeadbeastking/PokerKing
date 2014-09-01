@@ -42,6 +42,9 @@ public class MainFrame extends JFrame implements Runnable {
     private PlayerCommunicator server;
     private Account me;
     private String myCards, commuCards, currentTurnUsername;
+    private ArrayList<Integer> money;
+    private int myMoney;
+    private int currentHighestBet = 100;
     private ArrayList<String> usernames;
     private boolean winnerFound = false;
      AutoObtainIP autoObtainIP = new AutoObtainIP();
@@ -78,11 +81,12 @@ public class MainFrame extends JFrame implements Runnable {
     private void initSocket() throws IOException {
 
         //Make connection and initialize streams
-        try {
-            serverAddress = autoObtainIP.obtainIP();
-        } catch (Exception e) {
-            System.out.println("cant obtain");
-        }
+//        try {
+//            serverAddress = autoObtainIP.obtainIP();
+//        } catch (Exception e) {
+//            System.out.println("Can't obtain");
+//        }
+
         Socket socket = new Socket(serverAddress, PORT);
         ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
         ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
@@ -118,6 +122,7 @@ public class MainFrame extends JFrame implements Runnable {
                     //Receive necessary info before pop up the Game
                     receiveCards();
                     receiveAllPlayerNames();
+                    receivePlayersMoney();
 
                     //Pop Up GamePanel
                     System.out.println("Pop up GamePanel");
@@ -151,6 +156,7 @@ public class MainFrame extends JFrame implements Runnable {
 
                             } else if(e == BetState.FourBet.ShowDown){
                                 gamePanel.getBetRound().setText("ShowDown");
+
                             }
                         }
 
@@ -190,6 +196,18 @@ public class MainFrame extends JFrame implements Runnable {
         Object fromServer = server.read();
         if (fromServer instanceof ArrayList) {
             usernames = (ArrayList<String>) fromServer;
+        } else {
+            System.out.println("Can not take players from server");
+        }
+    }
+
+    public void receivePlayersMoney(){
+        server.write(State.SendMoney);
+        Object fromServer = server.read();
+        if (fromServer instanceof ArrayList) {
+            money = (ArrayList<Integer>) fromServer;
+            System.out.println("Receive Money.");
+
         } else {
             System.out.println("Can not take players from server");
         }
@@ -248,6 +266,7 @@ public class MainFrame extends JFrame implements Runnable {
                 }
             }
 
+            System.out.println("Turn received, now listen to response.");
             listenResponse();
             if(winnerFound)   break;
         }
@@ -256,6 +275,7 @@ public class MainFrame extends JFrame implements Runnable {
     public void listenResponse() {
         if (!winnerFound) {
             Object fromServer = server.read();
+            System.out.println("Received from the others: " + fromServer);
             if (fromServer instanceof String) {
                 gamePanel.processResponse(currentTurnUsername, fromServer.toString());
             }
@@ -296,5 +316,25 @@ public class MainFrame extends JFrame implements Runnable {
 
     public Account getMyAccount() {
         return me;
+    }
+
+    public ArrayList<Integer> getMoney() {
+        return money;
+    }
+
+    public int getCurrentHighestBet() {
+        return currentHighestBet;
+    }
+
+    public void setCurrentHighestBet(int value) {
+        currentHighestBet = value;
+    }
+
+    public int getMyMoney() {
+        return myMoney;
+    }
+
+    public void setMyMoney(int m) {
+        myMoney = m;
     }
 }

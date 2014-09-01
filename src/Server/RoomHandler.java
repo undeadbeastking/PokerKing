@@ -1,6 +1,8 @@
 package Server;
 
-import java.util.*;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.LinkedList;
 
 /**
  * Created by Agatha Wood Beyond on 8/16/2014.
@@ -19,6 +21,9 @@ public class RoomHandler implements Runnable {
     private LinkedList<Hand> hands = new LinkedList<Hand>();
     private ShowHand showHand;
     private int pot = 150;
+    private int currentRaise = 100;
+    private int[] allBets;
+    private ArrayList<Integer> allPlayerMoney;
 
     public RoomHandler(int numberOfPlayersInARoom) {
         this.numberOfPlayersInARoom = numberOfPlayersInARoom;
@@ -46,7 +51,18 @@ public class RoomHandler implements Runnable {
         disconnect();
     }
 
-    public void initNewGame(){
+    public void initNewGame() {
+        //First player will have a small blind, second player will have a big blind
+        allBets = new int[numberOfPlayersInARoom];
+        allPlayerMoney = new ArrayList<Integer>();
+        //Default each one has 10000$
+        for (int i = 0; i < numberOfPlayersInARoom; i++) {
+            allPlayerMoney.add(10000);
+        }
+
+        allBets[0] = 50;
+        allBets[1] = 100;
+
         for (PlayerCommunicator playerCom : playerComs) {
             //Send Client's Hand and identities of all players
             playerCom.write(State.StartGame);
@@ -60,6 +76,10 @@ public class RoomHandler implements Runnable {
                 if (s == State.SendPlayers) {
                     playerCom.write(allUsernames);
                 }
+                s = (State) playerCom.read();
+                if(s == State.SendMoney){
+                    playerCom.write(allPlayerMoney);
+                }
             }
         }
     }
@@ -71,12 +91,12 @@ public class RoomHandler implements Runnable {
         hands.add(hand);
     }
 
-    public void processingBets(){
+    public void processingBets() {
         //Loop 4 Betting States
         for (int j = 0; j < 4; j++) {
             //Notify all the players about bet states
-            for (PlayerCommunicator com : playerComs){
-                switch(j){
+            for (PlayerCommunicator com : playerComs) {
+                switch (j) {
                     case 0:
                         com.write(BetState.FirstBet);
                         break;
@@ -95,39 +115,74 @@ public class RoomHandler implements Runnable {
                 }
             }
 
-            //Bet starts with first one posts small blind, second posts big blind, third one will have the official turn
-            int i = 0;
-            if(j == 0){
-                i = 2;
+            int dealerPosition = 0;
+            int i = dealerPosition;
+            //Need a while here and will loop if there is still a RAISE
+            int numberOfPlayersWhoMatchRaise = 0;
+            //There is still another player who tries to raise
+            while (numberOfPlayersWhoMatchRaise != playerComs.size() && !onlyOneDoesNotFold()) {
+                //Restart index for the next Raise
+                if (i == playerComs.size()) {
+                    i = 0;
+                }
+
+                //If a username is not null then his turn is sent and the server will listen to the response of his socket
+                if (allUsernames.get(i) != null) {
+                    //send whos turn
+                    System.out.println("Send a player's turn.");
+                    sendTurn(i);
+
+                    //receive response from that player socket
+                    System.out.println("Waiting for response from that player");
+                    Object fromClient = playerComs.get(i).read();
+                    String responseToOthers = "Cannot detect";
+
+                    if (fromClient instanceof Integer) {
+                        System.out.println(fromClient);
+                        int moneyFromPlayer = (Integer) fromClient;
+
+                        if (moneyFromPlayer > currentRaise) {
+                            currentRaise = moneyFromPlayer;
+                            numberOfPlayersWhoMatchRaise = 0;
+                            responseToOthers = "Raise $" + moneyFromPlayer;
+
+                        } else if (moneyFromPlayer == currentRaise) {
+                            numberOfPlayersWhoMatchRaise++;
+                            responseToOthers = "Call $" + moneyFromPlayer;
+                            System.out.println("Number of players who match Raise: " + numberOfPlayersWhoMatchRaise);
+
+                        } else if (moneyFromPlayer == -1) {
+                            numberOfPlayersWhoMatchRaise++;
+                            responseToOthers = "Fold $";
+
+                        }
+                        //send that response to everyone
+                        for (int y = 0; y < playerComs.size(); y++) {
+                            System.out.println("Writing " + responseToOthers + " to everyone.");
+                            playerComs.get(y).write(responseToOthers);
+                        }
+                    }
+                    //if a player fold, this username will be null
+                    if (responseToOthers.startsWith("Fold")) {
+                        allUsernames.set(i, null);
+                    }
+                }
+
+                i++;
+
+                if (numberOfPlayersWhoMatchRaise == playerComs.size()) {
+                    break;
+                }
             }
 
-            //Need a while here and will loop if there is still a RAISE
-            for (; i < playerComs.size(); i++) {
-                //if there is only one player left in the room who does not fold then he is the Winner
-                if (!onlyOneDoesNotFold()) {
-                    //If a username is not null then his turn is sent and the server will listen to the response of his socket
-                    if (allUsernames.get(i) != null) {
-                        //send whos turn
-                        sendTurn(i);
-                        //receive response from that player socket
-                        handleReponse(i);
-                    }
-                } else {
-                    break;
-
-                }
-
-                //The final turn has been processed, send end turn to every player
-                if(i == playerComs.size()-1){
-                    for (int x = 0; x < playerComs.size(); x++) {
-                        playerComs.get(x).write(BetState.EndState);
-                    }
-                }
+            //The final turn has been processed, send end turn to every player
+            for (int x = 0; x < playerComs.size(); x++) {
+                playerComs.get(x).write(BetState.EndState);
             }
         }
 
         //ShowDown
-        for (PlayerCommunicator com : playerComs){
+        for (PlayerCommunicator com : playerComs) {
             com.write(BetState.ShowDown);
         }
     }
@@ -159,29 +214,14 @@ public class RoomHandler implements Runnable {
         }
     }
 
-    public void handleReponse(int i) {
-        Object fromClient = playerComs.get(i).read();
-
-        if (fromClient != null) {
-            //send that response to everyone
-            for (int j = 0; j < playerComs.size(); j++) {
-                playerComs.get(j).write(fromClient);
-            }
-        }
-        //if a player fold, this username will be null
-        if (fromClient.equals("Fold")) {
-            allUsernames.set(i, null);
-        }
-    }
-
-    public void endGame(){
+    public void endGame() {
         for (PlayerCommunicator p : playerComs) {
             //Send first hand info
             p.write(State.EndGame);
         }
     }
 
-    public void disconnect(){
+    public void disconnect() {
         for (PlayerCommunicator p : playerComs) {
             p.close();
         }
