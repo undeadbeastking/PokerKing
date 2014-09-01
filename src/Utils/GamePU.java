@@ -39,4 +39,29 @@ public class GamePU {
     public static final int card_h = 100;//Combine bound
     public static final int card_x = 260;
     public static final int card_y = 320;
+
+    //Pot Label
+    public static final int pot_x = 20;
+    public static final int pot_y = 640;
+    public static final int pot_w = 170;//Combine bound
+    public static final int pot_h = 30;//Combine bound
+    public static final Font potFont = new Font("Consolas", Font.BOLD, 21);
+
+    //Small blind and Big blind Bound
+    public static final int blind_x = 900;//Combine bound
+    public static final int smallBlind_y = 620;
+    public static final int bigBlind_y = 650;
+    public static final Font blindFont = new Font("Consolas", Font.BOLD, 16);
+
+    //Increase, decrease $ buttons
+    public static final String increase_Mon = "buttons/increase.png";
+    public static final String decrease_Mon = "buttons/decrease.png";
+    public static final int bet_y = 630;//Combine bound
+    public static final int bet_w = 50;//Combine bound
+    public static final int bet_h = 40;//Combine bound
+    public static final int betDecrease_x = 405;
+    public static final int betIncrease_x = 605;
+    public static final int betAmount_x = 482;
+    public static final int betAmount_w = 100;
+    public static final int betAmount_h = 40;
 }

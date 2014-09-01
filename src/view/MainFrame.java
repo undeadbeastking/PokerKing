@@ -47,11 +47,6 @@ public class MainFrame extends JFrame implements Runnable {
      AutoObtainIP autoObtainIP = new AutoObtainIP();
 
     public MainFrame() {
-//        try {
-//            serverAddress = autoObtainIP.obtainIP();
-//        } catch(Exception e){
-//            System.out.println("Server is currently down!");
-//        }
 
         //Customize MainFrame for loginPanel
         this.setSize(LoginPU.width, LoginPU.height);
@@ -159,6 +154,7 @@ public class MainFrame extends JFrame implements Runnable {
                             }
                         }
 
+                        //i = 4 means it is ShowDown so no Bet Processing
                         if(i!=4){
                             System.out.println("Process a bet State...");
                             processABetState();

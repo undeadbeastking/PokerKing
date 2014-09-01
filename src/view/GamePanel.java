@@ -23,6 +23,9 @@ public class GamePanel extends JPanel {
     private Image backGround;
     private CustBut betRound = new CustBut("Start a game");
     private CustBut back = new CustBut("back");
+    private JLabel potLabel = new JLabel("Pot: $" + 150);
+    private JLabel smallBlind = new JLabel("Small Blind: 50$");
+    private JLabel bigBlind = new JLabel("Big Blind: 100$");
 
     //5 Community cards
     private JLabel card1 = new JLabel();
@@ -35,6 +38,11 @@ public class GamePanel extends JPanel {
     private CustBut foldBut = new CustBut("Fold");
     private CustBut callBut = new CustBut("Call");
     private CustBut raiseBut = new CustBut("Raise");
+
+    //Money Betting UI
+    private CustBut decreaseMon = new CustBut("decrease");
+    private CustBut increaseMon = new CustBut("increase");
+    private JLabel betAmount = new JLabel("150$");
 
     public GamePanel(MainFrame frame) {
         //Customize Game Panel
@@ -55,6 +63,9 @@ public class GamePanel extends JPanel {
         foldBut.setBounds(GamePU.fold_x, GamePU.fcr_y, GamePU.fcr_w, GamePU.fcr_h);
         callBut.setBounds(GamePU.call_x, GamePU.fcr_y, GamePU.fcr_w, GamePU.fcr_h);
         raiseBut.setBounds(GamePU.raise_x, GamePU.fcr_y, GamePU.fcr_w, GamePU.fcr_h);
+        decreaseMon.setBounds(GamePU.betDecrease_x, GamePU.bet_y, GamePU.bet_w, GamePU.bet_h);
+        increaseMon.setBounds(GamePU.betIncrease_x, GamePU.bet_y, GamePU.bet_w, GamePU.bet_h);
+        betAmount.setBounds(GamePU.betAmount_x, GamePU.bet_y, GamePU.betAmount_w, GamePU.betAmount_h);
 
         //Community cards
         card1.setBounds(GamePU.card_x, GamePU.card_y, GamePU.card_w, GamePU.card_h);
@@ -66,6 +77,23 @@ public class GamePanel extends JPanel {
         //Custom Bet round info and set Bound
         betRound.setBounds(GamePU.betRound_x, GamePU.betRound_y, GamePU.betRound_w, GamePU.betRound_h);
         betRound.setFont(GamePU.betRoundFont);
+
+        //Pot Label Font, Color and Bound
+        potLabel.setFont(GamePU.potFont);
+        smallBlind.setFont(GamePU.blindFont);
+        bigBlind.setFont(GamePU.blindFont);
+        potLabel.setBounds(GamePU.pot_x, GamePU.pot_y, GamePU.pot_w, GamePU.pot_h);
+        smallBlind.setBounds(GamePU.blind_x, GamePU.smallBlind_y, GamePU.pot_w, GamePU.pot_h);
+        bigBlind.setBounds(GamePU.blind_x, GamePU.bigBlind_y, GamePU.pot_w, GamePU.pot_h);
+        potLabel.setForeground(Color.GREEN);
+        smallBlind.setForeground(Color.GREEN);
+        bigBlind.setForeground(Color.GREEN);
+
+        //Bet amount
+        betAmount.setBackground(Color.white);
+        betAmount.setForeground(Color.BLACK);
+        betAmount.setOpaque(true);
+        betAmount.setHorizontalAlignment(SwingConstants.CENTER);
 
         //Add components - PlayerPanels
         for (int j = 0; j < playerPanels.size(); j++) {
@@ -81,6 +109,12 @@ public class GamePanel extends JPanel {
         this.add(card4);
         this.add(card5);
         this.add(betRound);
+        this.add(potLabel);
+        this.add(increaseMon);
+        this.add(decreaseMon);
+        this.add(betAmount);
+        this.add(smallBlind);
+        this.add(bigBlind);
 
         //Disable buttons
         callBut.setEnabled(false);

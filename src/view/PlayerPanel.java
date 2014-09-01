@@ -19,6 +19,7 @@ public class PlayerPanel extends JPanel {
     private JLabel username = new JLabel();
     private JLabel status = new JLabel();
     private JLabel cash = new JLabel();
+    private JLabel bet = new JLabel("Bet: $" + 0);
     //Cards
     private JLabel card1 = new JLabel();
     private JLabel card2 = new JLabel();
@@ -47,6 +48,8 @@ public class PlayerPanel extends JPanel {
         cash.setBounds(PlayerPU.label_x, PlayerPU.cash_y, PlayerPU.label_w, PlayerPU.label_h);
         card1.setBounds(PlayerPU.card1_x, PlayerPU.card_y, PlayerPU.card_w, PlayerPU.card_h);
         card2.setBounds(PlayerPU.card2_x, PlayerPU.card_y, PlayerPU.card_w, PlayerPU.card_h);
+        bet.setBounds(PlayerPU.bet_x, PlayerPU.bet_y, PlayerPU.label_w, PlayerPU.label_h);
+
         //Set Player Panel Bound
         setPanelBound(orderInArray);
 
@@ -54,9 +57,11 @@ public class PlayerPanel extends JPanel {
         username.setFont(PlayerPU.label_font);
         cash.setText("Cash: $" + 1000);
         cash.setFont(PlayerPU.label_font);
+        cash.setForeground(PlayerPU.label_Color);
         status.setFont(PlayerPU.label_font);
         status.setForeground(PlayerPU.label_Color);
-        cash.setForeground(PlayerPU.label_Color);
+        bet.setFont(PlayerPU.label_font);
+        bet.setForeground(PlayerPU.label_Color);
 
         usernames = f.getUsernames();
         //If the current username == Client username then Highlight his or her Panel
@@ -82,6 +87,7 @@ public class PlayerPanel extends JPanel {
         this.add(status);
         this.add(card1);
         this.add(card2);
+        this.add(bet);
     }
 
     //Set PlayerPanel Bound & Resolution

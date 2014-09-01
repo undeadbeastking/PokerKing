@@ -18,7 +18,7 @@ public class RoomHandler implements Runnable {
     private Deck deck;
     private LinkedList<Hand> hands = new LinkedList<Hand>();
     private ShowHand showHand;
-    private int pot;
+    private int pot = 150;
 
     public RoomHandler(int numberOfPlayersInARoom) {
         this.numberOfPlayersInARoom = numberOfPlayersInARoom;
@@ -95,8 +95,14 @@ public class RoomHandler implements Runnable {
                 }
             }
 
+            //Bet starts with first one posts small blind, second posts big blind, third one will have the official turn
+            int i = 0;
+            if(j == 0){
+                i = 2;
+            }
+
             //Need a while here and will loop if there is still a RAISE
-            for (int i = 0; i < playerComs.size(); i++) {
+            for (; i < playerComs.size(); i++) {
                 //if there is only one player left in the room who does not fold then he is the Winner
                 if (!onlyOneDoesNotFold()) {
                     //If a username is not null then his turn is sent and the server will listen to the response of his socket

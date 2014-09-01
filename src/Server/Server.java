@@ -20,7 +20,7 @@ public class Server extends JFrame implements Runnable {
     private static Thread serverThread = null;
     private static ServerSocket server = null;
     private int roomNumber = 1;//Count how many rooms the server is controlling
-    public static int numberOfPlayersInARoom = 2;
+    public static int numberOfPlayersInARoom = 3;
     private static ArrayList<String> inUsedUsernames = new ArrayList<String>();
     private static String IP;
     static AutoObtainIP autoObtainIP = new AutoObtainIP();
@@ -77,7 +77,7 @@ public class Server extends JFrame implements Runnable {
                 try {
                     autoObtainIP.delete(IP);
                 } catch (Exception e1) {
-                    System.out.println("cant not delete server");
+                    System.out.println("Cannot delete server.");
                 }
             }
         });

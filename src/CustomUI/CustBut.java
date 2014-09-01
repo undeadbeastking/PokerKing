@@ -1,6 +1,6 @@
 package CustomUI;
 
-import Utils.Utils;
+import Utils.*;
 import images.ImageGetter;
 
 import javax.swing.*;
@@ -25,6 +25,20 @@ public class CustBut extends JButton {
             this.setText(name);
             this.setFont(Utils.hyperButUnfocusState);
             this.setForeground(Utils.hyperButColor);
+
+
+            //Increase money
+        } else if (name.equals("increase")) {
+            Image img = ImageGetter.getInstance().getImage(GamePU.increase_Mon);
+            this.setIcon(new ImageIcon(img));
+            //Remove button's default background
+            this.setContentAreaFilled(false);
+
+        } else if (name.equals("decrease")) {
+            Image img = ImageGetter.getInstance().getImage(GamePU.decrease_Mon);
+            this.setIcon(new ImageIcon(img));
+            //Remove button's default background
+            this.setContentAreaFilled(false);
 
             //Back button
         } else if (name.equals("back")) {
