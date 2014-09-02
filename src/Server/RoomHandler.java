@@ -60,7 +60,7 @@ public class RoomHandler implements Runnable {
     public void initNewGame() {
 
         allPlayerMoney = new ArrayList<Integer>();
-        int testMoney = 1000;
+        int testMoney = 600;
         for (int i = 0; i < numberOfPlayersPerRoom; i++) {
 
             //Subtract the money of small blind and big blind hosts first
@@ -71,7 +71,7 @@ public class RoomHandler implements Runnable {
             }
 
             allPlayerMoney.add(testMoney);
-            testMoney-=150;
+            testMoney-=100;
         }
 
         //Send Client's Hand and identities of all players, money

@@ -26,17 +26,21 @@ public class LoginPU {
     public static final int introLabel_y = 70;
     public static final int introLabel_w = 290;
     public static final int introLabel_h = 30;
+
     //Username & Password
     public static final int inputField_x = 200;//Combine bound
     public static final int inputField_w = 200;//Combine bound
     public static final int inputField_h =  30;//Combine bound
     public static final int usernameF_y = 130;
     public static final int passwordF_y = 180;
+
     //Sign in & Sign up buttons
     public static final int button_w = 150;//Combine bound
     public static final int button_h = 30;//Combine bound
+
     public static final int signIn_x = 225;
     public static final int signIn_y = 240;
+
     public static final int signUp_x = 40;
     public static final int signUp_y = 315;
 

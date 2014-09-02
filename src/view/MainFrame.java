@@ -41,13 +41,14 @@ public class MainFrame extends JFrame implements Runnable {
     private static final int PORT = 9000;
     private String serverAddress = "localhost";
     private PlayerCommunicator server;
-    AutoObtainIP autoObtainIP = new AutoObtainIP();
+    private AutoObtainIP autoObtainIP = new AutoObtainIP();
 
     //All usernames in the room
     private ArrayList<String> allUsernames;
 
     //This client account
     private Account me;
+    private int myIndex;
 
     //Cards
     private String myHoleCards, commuCards, currentTurnUsername;
@@ -354,5 +355,17 @@ public class MainFrame extends JFrame implements Runnable {
 
     public void setMyMoney(int m) {
         myMoney = m;
+    }
+
+    public int getMyIndex() {
+        return myIndex;
+    }
+
+    public Account getMe() {
+        return me;
+    }
+
+    public void setMyIndex(int myIndex) {
+        this.myIndex = myIndex;
     }
 }
