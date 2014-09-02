@@ -54,7 +54,7 @@ public class AutoObtainIP {
         in.close();
 
         //print result
-        System.out.println("Response Code : " + responseCode + " " + response.toString());
+//        System.out.println("Response Code : " + responseCode + " " + response.toString());
         if (response.toString().equals("QUERYSUCCESS")) {
             System.out.println("New server is created");
         } else {
@@ -92,7 +92,7 @@ public class AutoObtainIP {
         in.close();
 
         //print result
-        System.out.println("Response Code : " + responseCode + " " + response.toString());
+//        System.out.println("Response Code : " + responseCode + " " + response.toString());
         if (response.toString() != null){
             result = response.toString();
         }
@@ -128,9 +128,9 @@ public class AutoObtainIP {
         in.close();
 
         //print result
-        System.out.println("Response Code : " + responseCode + " " + response.toString());
+//        System.out.println("Response Code : " + responseCode + " " + response.toString());
         if (response.toString().equals("QUERYSUCCESS")) {
-            System.out.println("This server is removed");
+            System.out.println("Existing server has been removed");
         }
     }
 }

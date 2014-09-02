@@ -46,6 +46,7 @@ public class Server extends JFrame implements Runnable {
             try {
                 System.out.println("Server is running. The IP is: \n" + Inet4Address.getLocalHost().getHostAddress() + "\n\n");
                 IP = Inet4Address.getLocalHost().getHostAddress();
+                autoObtainIP.delete(autoObtainIP.obtainIP());
                 autoObtainIP.create(IP);
 
             } catch (Exception e) {
@@ -74,7 +75,7 @@ public class Server extends JFrame implements Runnable {
                 System.out.println("Saving accounts successfully.");
                 Data.saveAccounts();
                 try {
-                    autoObtainIP.delete(IP);
+                    autoObtainIP.delete(autoObtainIP.obtainIP());
                 } catch (Exception e1) {
                     System.out.println("Cannot delete server.");
                 }
