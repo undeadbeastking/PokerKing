@@ -20,8 +20,8 @@ public class SignUpPanel extends JPanel {
     private JLabel usernameVal = new JLabel();
     private JLabel passwordVal = new JLabel();
     //Buttons
-    private CustBut back = new CustBut("back");
-    private CustBut register = new CustBut("Register");
+    private CustBut backButton = new CustBut("backButton");
+    private CustBut registerButton = new CustBut("Register");
 
     public SignUpPanel() {
         //Customize SignUp Panel
@@ -30,8 +30,8 @@ public class SignUpPanel extends JPanel {
 
         //Set Bounds
         intro.setBounds(110, 60, 180, 30);
-        back.setBounds(320, 20, 50, 50);
-        register.setBounds(140, 240, 110, 30);
+        backButton.setBounds(320, 20, 50, 50);
+        registerButton.setBounds(140, 240, 110, 30);
         //Vertical Gap for textfields: 55
         usernameField.setBounds(105, 120, 180, 25);
         passwordField.setBounds(105, 175, 180, 25);
@@ -41,8 +41,8 @@ public class SignUpPanel extends JPanel {
 
         //Add components
         this.add(intro);
-        this.add(back);
-        this.add(register);
+        this.add(backButton);
+        this.add(registerButton);
         //Input fields
         this.add(usernameField);
         this.add(passwordField);
@@ -119,10 +119,10 @@ public class SignUpPanel extends JPanel {
     }
 
     public CustBut getRegistBut() {
-        return register;
+        return registerButton;
     }
 
     public CustBut getBackBut() {
-        return back;
+        return backButton;
     }
 }

@@ -9,7 +9,6 @@ import view.SignUpPanel;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 
@@ -27,20 +26,21 @@ public class SignUpCon {
         SignUpPanel local = f.getSignUpPanel();
 
         //Add FocusListener to fields
-        local.getUsernameF().addFocusListener(new JFieldListener());
-        local.getPasswordF().addFocusListener(new JFieldListener());
+        local.getUsernameF().addFocusListener(new JFieldFocusListener());
+        local.getPasswordF().addFocusListener(new JFieldFocusListener());
 
         //Add ActionListener for buttons
-        local.getBackBut().addActionListener(new ActionList());
-        local.getRegistBut().addActionListener(new ActionList());
+        local.getBackBut().addActionListener(new ActionListener());
+        local.getRegistBut().addActionListener(new ActionListener());
     }
 
-    private class ActionList implements ActionListener {
+    private class ActionListener implements java.awt.event.ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
             //Local SignUpPanel
             SignUpPanel local = f.getSignUpPanel();
 
+            //Register button ActionListener
             if (e.getSource() == local.getRegistBut()) {
                 //Casting to local variables
                 JTextField usernameRef = local.getUsernameF();
@@ -72,8 +72,8 @@ public class SignUpCon {
                     usernameValRef.setText(Validator.lengthMess);
 
                 } else {
+                    //Everything is fine then set empty to Error Field
                     usernameValRef.setText("");
-
                 }
 
                 //Validate password
@@ -90,8 +90,8 @@ public class SignUpCon {
                     passwordValRef.setText(Validator.lengthMess);
 
                 } else {
+                    //Everything is fine then set empty to Error Field
                     passwordValRef.setText("");
-
                 }
 
                 if (isQualified) {
@@ -100,11 +100,12 @@ public class SignUpCon {
                     //Show success message
                     JOptionPane.showMessageDialog(null, "Register successfully");
 
-                    //Return to login
+                    //Return to login Panel
                     toLoginP();
                 }
             }
 
+            //Back Button listener
             if (e.getSource() == local.getBackBut()) {
                 toLoginP();
             }
@@ -125,7 +126,7 @@ public class SignUpCon {
         f.repaint();
     }
 
-    private class JFieldListener implements FocusListener {
+    private class JFieldFocusListener implements FocusListener {
         @Override
         public void focusGained(FocusEvent e) {
             JTextField usernameRef;

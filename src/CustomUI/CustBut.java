@@ -26,29 +26,29 @@ public class CustBut extends JButton {
             this.setFont(Utils.hyperButUnfocusState);
             this.setForeground(Utils.hyperButColor);
 
-
-            //Increase money
+        //Increase money button
         } else if (name.equals("increase")) {
-            Image img = ImageGetter.getInstance().getImage(GamePU.increase_Mon);
+            Image img = ImageGetter.getInstance().getImage(GamePU.increase_Mon_Pic);
             this.setIcon(new ImageIcon(img));
             //Remove button's default background
             this.setContentAreaFilled(false);
 
+        //Decrease money button
         } else if (name.equals("decrease")) {
-            Image img = ImageGetter.getInstance().getImage(GamePU.decrease_Mon);
+            Image img = ImageGetter.getInstance().getImage(GamePU.decrease_Mon_Pic);
             this.setIcon(new ImageIcon(img));
             //Remove button's default background
             this.setContentAreaFilled(false);
 
-            //Back button
-        } else if (name.equals("back")) {
+        //Back Button
+        } else if (name.equals("backButton")) {
             //Set button icon
             Image img = ImageGetter.getInstance().getImage(Utils.backButImage);
             this.setIcon(new ImageIcon(img));
             //Remove button's default background
             this.setContentAreaFilled(false);
 
-            //Normal Button
+        //Normal Button
         } else {
             //Set button icon
             Image img = ImageGetter.getInstance().getImage(Utils.normalButImage);

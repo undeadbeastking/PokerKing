@@ -47,7 +47,7 @@ public class Data {
     public static void saveAccounts() {
         try {
             File file = new File("src/bin/accounts.txt");
-            // if file doesnt exists, then create it
+            //if file doesn't exists, then create it
             if (!file.exists()) {
                 file.createNewFile();
             }

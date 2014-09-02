@@ -15,22 +15,24 @@ import java.util.StringTokenizer;
  */
 public class PlayerPanel extends JPanel {
 
+    private MainFrame f;
+
+    //Player avatar
     private JLabel icon = new JLabel();
+
     private JLabel username = new JLabel();
     private JLabel status = new JLabel();
-    private JLabel cash = new JLabel();
-    //Cards
-    private JLabel card1 = new JLabel();
-    private JLabel card2 = new JLabel();
-    private MainFrame f;
-    //Players info
-    private ArrayList<String> usernames;
+    private JLabel remainCash = new JLabel();
 
-    public PlayerPanel(int orderInArray, MainFrame frame) {
+    //Hole Cards
+    private JLabel holeCard1 = new JLabel();
+    private JLabel holeCard2 = new JLabel();
+
+    public PlayerPanel(int index, MainFrame frame) {
         //Customize player panel
-        this.setLayout(null);
-        this.setOpaque(false);
         this.f = frame;
+        this.setLayout(null);
+        this.setOpaque(false);//Transparent background
 
         //Read player image into JLabel icon
         Image img = PlayerPU.randomIcon();
@@ -44,57 +46,70 @@ public class PlayerPanel extends JPanel {
         icon.setBounds(PlayerPU.icon_x, PlayerPU.icon_y, PlayerPU.icon_w, PlayerPU.icon_h);
         username.setBounds(PlayerPU.label_x, PlayerPU.username_y, PlayerPU.label_w, PlayerPU.label_h);
         status.setBounds(PlayerPU.label_x, PlayerPU.status_y, PlayerPU.label_w, PlayerPU.label_h);
-        cash.setBounds(PlayerPU.label_x, PlayerPU.cash_y, PlayerPU.label_w, PlayerPU.label_h);
-        card1.setBounds(PlayerPU.card1_x, PlayerPU.card_y, PlayerPU.card_w, PlayerPU.card_h);
-        card2.setBounds(PlayerPU.card2_x, PlayerPU.card_y, PlayerPU.card_w, PlayerPU.card_h);
+        remainCash.setBounds(PlayerPU.label_x, PlayerPU.cash_y, PlayerPU.label_w, PlayerPU.label_h);
+        holeCard1.setBounds(PlayerPU.holeCard1_x, PlayerPU.holeCard_y, PlayerPU.holeCard_w, PlayerPU.holeCard_h);
+        holeCard2.setBounds(PlayerPU.holeCard2_x, PlayerPU.holeCard_y, PlayerPU.holeCard_w, PlayerPU.holeCard_h);
 
         //Set Player Panel Bound
-        setPanelBound(orderInArray);
+        setPlayerPanelBound(index);
 
         //Customize displays
         username.setFont(PlayerPU.label_font);
-        cash.setFont(PlayerPU.label_font);
-        cash.setForeground(PlayerPU.label_Color);
+        remainCash.setFont(PlayerPU.label_font);
+        remainCash.setForeground(PlayerPU.label_Color);
         status.setFont(PlayerPU.label_font);
         status.setForeground(PlayerPU.label_Color);
 
-        if(orderInArray == 1){
+        //Local cast username list from MainFrame
+        ArrayList<String> usernames = f.getAllUsernames();
+
+        //The player behind the final player will pay the small blind
+        if(index == usernames.size()-2){
             status.setText("Small Blind: $50");
-        } else if(orderInArray == 2) {
+
+        //The final player hosts the big blind
+        } else if(index == usernames.size()-1) {
             status.setText("Big Blind: $100");
         }
 
-        usernames = f.getUsernames();
-        //If the current username == Client username then Highlight his or her Panel
-        if (usernames.get(orderInArray).equals(f.getMyAccount().getUsername())) {
-            username.setText(f.getMyAccount().getUsername());
-            //Customize player statistics
-            username.setForeground(PlayerPU.pUsername_Color);
-            setHoleCards(true);
-            cash.setText("Cash: $" + f.getMoney().get(orderInArray));
-            f.setMyMoney(f.getMoney().get(orderInArray));
+        //Set text for username label
+        username.setText(usernames.get(index));
 
-        //For other users, Face down the hole cards
+        //Set text for player's cash
+        remainCash.setText("Cash: $" + f.getAllMoney().get(index));
+
+        //If the current username == Client username then Highlight his username
+        if (usernames.get(index).equals(f.getMyAccount().getUsername())) {
+            //Highlight yellow username
+            username.setForeground(PlayerPU.myUsername_Color);
+
+            //Display hole cards for the client
+            setHoleCards(true);
+
+            //Remember this player Money, other just for display
+            f.setMyMoney(f.getAllMoney().get(index));
+
+        //For opponents
         } else {
-            username.setText(usernames.get(orderInArray));
-            //Customize player statistics
-            username.setForeground(PlayerPU.username_Color);
+            //Green Border
+            username.setForeground(PlayerPU.otherUsername_Color);
+
+            //Hide hole cards of other players
             setHoleCards(false);
-            cash.setText("Cash: $" + f.getMoney().get(orderInArray));
 
         }
 
         //Add component
         this.add(icon);
         this.add(username);
-        this.add(cash);
+        this.add(remainCash);
         this.add(status);
-        this.add(card1);
-        this.add(card2);
+        this.add(holeCard1);
+        this.add(holeCard2);
     }
 
     //Set PlayerPanel Bound & Resolution
-    private void setPanelBound(int index){
+    private void setPlayerPanelBound(int index){
         switch(index){
             case 0:
                 this.setBounds(PlayerPU.panel1_x, PlayerPU.panel1_4_y,
@@ -142,20 +157,22 @@ public class PlayerPanel extends JPanel {
                 break;
 
             default:
-                System.out.println("Cannot find the Panel to set bound.");
+                System.out.println("Cannot find the PlayerPanel to set bound.");
         }
     }
 
     //Set hole cards
-    public void setHoleCards(boolean thisPlayer) {
+    public void setHoleCards(boolean isClient) {
 
-        String path1 = PlayerPU.pathPrefix + "0.png";
-        String path2 = PlayerPU.pathPrefix + "0.png";
+        //Default face down hole cards
+        String path1 = PlayerPU.cardsPathPrefix + "0.png";
+        String path2 = PlayerPU.cardsPathPrefix + "0.png";
 
-        if (thisPlayer) {
-            StringTokenizer tokenizer = new StringTokenizer(f.getMyCards(), "-");
-            path1 = PlayerPU.pathPrefix + tokenizer.nextToken() + ".png";
-            path2 = PlayerPU.pathPrefix + tokenizer.nextToken() + ".png";
+        //is client then set the right hole cards
+        if (isClient) {
+            StringTokenizer tokenizer = new StringTokenizer(f.getMyHoleCards(), "-");
+            path1 = PlayerPU.cardsPathPrefix + tokenizer.nextToken() + ".png";
+            path2 = PlayerPU.cardsPathPrefix + tokenizer.nextToken() + ".png";
         }
 
         Image img1 = ImageGetter.getInstance().getImage(path1);
@@ -169,18 +186,18 @@ public class PlayerPanel extends JPanel {
 
         if (img1 != null && img2 != null) {
             ImageIcon imageIcon = new ImageIcon(cardI1);
-            card1.setIcon(imageIcon);
+            holeCard1.setIcon(imageIcon);
             imageIcon = new ImageIcon(cardI2);
-            card2.setIcon(imageIcon);
+            holeCard2.setIcon(imageIcon);
         }
     }
 
-    public void highlightMyTurn() {
-        this.setBorder(PlayerPU.TurnBorder);
+    public void highlightCurrentPlayerTurn() {
+        this.setBorder(PlayerPU.YourTurnBorder);
     }
 
-    public void highlightOtherTurn() {
-        this.setBorder(PlayerPU.PanelBorder);
+    public void waitingStatus() {
+        this.setBorder(PlayerPU.DisableBorder);
     }
 
     public String getUsername() {
@@ -189,5 +206,9 @@ public class PlayerPanel extends JPanel {
 
     public void setStatus(String status) {
         this.status.setText(status);
+    }
+
+    public void setRemainCash(JLabel remainCash) {
+        this.remainCash = remainCash;
     }
 }

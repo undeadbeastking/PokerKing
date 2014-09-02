@@ -23,7 +23,6 @@ public class AutoObtainIP {
 
         System.out.println("Testing 1 - Send Http GET request");
         http.create(Inet4Address.getLocalHost().getHostAddress());
-
     }
 
     // HTTP GET request
@@ -56,7 +55,6 @@ public class AutoObtainIP {
 
         //print result
         System.out.println(response.toString());
-
     }
 
     public String obtainIP() throws Exception {
@@ -89,7 +87,6 @@ public class AutoObtainIP {
         //print result
         System.out.println(response.toString());
         return response.toString();
-
     }
 
     public void delete(String IP) throws Exception {

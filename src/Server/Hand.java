@@ -931,12 +931,13 @@ public class Hand {
                                 sortedHighCards[index] = lowerHoleCard;
                                 index++;
 
-                                for (int i = 13; i > higherHoleCard.getRank(); i++) {
+                                for (int i = 13; i > higherHoleCard.getRank(); i--) {
                                     if(rank[i] == 1){
-                                        neededCard--;
+
                                         for (int j = 2; j < 7; j++) {
                                             if(cards[j].getRank() == i){
                                                 sortedHighCards[index] = cards[j];
+                                                neededCard--;
                                                 break;
                                             }
                                         }
@@ -950,10 +951,10 @@ public class Hand {
                                 if(neededCard != 0){
                                     for (int i = higherHoleCard.getRank()-1; i > 1; i--) {
                                         if(rank[i] == 1){
-                                            neededCard--;
                                             for (int j = 2; j < 7; j++) {
                                                 if(cards[j].getRank() == i){
                                                     sortedHighCards[index] = cards[j];
+                                                    neededCard--;
                                                     break;
                                                 }
                                             }
@@ -977,11 +978,11 @@ public class Hand {
                             } else {
                                 for (int i = 13; i > higherHoleCard.getRank(); i--) {
                                     if(rank[i] == 1){
-                                        neededCard--;
                                         for (int j = 2; j < 7; j++) {
                                             if(cards[j].getRank() == i){
                                                 sortedHighCards[index] = cards[j];
                                                 index++;
+                                                neededCard--;
                                                 break;
                                             }
                                         }

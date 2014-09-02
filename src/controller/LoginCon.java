@@ -2,16 +2,12 @@ package controller;
 
 import Utils.SignUpPU;
 import Utils.Utils;
-import Utils.GamePU;
 import model.Account;
-import model.Data;
 import view.LoginPanel;
 import view.MainFrame;
 
 import javax.swing.*;
 import java.awt.event.*;
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * Created by Agatha of Wood Beyond on 7/2/2014.
@@ -27,19 +23,19 @@ public class LoginCon {
         LoginPanel local = f.getLoginPanel();
 
         //Add FocusListener for Input Fields
-        local.getUsernameF().addFocusListener(new JFieldListener());
-        local.getPasswordF().addFocusListener(new JFieldListener());
+        local.getUsernameF().addFocusListener(new JFieldFocusListener());
+        local.getPasswordF().addFocusListener(new JFieldFocusListener());
 
         //Add MouseListener to Signup button
-        local.getSignUp().addMouseListener(new SignUpListener());
+        local.getSignUpButton().addMouseListener(new SignUpListener());
 
         //Add ActionListener to Signin button anf fields (Enter event)
-        local.getSignIn().addActionListener(new ActionList());
-        local.getUsernameF().addActionListener(new ActionList());
-        local.getPasswordF().addActionListener(new ActionList());
+        local.getSignInButton().addActionListener(new LoginListener());
+        local.getUsernameF().addActionListener(new LoginListener());
+        local.getPasswordF().addActionListener(new LoginListener());
     }
 
-    private class ActionList implements ActionListener {
+    private class LoginListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
             //Local cast
@@ -51,12 +47,13 @@ public class LoginCon {
 
             //Pack account and send to server
             Account temp = new Account(username, password);
+            System.out.println(temp);
             f.setMe(temp);
             f.getServer().write(temp);
         }
     }
 
-    private class JFieldListener implements FocusListener {
+    private class JFieldFocusListener implements FocusListener {
         @Override
         public void focusGained(FocusEvent e) {
             JTextField usernameRef;
@@ -138,12 +135,12 @@ public class LoginCon {
 
         @Override
         public void mouseEntered(MouseEvent e) {
-            f.getLoginPanel().getSignUp().setFont(Utils.hyperButFocusState);
+            f.getLoginPanel().getSignUpButton().setFont(Utils.hyperButFocusState);
         }
 
         @Override
         public void mouseExited(MouseEvent e) {
-            f.getLoginPanel().getSignUp().setFont(Utils.hyperButUnfocusState);
+            f.getLoginPanel().getSignUpButton().setFont(Utils.hyperButUnfocusState);
         }
     }
 }
