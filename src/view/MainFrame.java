@@ -99,6 +99,8 @@ public class MainFrame extends JFrame implements Runnable {
 
         }
         Socket socket = new Socket(serverAddress, PORT);
+
+        //*******************Must init oos first else Exceptions??**************** Cannot resolve
         ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
         ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
 
