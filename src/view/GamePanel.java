@@ -141,11 +141,43 @@ public class GamePanel extends JPanel {
 
     public void setTurn(boolean isMyTurn, String currentTurnUsername) {
         if (isMyTurn) {
-            callBut.setEnabled(true);
             foldBut.setEnabled(true);
-            raiseBut.setEnabled(true);
             increaseMonButton.setEnabled(true);
             decreaseMonButton.setEnabled(true);
+            callBut.setEnabled(true);
+            raiseBut.setEnabled(false);
+
+            StringTokenizer tokenizer = new StringTokenizer(f.getGamePanel().getBetAmountLabel().getText(), "$");
+            int currentBet = Integer.valueOf(tokenizer.nextToken());
+
+            //Calculate if the player have enough money?
+            int neededToAdd = f.getCurrentHighestBet() - currentBet;
+            int moneyRemain = f.getMyMoney() - neededToAdd;
+
+            //Can only All in or Fold
+            if(moneyRemain <= 0){
+                increaseMonButton.setEnabled(false);
+                decreaseMonButton.setEnabled(false);
+                callBut.setEnabled(false);
+
+                //All in button
+                raiseBut.setEnabled(true);
+                raiseBut.setText("All in");
+
+                //Set All in amount as default
+                currentBet += f.getMyMoney();
+                f.setMyMoney(0);
+
+                //Set them to UI
+                int myIndex = f.getAllUsernames().indexOf(currentTurnUsername);
+                f.getGamePanel().getPlayerPanels().get(myIndex).getRemainCash().setText("Cash: $" + f.getMyMoney());
+                f.getGamePanel().getBetAmountLabel().setText("$" + currentBet);
+
+            } else {
+                //Enough money so set BetAmountLabel to currentHighest
+                f.getGamePanel().getBetAmountLabel().setText("$" + f.getCurrentHighestBet());
+            }
+            
         } else {
             callBut.setEnabled(false);
             foldBut.setEnabled(false);
@@ -165,22 +197,31 @@ public class GamePanel extends JPanel {
     }
 
     public void processResponseFromOtherPlayer(String name, String response) {
+
+        StringTokenizer tokenizer = new StringTokenizer(response, "/");
+
+        String status = tokenizer.nextToken();
+        String pot = tokenizer.nextToken();
+        String playerMoney = tokenizer.nextToken();
+
+        //Set that player status, money
         for (int i = 0; i < playerPanels.size(); i++) {
             if (name.equals(playerPanels.get(i).getUsername())) {
-                playerPanels.get(i).setStatus(response);
+                playerPanels.get(i).setStatus(status);
+                playerPanels.get(i).getRemainCash().setText("Cash: $" + playerMoney);
             }
         }
 
+        //Set Pot
+        potLabel.setText("Pot: $" + pot);
+
         //Set current highestRaise
         if(response.startsWith("Raise")) {
-            StringTokenizer bet = new StringTokenizer(response, "$");
-            bet.nextToken();
-            f.setCurrentHighestBet(Integer.valueOf(bet.nextToken()));
-            System.out.println(f.getCurrentHighestBet());
-        }
+            StringTokenizer bet = new StringTokenizer(status, "$");
+            bet.nextToken();//ignore String "Raise"
 
-        //A player will need to draw this much money when it is his turn
-        betAmountLabel.setText("$" + f.getCurrentHighestBet());
+            f.setCurrentHighestBet(Integer.valueOf(bet.nextToken()));
+        }
     }
 
     public void setCommunityCards() {

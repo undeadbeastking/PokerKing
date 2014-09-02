@@ -41,8 +41,8 @@ public class GameCon {
         public void actionPerformed(ActionEvent e) {
             System.out.println("Call");
             StringTokenizer tokenizer = new StringTokenizer(f.getGamePanel().getBetAmountLabel().getText(), "$");
-            int currentBetAmount = Integer.valueOf(tokenizer.nextToken());
-            f.getServer().write(currentBetAmount);
+            int bet = Integer.valueOf(tokenizer.nextToken());
+            f.getServer().write(bet);
         }
     }
 

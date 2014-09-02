@@ -76,7 +76,12 @@ public class PlayerPanel extends JPanel {
         username.setText(usernames.get(index));
 
         //Set text for player's cash
-        remainCash.setText("Cash: $" + f.getAllMoney().get(index));
+        //First one will be expected to used $100 to match a Call
+        if(index == 0){
+            remainCash.setText("Cash: $" + (f.getAllMoney().get(index) - f.getCurrentHighestBet()));
+        } else {
+            remainCash.setText("Cash: $" + f.getAllMoney().get(index));
+        }
 
         //If the current username == Client username then Highlight his username
         if (usernames.get(index).equals(f.getMyAccount().getUsername())) {
