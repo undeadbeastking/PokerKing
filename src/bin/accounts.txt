@@ -8,3 +8,10 @@ ahri,123
 robin,123
 tiger,123
 lion,123
+nami,123
+fizz,123
+ursa,123
+banana,123
+cute,123
+quang,123
+linh,123

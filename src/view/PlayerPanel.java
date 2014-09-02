@@ -15,23 +15,22 @@ import java.util.StringTokenizer;
  */
 public class PlayerPanel extends JPanel {
 
+    private MainFrame f;
+
     private JLabel icon = new JLabel();
     private JLabel username = new JLabel();
     private JLabel status = new JLabel();
-    private JLabel cash = new JLabel();
-    private JLabel bet = new JLabel("Bet: $" + 0);
-    //Cards
-    private JLabel card1 = new JLabel();
-    private JLabel card2 = new JLabel();
-    private MainFrame f;
-    //Players info
-    private ArrayList<String> usernames;
+    private JLabel remainCash = new JLabel();
 
-    public PlayerPanel(int orderInArray, MainFrame frame) {
+    //Hole Cards
+    private JLabel holeCard1 = new JLabel();
+    private JLabel holeCard2 = new JLabel();
+
+    public PlayerPanel(int index, MainFrame frame) {
         //Customize player panel
+        this.f = frame;
         this.setLayout(null);
         this.setOpaque(false);
-        this.f = frame;
 
         //Read player image into JLabel icon
         Image img = PlayerPU.randomIcon();
@@ -45,37 +44,41 @@ public class PlayerPanel extends JPanel {
         icon.setBounds(PlayerPU.icon_x, PlayerPU.icon_y, PlayerPU.icon_w, PlayerPU.icon_h);
         username.setBounds(PlayerPU.label_x, PlayerPU.username_y, PlayerPU.label_w, PlayerPU.label_h);
         status.setBounds(PlayerPU.label_x, PlayerPU.status_y, PlayerPU.label_w, PlayerPU.label_h);
-        cash.setBounds(PlayerPU.label_x, PlayerPU.cash_y, PlayerPU.label_w, PlayerPU.label_h);
-        card1.setBounds(PlayerPU.card1_x, PlayerPU.card_y, PlayerPU.card_w, PlayerPU.card_h);
-        card2.setBounds(PlayerPU.card2_x, PlayerPU.card_y, PlayerPU.card_w, PlayerPU.card_h);
-        bet.setBounds(PlayerPU.bet_x, PlayerPU.bet_y, PlayerPU.label_w, PlayerPU.label_h);
+        remainCash.setBounds(PlayerPU.label_x, PlayerPU.cash_y, PlayerPU.label_w, PlayerPU.label_h);
+        holeCard1.setBounds(PlayerPU.holeCard1_x, PlayerPU.holeCard_y, PlayerPU.holeCard_w, PlayerPU.holeCard_h);
+        holeCard2.setBounds(PlayerPU.holeCard2_x, PlayerPU.holeCard_y, PlayerPU.holeCard_w, PlayerPU.holeCard_h);
 
         //Set Player Panel Bound
-        setPanelBound(orderInArray);
+        setPanelBound(index);
 
         //Customize displays
         username.setFont(PlayerPU.label_font);
-        cash.setText("Cash: $" + 1000);
-        cash.setFont(PlayerPU.label_font);
-        cash.setForeground(PlayerPU.label_Color);
+        remainCash.setText("Cash: $" + 1000);
+        remainCash.setFont(PlayerPU.label_font);
+        remainCash.setForeground(PlayerPU.label_Color);
         status.setFont(PlayerPU.label_font);
         status.setForeground(PlayerPU.label_Color);
-        bet.setFont(PlayerPU.label_font);
-        bet.setForeground(PlayerPU.label_Color);
 
-        usernames = f.getUsernames();
-        //If the current username == Client username then Highlight his or her Panel
-        if (usernames.get(orderInArray).equals(f.getMyAccount().getUsername())) {
-            username.setText(f.getMyAccount().getUsername());
-            //Customize player statistics
-            username.setForeground(PlayerPU.pUsername_Color);
+        //Get usernames list from MainFrame
+        ArrayList<String> usernames = f.getUsernames();
+
+        //Set Text username
+        username.setText(usernames.get(index));
+
+        if (usernames.get(index).equals(f.getMyAccount().getUsername())) {
+
+            //Highlight my username
+            username.setForeground(PlayerPU.myUsername_Color);
+
+            //Display my hole cards
             setHoleCards(true);
 
-        //For other users, Face down the hole cards
         } else {
-            username.setText(usernames.get(orderInArray));
-            //Customize player statistics
-            username.setForeground(PlayerPU.username_Color);
+
+            //Normal color username
+            username.setForeground(PlayerPU.otherUsername_Color);
+
+            //Face down hole cards
             setHoleCards(false);
 
         }
@@ -83,59 +86,50 @@ public class PlayerPanel extends JPanel {
         //Add component
         this.add(icon);
         this.add(username);
-        this.add(cash);
+        this.add(remainCash);
         this.add(status);
-        this.add(card1);
-        this.add(card2);
-        this.add(bet);
+
+        this.add(holeCard1);
+        this.add(holeCard2);
     }
 
-    //Set PlayerPanel Bound & Resolution
+    //Set PlayerPanel Bound & Resolution based on index
     private void setPanelBound(int index){
         switch(index){
             case 0:
-                this.setBounds(PlayerPU.panel1_x, PlayerPU.panel1_4_y,
-                        PlayerPU.width, PlayerPU.height);
+                this.setBounds(PlayerPU.panel1_x, PlayerPU.panel1_4_y, PlayerPU.width, PlayerPU.height);
                 break;
 
             case 1:
-                this.setBounds(PlayerPU.panel2_x, PlayerPU.panel2_3_y,
-                        PlayerPU.width, PlayerPU.height);
+                this.setBounds(PlayerPU.panel2_x, PlayerPU.panel2_3_y, PlayerPU.width, PlayerPU.height);
                 break;
 
             case 2:
-                this.setBounds(PlayerPU.panel3_x, PlayerPU.panel2_3_y,
-                        PlayerPU.width, PlayerPU.height);
+                this.setBounds(PlayerPU.panel3_x, PlayerPU.panel2_3_y, PlayerPU.width, PlayerPU.height);
                 break;
 
             case 3:
-                this.setBounds(PlayerPU.panel4_x, PlayerPU.panel1_4_y,
-                        PlayerPU.width, PlayerPU.height);
+                this.setBounds(PlayerPU.panel4_x, PlayerPU.panel1_4_y, PlayerPU.width, PlayerPU.height);
                 break;
 
             case 4:
-                this.setBounds(PlayerPU.panel5_x, PlayerPU.panel5_9_y,
-                        PlayerPU.width, PlayerPU.height);
+                this.setBounds(PlayerPU.panel5_x, PlayerPU.panel5_9_y, PlayerPU.width, PlayerPU.height);
                 break;
 
             case 5:
-                this.setBounds(PlayerPU.panel6_x, PlayerPU.panel6_8_y,
-                        PlayerPU.width, PlayerPU.height);
+                this.setBounds(PlayerPU.panel6_x, PlayerPU.panel6_8_y, PlayerPU.width, PlayerPU.height);
                 break;
 
             case 6:
-                this.setBounds(PlayerPU.panel7_x, PlayerPU.panel7_y,
-                        PlayerPU.width, PlayerPU.height);
+                this.setBounds(PlayerPU.panel7_x, PlayerPU.panel7_y, PlayerPU.width, PlayerPU.height);
                 break;
 
             case 7:
-                this.setBounds(PlayerPU.panel8_x, PlayerPU.panel6_8_y,
-                        PlayerPU.width, PlayerPU.height);
+                this.setBounds(PlayerPU.panel8_x, PlayerPU.panel6_8_y, PlayerPU.width, PlayerPU.height);
                 break;
 
             case 8:
-                this.setBounds(PlayerPU.panel9_x, PlayerPU.panel5_9_y,
-                        PlayerPU.width, PlayerPU.height);
+                this.setBounds(PlayerPU.panel9_x, PlayerPU.panel5_9_y, PlayerPU.width, PlayerPU.height);
                 break;
 
             default:
@@ -150,7 +144,7 @@ public class PlayerPanel extends JPanel {
         String path2 = PlayerPU.pathPrefix + "0.png";
 
         if (thisPlayer) {
-            StringTokenizer tokenizer = new StringTokenizer(f.getMyCards(), "-");
+            StringTokenizer tokenizer = new StringTokenizer(f.getMyHoleCards(), "-");
             path1 = PlayerPU.pathPrefix + tokenizer.nextToken() + ".png";
             path2 = PlayerPU.pathPrefix + tokenizer.nextToken() + ".png";
         }
@@ -166,18 +160,18 @@ public class PlayerPanel extends JPanel {
 
         if (img1 != null && img2 != null) {
             ImageIcon imageIcon = new ImageIcon(cardI1);
-            card1.setIcon(imageIcon);
+            holeCard1.setIcon(imageIcon);
             imageIcon = new ImageIcon(cardI2);
-            card2.setIcon(imageIcon);
+            holeCard2.setIcon(imageIcon);
         }
     }
 
     public void highlightMyTurn() {
-        this.setBorder(PlayerPU.TurnBorder);
+        this.setBorder(PlayerPU.MyTurnBorder);
     }
 
     public void highlightOtherTurn() {
-        this.setBorder(PlayerPU.PanelBorder);
+        this.setBorder(PlayerPU.NotMyTurnBorder);
     }
 
     public String getUsername() {

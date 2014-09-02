@@ -20,9 +20,7 @@ public class AutoObtainIP {
     public static void main(String[] args) throws Exception {
 
         AutoObtainIP http = new AutoObtainIP();
-
         http.create(Inet4Address.getLocalHost().getHostAddress());
-
     }
 
     // HTTP GET request
@@ -40,8 +38,6 @@ public class AutoObtainIP {
         con.setRequestProperty("User-Agent", USER_AGENT);
 
         int responseCode = con.getResponseCode();
-//        System.out.println("\nSending 'GET' request to URL : " + url);
-//        System.out.println("Response Code : " + responseCode);
 
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(con.getInputStream()));
@@ -53,14 +49,11 @@ public class AutoObtainIP {
         }
         in.close();
 
-        //print result
-//        System.out.println("Response Code : " + responseCode + " " + response.toString());
         if (response.toString().equals("QUERYSUCCESS")) {
             System.out.println("New server is created");
         } else {
             System.out.println("Someone else is running the server");
         }
-
     }
 
     public String obtainIP() throws Exception {
@@ -71,15 +64,13 @@ public class AutoObtainIP {
         URL obj = new URL(url);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 
-        // optional default is GET
+        //optional default is GET
         con.setRequestMethod("GET");
 
         //add request header
         con.setRequestProperty("User-Agent", USER_AGENT);
 
         int responseCode = con.getResponseCode();
-//        System.out.println("\nSending 'GET' request to URL : " + url);
-//        System.out.println("Response Code : " + responseCode);
 
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(con.getInputStream()));
@@ -91,8 +82,6 @@ public class AutoObtainIP {
         }
         in.close();
 
-        //print result
-//        System.out.println("Response Code : " + responseCode + " " + response.toString());
         if (response.toString() != null){
             result = response.toString();
         }
@@ -114,8 +103,6 @@ public class AutoObtainIP {
         con.setRequestProperty("User-Agent", USER_AGENT);
 
         int responseCode = con.getResponseCode();
-//        System.out.println("\nSending 'GET' request to URL : " + url);
-//        System.out.println("Response Code : " + responseCode);
 
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(con.getInputStream()));
@@ -128,7 +115,6 @@ public class AutoObtainIP {
         in.close();
 
         //print result
-//        System.out.println("Response Code : " + responseCode + " " + response.toString());
         if (response.toString().equals("QUERYSUCCESS")) {
             System.out.println("Existing server has been removed");
         }

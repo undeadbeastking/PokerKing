@@ -13,8 +13,8 @@ import java.util.Random;
 public class PlayerPU {
 
     //PlayerPanel Utilities
-    public static final Border PanelBorder = new LineBorder(Color.red, 2, false);
-    public static final Border TurnBorder = new LineBorder(Color.green, 2, false);
+    public static final Border NotMyTurnBorder = new LineBorder(Color.red, 2, false);
+    public static final Border MyTurnBorder = new LineBorder(Color.green, 2, false);
 
     //Player panels' bounds
     //Resolutions
@@ -48,29 +48,26 @@ public class PlayerPU {
     public static final int label_x = 5;//Combine bound
     public static final int label_w = 300;//Combine bound
     public static final int label_h = 20;//Combine bound
+
     public static final int username_y = 3;
     public static final int status_y = 105;
     public static final int cash_y = 118;
 
-    //Bet
-    public static final int bet_x = 115;
-    public static final int bet_y = 90;
-
     //Cards
     public static final String pathPrefix = "cards/";
     //cards bounds
-    public static final int card_y = 50;//Combine bound
-    public static final int card_w = 30;//Combine bound
-    public static final int card_h = 30;//Combine bound
-    public static final int card1_x = 120;
-    public static final int card2_x = 145;
+    public static final int holeCard_y = 50;//Combine bound
+    public static final int holeCard_w = 30;//Combine bound
+    public static final int holeCard_h = 30;//Combine bound
+    public static final int holeCard1_x = 120;
+    public static final int holeCard2_x = 145;
 
     //Color & Style
     public static final Font label_font = new Font("Consolas", Font.BOLD, 13);//Combine
     public static final Color label_Color = Color.GREEN;//Combine
     //Username
-    public static final Color username_Color = Color.GREEN;
-    public static final Color pUsername_Color = Color.YELLOW;
+    public static final Color otherUsername_Color = Color.GREEN;
+    public static final Color myUsername_Color = Color.YELLOW;
 
     //Player icon
     //Bounds
