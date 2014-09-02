@@ -47,10 +47,9 @@ public class LoginCon {
 
             //Pack account and send to server
             Account temp = new Account(username, password);
-            System.out.println(temp);
+
             f.setMe(temp);
             f.getServer().write(temp);
-            System.out.println("Sent account info to server");
         }
     }
 

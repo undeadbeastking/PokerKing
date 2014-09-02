@@ -101,18 +101,18 @@ public class SignUpCon {
                     JOptionPane.showMessageDialog(null, "Register successfully");
 
                     //Return to login Panel
-                    toLoginP();
+                    backToLoginPanel();
                 }
             }
 
             //Back Button listener
             if (e.getSource() == local.getBackBut()) {
-                toLoginP();
+                backToLoginPanel();
             }
         }
     }
 
-    private void toLoginP() {
+    private void backToLoginPanel() {
         //Refresh JTextfield and validation field
         f.getSignUpPanel().refreshPanel();
         //Replace Signup Panel with Login Panel

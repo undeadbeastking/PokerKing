@@ -89,6 +89,9 @@ public class PlayerPanel extends JPanel {
             //Remember this player Money, other just for display
             f.setMyMoney(f.getAllMoney().get(index));
 
+            //Set my index
+            f.setMyIndex(index);
+
         //For opponents
         } else {
             //Green Border
@@ -208,7 +211,7 @@ public class PlayerPanel extends JPanel {
         this.status.setText(status);
     }
 
-    public void setRemainCash(JLabel remainCash) {
-        this.remainCash = remainCash;
+    public JLabel getRemainCash() {
+        return remainCash;
     }
 }
