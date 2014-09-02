@@ -23,8 +23,8 @@ public class LoginCon {
         LoginPanel local = f.getLoginPanel();
 
         //Add FocusListener for Input Fields
-        local.getUsernameF().addFocusListener(new JFFocusListener());
-        local.getPasswordF().addFocusListener(new JFFocusListener());
+        local.getUsernameF().addFocusListener(new JFieldFocusListener());
+        local.getPasswordF().addFocusListener(new JFieldFocusListener());
 
         //Add MouseListener to Signup button
         local.getSignUpButton().addMouseListener(new SignUpListener());
@@ -47,12 +47,14 @@ public class LoginCon {
 
             //Pack account and send to server
             Account temp = new Account(username, password);
+            System.out.println(temp);
             f.setMe(temp);
             f.getServer().write(temp);
+            System.out.println("Sent account info to server");
         }
     }
 
-    private class JFFocusListener implements FocusListener {
+    private class JFieldFocusListener implements FocusListener {
         @Override
         public void focusGained(FocusEvent e) {
             JTextField usernameRef;

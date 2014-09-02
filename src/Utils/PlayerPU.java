@@ -13,8 +13,8 @@ import java.util.Random;
 public class PlayerPU {
 
     //PlayerPanel Utilities
-    public static final Border NotMyTurnBorder = new LineBorder(Color.red, 2, false);
-    public static final Border MyTurnBorder = new LineBorder(Color.green, 2, false);
+    public static final Border DisableBorder = new LineBorder(Color.red, 2, false);
+    public static final Border YourTurnBorder = new LineBorder(Color.green, 2, false);
 
     //Player panels' bounds
     //Resolutions
@@ -44,21 +44,20 @@ public class PlayerPU {
     public static final int panel7_x = 405;
     public static final int panel7_y = 415;
 
-    //Username , Status, Bet - x, width, height
+    //Username , Status, total money
     public static final int label_x = 5;//Combine bound
     public static final int label_w = 300;//Combine bound
     public static final int label_h = 20;//Combine bound
-
     public static final int username_y = 3;
     public static final int status_y = 105;
     public static final int cash_y = 118;
 
-    //Cards
-    public static final String pathPrefix = "cards/";
-    //cards bounds
-    public static final int holeCard_y = 50;//Combine bound
+    //Hole Cards
+    public static final String cardsPathPrefix = "cards/";
+    //Bounds
     public static final int holeCard_w = 30;//Combine bound
     public static final int holeCard_h = 30;//Combine bound
+    public static final int holeCard_y = 50;//Combine bound
     public static final int holeCard1_x = 120;
     public static final int holeCard2_x = 145;
 
@@ -184,8 +183,8 @@ public class PlayerPU {
                 path = Sona_icon;
                 break;
         }
-        img = ImageGetter.getInstance().getImage(path);
 
+        img = ImageGetter.getInstance().getImage(path);
         return img;
     }
 }

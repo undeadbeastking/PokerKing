@@ -15,118 +15,128 @@ import java.util.StringTokenizer;
  */
 public class GamePanel extends JPanel {
 
+    private MainFrame f;
+    //Background image
+    private Image backGround;
+
+    //4 - 9 player mini panels
     private ArrayList<PlayerPanel> playerPanels;
 
-    private MainFrame f;
-    private Image backGround;
+    //This label tells which state of Bet round players are in
     private CustBut betRoundLabel = new CustBut("Start a game");
 
+    //Pot, small blind, big blind
     private JLabel potLabel = new JLabel("Pot: $" + 150);
     private JLabel smallBlind = new JLabel("Small Blind: $50");
     private JLabel bigBlind = new JLabel("Big Blind: $100");
 
     //5 Community cards
-    private JLabel comCard1 = new JLabel();
-    private JLabel comCard2 = new JLabel();
-    private JLabel comCard3 = new JLabel();
-    private JLabel comCard4 = new JLabel();
-    private JLabel comCard5 = new JLabel();
+    private JLabel ComCard1 = new JLabel();
+    private JLabel ComCard2 = new JLabel();
+    private JLabel ComCard3 = new JLabel();
+    private JLabel ComCard4 = new JLabel();
+    private JLabel ComCard5 = new JLabel();
 
-    //Function buttons
+    //Bet Function buttons
     private CustBut foldBut = new CustBut("Fold");
     private CustBut callBut = new CustBut("Call");
     private CustBut raiseBut = new CustBut("Raise");
 
     //Money Betting UI
-    private CustBut decreaseMonBut = new CustBut("decrease");
-    private CustBut increaseMonBut = new CustBut("increase");
+    private CustBut decreaseMonButton = new CustBut("decrease");
+    private CustBut increaseMonButton = new CustBut("increase");
     private JLabel betAmountLabel = new JLabel("$100");
 
     public GamePanel(MainFrame frame) {
-
+        //Customize Game Panel
         this.f = frame;
+        this.backGround = ImageGetter.getInstance().getImage(GamePU.backGround);
         setLayout(null);
 
-        //Customize Game Panel
-        this.backGround = ImageGetter.getInstance().getImage(GamePU.backGround);
-
+        //Get community cards from server and put them into Labels, set Invisible -> Waiting to be called
         setCommunityCards();
 
-        //Create all players panels - real player will be added
+        //Create all players panels
         playerPanels = new ArrayList<PlayerPanel>();
 
-        //Get username list from MainFrame
-        ArrayList<String> usernames = f.getUsernames();
-        for (int j = 0; j < usernames.size(); j++) {
+        //Local cast username list
+        ArrayList<String> localAllUsernames;
+        localAllUsernames = f.getAllUsernames();
+        for (int j = 0; j < localAllUsernames.size(); j++) {
             playerPanels.add(new PlayerPanel(j, f));
         }
 
-        //Set bounds for components - fcr = Fall Call Raise
+        //Set bounds for components
         foldBut.setBounds(GamePU.fold_x, GamePU.fcr_y, GamePU.fcr_w, GamePU.fcr_h);
         callBut.setBounds(GamePU.call_x, GamePU.fcr_y, GamePU.fcr_w, GamePU.fcr_h);
         raiseBut.setBounds(GamePU.raise_x, GamePU.fcr_y, GamePU.fcr_w, GamePU.fcr_h);
-        decreaseMonBut.setBounds(GamePU.betDecrease_x, GamePU.betGear_y, GamePU.betGear_w, GamePU.betGear_h);
-        increaseMonBut.setBounds(GamePU.betIncrease_x, GamePU.betGear_y, GamePU.betGear_w, GamePU.betGear_h);
+        decreaseMonButton.setBounds(GamePU.betDecrease_x, GamePU.betGear_y, GamePU.betGear_w, GamePU.betGear_h);
+        increaseMonButton.setBounds(GamePU.betIncrease_x, GamePU.betGear_y, GamePU.betGear_w, GamePU.betGear_h);
         betAmountLabel.setBounds(GamePU.betAmount_x, GamePU.betGear_y, GamePU.betAmount_w, GamePU.betAmount_h);
 
-        //Community cards
-        comCard1.setBounds(GamePU.comCard_x, GamePU.comCard_y, GamePU.comCard_w, GamePU.comCard_h);
-        comCard2.setBounds(GamePU.comCard_x + 120, GamePU.comCard_y, GamePU.comCard_w, GamePU.comCard_h);
-        comCard3.setBounds(GamePU.comCard_x + 240, GamePU.comCard_y, GamePU.comCard_w, GamePU.comCard_h);
-        comCard4.setBounds(GamePU.comCard_x + 360, GamePU.comCard_y, GamePU.comCard_w, GamePU.comCard_h);
-        comCard5.setBounds(GamePU.comCard_x + 480, GamePU.comCard_y, GamePU.comCard_w, GamePU.comCard_h);
+        //Community cards bound
+        ComCard1.setBounds(GamePU.CommuCard_x, GamePU.CommuCard_y, GamePU.CommuCard_w, GamePU.CommuCard_h);
+        ComCard2.setBounds(GamePU.CommuCard_x + 120, GamePU.CommuCard_y, GamePU.CommuCard_w, GamePU.CommuCard_h);
+        ComCard3.setBounds(GamePU.CommuCard_x + 240, GamePU.CommuCard_y, GamePU.CommuCard_w, GamePU.CommuCard_h);
+        ComCard4.setBounds(GamePU.CommuCard_x + 360, GamePU.CommuCard_y, GamePU.CommuCard_w, GamePU.CommuCard_h);
+        ComCard5.setBounds(GamePU.CommuCard_x + 480, GamePU.CommuCard_y, GamePU.CommuCard_w, GamePU.CommuCard_h);
 
-        //Custom Bet round info and set Bound
-        betRoundLabel.setBounds(GamePU.betRoundLabel_x, GamePU.betRoundLabel_y, GamePU.betRoundLabel_w, GamePU.betRoundLabel_h);
-        betRoundLabel.setFont(GamePU.betRoundLabelFont);
+        //Custom Bet round info label and set Bound
+        betRoundLabel.setBounds(GamePU.betRound_x, GamePU.betRound_y, GamePU.betRound_w, GamePU.betRound_h);
+        betRoundLabel.setFont(GamePU.betRoundFont);
 
-        //Pot Label Font, Color and Bound
+        //Pot, small blind, big blind Label Font, Color and Bound
+        //Font
         potLabel.setFont(GamePU.potFont);
         smallBlind.setFont(GamePU.blindFont);
         bigBlind.setFont(GamePU.blindFont);
+        //Bound
         potLabel.setBounds(GamePU.pot_x, GamePU.pot_y, GamePU.pot_blind_w, GamePU.pot_blind_h);
         smallBlind.setBounds(GamePU.blind_x, GamePU.smallBlind_y, GamePU.pot_blind_w, GamePU.pot_blind_h);
         bigBlind.setBounds(GamePU.blind_x, GamePU.bigBlind_y, GamePU.pot_blind_w, GamePU.pot_blind_h);
+        //Set font color
         potLabel.setForeground(Color.GREEN);
         smallBlind.setForeground(Color.GREEN);
         bigBlind.setForeground(Color.GREEN);
 
-        //Bet amount
-        betAmountLabel.setBackground(Color.white);
-        betAmountLabel.setForeground(Color.BLACK);
+        //Bet amount Custom UI
+        betAmountLabel.setBackground(Color.BLACK);
+        betAmountLabel.setForeground(Color.WHITE);
         betAmountLabel.setOpaque(true);
         betAmountLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
-        //Add components - PlayerPanels
+        //Add components
+        //PlayerPanels
         for (int j = 0; j < playerPanels.size(); j++) {
             this.add(playerPanels.get(j));
         }
-//        this.add(back);
+
         this.add(foldBut);
         this.add(callBut);
         this.add(raiseBut);
-        this.add(comCard1);
-        this.add(comCard2);
-        this.add(comCard3);
-        this.add(comCard4);
-        this.add(comCard5);
+
+        this.add(ComCard1);
+        this.add(ComCard2);
+        this.add(ComCard3);
+        this.add(ComCard4);
+        this.add(ComCard5);
+
         this.add(betRoundLabel);
+
         this.add(potLabel);
-        this.add(increaseMonBut);
-        this.add(decreaseMonBut);
-        this.add(betAmountLabel);
         this.add(smallBlind);
         this.add(bigBlind);
+
+        this.add(increaseMonButton);
+        this.add(decreaseMonButton);
+        this.add(betAmountLabel);
 
         //Disable buttons
         callBut.setEnabled(false);
         foldBut.setEnabled(false);
         raiseBut.setEnabled(false);
-    }
-
-    //Draw panel image
-    public void paintComponent(Graphics g) {
-        g.drawImage(backGround, 0, 0, null);
+        increaseMonButton.setEnabled(false);
+        decreaseMonButton.setEnabled(false);
     }
 
     public void setTurn(boolean isMyTurn, String currentTurnUsername) {
@@ -134,27 +144,43 @@ public class GamePanel extends JPanel {
             callBut.setEnabled(true);
             foldBut.setEnabled(true);
             raiseBut.setEnabled(true);
+            increaseMonButton.setEnabled(true);
+            decreaseMonButton.setEnabled(true);
         } else {
             callBut.setEnabled(false);
             foldBut.setEnabled(false);
             raiseBut.setEnabled(false);
+            increaseMonButton.setEnabled(false);
+            decreaseMonButton.setEnabled(false);
         }
 
+        //Highlight the current turn panel, Others will have red highlight as waiting Status
         for (int i = 0; i < playerPanels.size(); i++) {
             if (currentTurnUsername.equals(playerPanels.get(i).getUsername())) {
-                playerPanels.get(i).highlightMyTurn();
+                playerPanels.get(i).highlightCurrentPlayerTurn();
             } else {
-                playerPanels.get(i).highlightOtherTurn();
+                playerPanels.get(i).waitingStatus();
             }
         }
     }
 
-    public void processResponse(String name, String response) {
+    public void processResponseFromOtherPlayer(String name, String response) {
         for (int i = 0; i < playerPanels.size(); i++) {
             if (name.equals(playerPanels.get(i).getUsername())) {
                 playerPanels.get(i).setStatus(response);
             }
         }
+
+        //Set current highestRaise
+        if(response.startsWith("Raise")) {
+            StringTokenizer bet = new StringTokenizer(response, "$");
+            bet.nextToken();
+            f.setCurrentHighestBet(Integer.valueOf(bet.nextToken()));
+            System.out.println(f.getCurrentHighestBet());
+        }
+
+        //A player will need to draw this much money when it is his turn
+        betAmountLabel.setText("$" + f.getCurrentHighestBet());
     }
 
     public void setCommunityCards() {
@@ -162,12 +188,11 @@ public class GamePanel extends JPanel {
         String path1, path2, path3, path4, path5;
 
         StringTokenizer tokenizer = new StringTokenizer(f.getCommuCards(), "-");
-
-        path1 = PlayerPU.pathPrefix + tokenizer.nextToken() + ".png";
-        path2 = PlayerPU.pathPrefix + tokenizer.nextToken() + ".png";
-        path3 = PlayerPU.pathPrefix + tokenizer.nextToken() + ".png";
-        path4 = PlayerPU.pathPrefix + tokenizer.nextToken() + ".png";
-        path5 = PlayerPU.pathPrefix + tokenizer.nextToken() + ".png";
+        path1 = PlayerPU.cardsPathPrefix + tokenizer.nextToken() + ".png";
+        path2 = PlayerPU.cardsPathPrefix + tokenizer.nextToken() + ".png";
+        path3 = PlayerPU.cardsPathPrefix + tokenizer.nextToken() + ".png";
+        path4 = PlayerPU.cardsPathPrefix + tokenizer.nextToken() + ".png";
+        path5 = PlayerPU.cardsPathPrefix + tokenizer.nextToken() + ".png";
 
         Image img1 = ImageGetter.getInstance().getImage(path1);
         Image img2 = ImageGetter.getInstance().getImage(path2);
@@ -177,25 +202,29 @@ public class GamePanel extends JPanel {
 
         ImageIcon imageIcon;
         if (img1 != null && img2 != null && img3 != null && img4 != null && img5 != null) {
-
             imageIcon = new ImageIcon(img1);
-            comCard1.setIcon(imageIcon);
+            ComCard1.setIcon(imageIcon);
             imageIcon = new ImageIcon(img2);
-            comCard2.setIcon(imageIcon);
+            ComCard2.setIcon(imageIcon);
             imageIcon = new ImageIcon(img3);
-            comCard3.setIcon(imageIcon);
+            ComCard3.setIcon(imageIcon);
             imageIcon = new ImageIcon(img4);
-            comCard4.setIcon(imageIcon);
+            ComCard4.setIcon(imageIcon);
             imageIcon = new ImageIcon(img5);
-            comCard5.setIcon(imageIcon);
+            ComCard5.setIcon(imageIcon);
         }
 
-        //Hide all 5 Community cards
-        comCard1.setVisible(false);
-        comCard2.setVisible(false);
-        comCard3.setVisible(false);
-        comCard4.setVisible(false);
-        comCard5.setVisible(false);
+        //Hide all 5 Community cards, waiting for the right bet round to Display
+        ComCard1.setVisible(false);
+        ComCard2.setVisible(false);
+        ComCard3.setVisible(false);
+        ComCard4.setVisible(false);
+        ComCard5.setVisible(false);
+    }
+
+    //Draw panel image
+    public void paintComponent(Graphics g) {
+        g.drawImage(backGround, 0, 0, null);
     }
 
     public ArrayList<PlayerPanel> getPlayerPanels() {
@@ -219,22 +248,39 @@ public class GamePanel extends JPanel {
     }
 
     public JLabel getComCard1() {
-        return comCard1;
+        return ComCard1;
     }
 
     public JLabel getComCard2() {
-        return comCard2;
+        return ComCard2;
     }
 
     public JLabel getComCard3() {
-        return comCard3;
+        return ComCard3;
     }
 
     public JLabel getComCard4() {
-        return comCard4;
+        return ComCard4;
     }
 
     public JLabel getComCard5() {
-        return comCard5;
+        return ComCard5;
     }
+
+    public JLabel getBetAmountLabel() {
+        return betAmountLabel;
+    }
+
+    public CustBut getIncreaseMonButton() {
+        return increaseMonButton;
+    }
+
+    public CustBut getDecreaseMonButton() {
+        return decreaseMonButton;
+    }
+
+    public JLabel getPotLabel() {
+        return potLabel;
+    }
+
 }

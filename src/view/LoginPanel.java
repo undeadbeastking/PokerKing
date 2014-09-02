@@ -13,7 +13,6 @@ import javax.swing.*;
 public class LoginPanel extends JPanel {
 
     private MainFrame f;
-
     //Panel components
     private JLabel introLabel = new JLabel("Welcome to Poker King");
     //Input Fields
@@ -21,7 +20,6 @@ public class LoginPanel extends JPanel {
     private JPasswordField passwordF = new JPasswordField();
     //Input validation Message
     private JLabel errorMess = new JLabel();
-
     //Buttons
     private CustBut signInButton = new CustBut("Sign in");
     private CustBut signUpButton = new CustBut("Sign me up");
@@ -29,17 +27,16 @@ public class LoginPanel extends JPanel {
     public LoginPanel(MainFrame f) {
 
         //Customize Login Panel
-        this.f = f;
         setLayout(null);
         this.setBackground(Utils.backGroundColor);
+        this.f = f;
 
         //Set bounds for components
         introLabel.setBounds(LoginPU.introLabel_x, LoginPU.introLabel_y, LoginPU.introLabel_w, LoginPU.introLabel_h);
         usernameF.setBounds(LoginPU.inputField_x, LoginPU.usernameF_y, LoginPU.inputField_w, LoginPU.inputField_h);
         passwordF.setBounds(LoginPU.inputField_x, LoginPU.passwordF_y, LoginPU.inputField_w, LoginPU.inputField_h);
-
-        signInButton.setBounds(LoginPU.signInButton_x, LoginPU.signInButton_y, LoginPU.button_w, LoginPU.button_h);
-        signUpButton.setBounds(LoginPU.signUpButton_x, LoginPU.signUpButton_y, LoginPU.button_w, LoginPU.button_h);
+        signInButton.setBounds(LoginPU.signIn_x, LoginPU.signIn_y, LoginPU.button_w, LoginPU.button_h);
+        signUpButton.setBounds(LoginPU.signUp_x, LoginPU.signUp_y, LoginPU.button_w, LoginPU.button_h);
         errorMess.setBounds(LoginPU.error_x, LoginPU.error_y, LoginPU.error_w, LoginPU.error_h);
 
         //Add components
@@ -66,9 +63,9 @@ public class LoginPanel extends JPanel {
         refreshPanel();
     }
 
-    public void loadWaiting(){
+    public void loadWaitingUI(){
         errorMess.setText("*Waiting for other players");
-        //Prevent UI Interaction
+        //Prevent UI Interaction while waiting for other Players
         signUpButton.setEnabled(false);
         signInButton.setEnabled(false);
         usernameF.setEnabled(false);
