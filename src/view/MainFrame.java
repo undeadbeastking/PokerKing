@@ -36,15 +36,23 @@ public class MainFrame extends JFrame implements Runnable {
     private SignUpCon signUpCon;
     private GameCon gameCon;
 
-    //CLient user
+    //Client
+    //Connection components
     private static final int PORT = 9000;
     private String serverAddress = "localhost";
     private PlayerCommunicator server;
+    private AutoObtainIP autoObtainIP = new AutoObtainIP();
+
+    //My account
     private Account me;
-    private String myCards, commuCards, currentTurnUsername;
+
+    //All usernames
     private ArrayList<String> usernames;
+
+    //Bets and turns,...
+    private String myHoleCards, commuCards, currentTurnUsername;
+
     private boolean winnerFound = false;
-     AutoObtainIP autoObtainIP = new AutoObtainIP();
 
     public MainFrame() {
 
@@ -91,6 +99,8 @@ public class MainFrame extends JFrame implements Runnable {
 
         }
         Socket socket = new Socket(serverAddress, PORT);
+
+        //*******************Must init oos first else Exceptions??**************** Cannot resolve
         ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
         ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
 
@@ -140,24 +150,24 @@ public class MainFrame extends JFrame implements Runnable {
                             BetState e = (BetState) betState;
 
                             if (e == BetState.FirstBet) {
-                                gamePanel.getBetRound().setText("Pre-Flop");
+                                gamePanel.getBetRoundLabel().setText("Pre-Flop");
 
                             } else if (e == BetState.SecondBet) {
-                                gamePanel.getBetRound().setText("The Flop");
-                                gamePanel.getCard1().setVisible(true);
-                                gamePanel.getCard2().setVisible(true);
-                                gamePanel.getCard3().setVisible(true);
+                                gamePanel.getBetRoundLabel().setText("The Flop");
+                                gamePanel.getComCard1().setVisible(true);
+                                gamePanel.getComCard2().setVisible(true);
+                                gamePanel.getComCard3().setVisible(true);
 
                             } else if (e == BetState.ThirdBet) {
-                                gamePanel.getBetRound().setText("The Turn");
-                                gamePanel.getCard4().setVisible(true);
+                                gamePanel.getBetRoundLabel().setText("The Turn");
+                                gamePanel.getComCard4().setVisible(true);
 
                             } else if (e == BetState.FourBet) {
-                                gamePanel.getBetRound().setText("The River");
-                                gamePanel.getCard5().setVisible(true);
+                                gamePanel.getBetRoundLabel().setText("The River");
+                                gamePanel.getComCard5().setVisible(true);
 
                             } else if(e == BetState.FourBet.ShowDown){
-                                gamePanel.getBetRound().setText("ShowDown");
+                                gamePanel.getBetRoundLabel().setText("ShowDown");
                             }
                         }
 
@@ -184,7 +194,7 @@ public class MainFrame extends JFrame implements Runnable {
         if (fromServer != null) {
             String cards = fromServer.toString();
             StringTokenizer tokenizer = new StringTokenizer(cards, "/");
-            myCards = tokenizer.nextToken();
+            myHoleCards = tokenizer.nextToken();
             commuCards = tokenizer.nextToken();
             System.out.println(cards);
         } else {
@@ -289,8 +299,8 @@ public class MainFrame extends JFrame implements Runnable {
         return commuCards;
     }
 
-    public String getMyCards() {
-        return myCards;
+    public String getMyHoleCards() {
+        return myHoleCards;
     }
 
     public ArrayList<String> getUsernames() {

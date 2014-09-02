@@ -13,49 +13,46 @@ import javax.swing.*;
 public class LoginPanel extends JPanel {
 
     private MainFrame f;
+
     //Panel components
-    private JLabel intro = new JLabel("Welcome to Poker King");
+    private JLabel introLabel = new JLabel("Welcome to Poker King");
     //Input Fields
     private JTextField usernameF = new JTextField();
     private JPasswordField passwordF = new JPasswordField();
     //Input validation Message
     private JLabel errorMess = new JLabel();
+
     //Buttons
-    private CustBut signIn = new CustBut("Sign in");
-    private CustBut signUp = new CustBut("Sign me up");
+    private CustBut signInButton = new CustBut("Sign in");
+    private CustBut signUpButton = new CustBut("Sign me up");
 
     public LoginPanel(MainFrame f) {
 
         //Customize Login Panel
+        this.f = f;
         setLayout(null);
         this.setBackground(Utils.backGroundColor);
-        this.f = f;
 
         //Set bounds for components
-        intro.setBounds(LoginPU.intro_x, LoginPU.intro_y,
-                LoginPU.intro_w, LoginPU.intro_h);
-        usernameF.setBounds(LoginPU.field_x, LoginPU.usernameF_y,
-                LoginPU.field_w, LoginPU.field_h);
-        passwordF.setBounds(LoginPU.field_x, LoginPU.passwordF_y,
-                LoginPU.field_w, LoginPU.field_h);
-        signIn.setBounds(LoginPU.signIn_x, LoginPU.signIn_y,
-                LoginPU.but_w, LoginPU.but_h);
-        signUp.setBounds(LoginPU.signUp_x, LoginPU.signUp_y,
-                LoginPU.but_w, LoginPU.but_h);
-        errorMess.setBounds(LoginPU.error_x, LoginPU.error_y,
-                LoginPU.error_w, LoginPU.error_h);
+        introLabel.setBounds(LoginPU.introLabel_x, LoginPU.introLabel_y, LoginPU.introLabel_w, LoginPU.introLabel_h);
+        usernameF.setBounds(LoginPU.inputField_x, LoginPU.usernameF_y, LoginPU.inputField_w, LoginPU.inputField_h);
+        passwordF.setBounds(LoginPU.inputField_x, LoginPU.passwordF_y, LoginPU.inputField_w, LoginPU.inputField_h);
+
+        signInButton.setBounds(LoginPU.signInButton_x, LoginPU.signInButton_y, LoginPU.button_w, LoginPU.button_h);
+        signUpButton.setBounds(LoginPU.signUpButton_x, LoginPU.signUpButton_y, LoginPU.button_w, LoginPU.button_h);
+        errorMess.setBounds(LoginPU.error_x, LoginPU.error_y, LoginPU.error_w, LoginPU.error_h);
 
         //Add components
-        this.add(intro);
+        this.add(introLabel);
         this.add(usernameF);
         this.add(passwordF);
-        this.add(signIn);
-        this.add(signUp);
+        this.add(signInButton);
+        this.add(signUpButton);
         this.add(errorMess);
 
         //Customize Introduction label
-        intro.setFont(LoginPU.IntroFont);
-        intro.setForeground(LoginPU.IntroColor);
+        introLabel.setFont(LoginPU.IntroFont);
+        introLabel.setForeground(LoginPU.IntroColor);
 
         //Set border for JTextFields
         usernameF.setBorder(Utils.JFColorBorder);
@@ -72,8 +69,8 @@ public class LoginPanel extends JPanel {
     public void loadWaiting(){
         errorMess.setText("*Waiting for other players");
         //Prevent UI Interaction
-        signUp.setEnabled(false);
-        signIn.setEnabled(false);
+        signUpButton.setEnabled(false);
+        signInButton.setEnabled(false);
         usernameF.setEnabled(false);
         passwordF.setEnabled(false);
     }
@@ -83,11 +80,11 @@ public class LoginPanel extends JPanel {
         errorMess.setText("");
 
         //Set signup button Unfocus State
-        signUp.setFont(Utils.hyperButUnfocusState);
+        signUpButton.setFont(Utils.hyperButUnfocusState);
 
         //Enable buttons
-        signUp.setEnabled(true);
-        signIn.setEnabled(true);
+        signUpButton.setEnabled(true);
+        signInButton.setEnabled(true);
         usernameF.setEnabled(true);
         passwordF.setEnabled(true);
 
@@ -110,12 +107,12 @@ public class LoginPanel extends JPanel {
         return passwordF;
     }
 
-    public CustBut getSignIn() {
-        return signIn;
+    public CustBut getSignInButton() {
+        return signInButton;
     }
 
-    public JButton getSignUp() {
-        return signUp;
+    public JButton getSignUpButton() {
+        return signUpButton;
     }
 
     public JLabel getErrorMess() {

@@ -27,8 +27,8 @@ public class SignUpCon {
         SignUpPanel local = f.getSignUpPanel();
 
         //Add FocusListener to fields
-        local.getUsernameF().addFocusListener(new JFieldListener());
-        local.getPasswordF().addFocusListener(new JFieldListener());
+        local.getUsernameF().addFocusListener(new JFFocusListener());
+        local.getPasswordF().addFocusListener(new JFFocusListener());
 
         //Add ActionListener for buttons
         local.getBackBut().addActionListener(new ActionList());
@@ -101,17 +101,17 @@ public class SignUpCon {
                     JOptionPane.showMessageDialog(null, "Register successfully");
 
                     //Return to login
-                    toLoginP();
+                    backToLoginPanel();
                 }
             }
 
             if (e.getSource() == local.getBackBut()) {
-                toLoginP();
+                backToLoginPanel();
             }
         }
     }
 
-    private void toLoginP() {
+    private void backToLoginPanel() {
         //Refresh JTextfield and validation field
         f.getSignUpPanel().refreshPanel();
         //Replace Signup Panel with Login Panel
@@ -125,7 +125,7 @@ public class SignUpCon {
         f.repaint();
     }
 
-    private class JFieldListener implements FocusListener {
+    private class JFFocusListener implements FocusListener {
         @Override
         public void focusGained(FocusEvent e) {
             JTextField usernameRef;

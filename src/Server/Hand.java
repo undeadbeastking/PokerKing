@@ -264,7 +264,7 @@ public class Hand {
                             }
                         }
                     } else {
-                        for (int i = 13; i > 1; i++) {
+                        for (int i = 13; i > 1; i--) {
                             if (bigQuanRank != i && rank[i] > 0) {
                                 //Get the suit of a card at that rank from Community
                                 for (int j = 2; j <= 6; j++) {
@@ -599,7 +599,7 @@ public class Hand {
                                 higherRank = 1;
                                 cardToFillIn--;
                             }
-                            for (int i = 13; i > 1; i++) {
+                            for (int i = 13; i > 1; i--) {
                                 if (rank[i] == 1) {
                                     if (cardToFillIn == 1) {
                                         smallerRank = i;
@@ -931,7 +931,7 @@ public class Hand {
                                 sortedHighCards[index] = lowerHoleCard;
                                 index++;
 
-                                for (int i = 13; i > higherHoleCard.getRank(); i++) {
+                                for (int i = 13; i > higherHoleCard.getRank(); i--) {
                                     if(rank[i] == 1){
                                         neededCard--;
                                         for (int j = 2; j < 7; j++) {

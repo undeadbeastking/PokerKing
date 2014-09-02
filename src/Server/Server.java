@@ -44,13 +44,13 @@ public class Server extends JFrame implements Runnable {
 
             //Print out server ip
             try {
-                System.out.println("Server is running. The IP is: \n" + Inet4Address.getLocalHost().getHostAddress() + "\n\n");
+                System.out.println("Server is running. The IP is: \n" + Inet4Address.getLocalHost().getHostAddress() + "\n");
                 IP = Inet4Address.getLocalHost().getHostAddress();
                 autoObtainIP.delete(autoObtainIP.obtainIP());
                 autoObtainIP.create(IP);
 
             } catch (Exception e) {
-                System.out.println("Can not find server ip!");
+                System.out.println("Cannot find server ip!");
             }
 
         } catch (IOException e) {
@@ -83,7 +83,8 @@ public class Server extends JFrame implements Runnable {
         });
 
         //JLabel info
-        JLabel serverState = new JLabel("<html>Port: " + PORT +
+        JLabel serverState = new JLabel("<html>" +
+                "Port: " + PORT +
                 "<br>Server IP: " + IP +
                 "<br>Number of players allowed in a Room: " + numberOfPlayersInARoom +
                 "<br>Server is running." + "</html>", SwingConstants.CENTER);
@@ -99,7 +100,7 @@ public class Server extends JFrame implements Runnable {
     }
 
     @Override
-    public synchronized void run() {
+    public void run() {
 
         while (true) {
             RoomHandler roomHandler = new RoomHandler(numberOfPlayersInARoom);
@@ -125,9 +126,9 @@ public class Server extends JFrame implements Runnable {
                     break;
                 }
             }
-            System.out.println("\n\nEnough players, Create another Room.");
+            System.out.println("\nEnough players, Create another Room.");
+            System.out.println("~~~~~~~~~~~~~~~//////~~~~~~~~~~~~~~\n");
             roomNumber++;
-            System.out.println("~~~~~~~~~~~~~~~//////~~~~~~~~~~~~~~\n\n");
         }
     }
 
@@ -163,12 +164,13 @@ public class Server extends JFrame implements Runnable {
                     Socket socket = null;
                     try {
                         socket = server.accept();
-                        System.out.println("Player " + playerNum + " of Room " + roomNum + " established the connection successfully.");
+                        System.out.println("A new Player " + playerNum + " of Room " + roomNum + " established the connection successfully.");
                         PlayerCommunicator player = new PlayerCommunicator(
                                 socket,
                                 new ObjectInputStream(socket.getInputStream()),
                                 new ObjectOutputStream(socket.getOutputStream())
                         );
+
                         new Thread(new WaitingForValidation(roomHandler, player, playerNum, roomNum)).start();
 
                     } catch (IOException e1) {
@@ -179,7 +181,7 @@ public class Server extends JFrame implements Runnable {
                     break;
                 }
 
-                //Validation
+                //Validation process
                 boolean rightAccount = false;
 
                 if (obj instanceof Account) {
@@ -198,8 +200,7 @@ public class Server extends JFrame implements Runnable {
                         }
                     }
                     /*
-                    Get the room info and see if a user with this account has already entered
-                    this room then prompt the current user to enter another account
+                    If the account is being used -> Deny
                      */
                     if (inUsedUsernames.contains(username)) {
                         rightAccount = false;
@@ -211,6 +212,7 @@ public class Server extends JFrame implements Runnable {
                         System.out.println(username + " login successfully.");
                         roomHandler.addPlayer(playerCom, username);
                         inUsedUsernames.add(username);
+                        //Wait for other players
                         playerCom.write(State.Waiting);
                         break;
 
@@ -222,7 +224,7 @@ public class Server extends JFrame implements Runnable {
             }
             /*
             Start the game if everyone logs in successfully
-            The final thread will invoke this thread
+            The final Validation thread will invoke this thread
              */
             if (roomHandler.getAllUsernames().size() == numberOfPlayersInARoom) {
                 new Thread(roomHandler).start();
