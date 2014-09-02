@@ -26,7 +26,7 @@ public class Server extends JFrame implements Runnable {
 
     //Count how many rooms the server is controlling
     private int roomNumber = 1;
-    public static int numberOfPlayersPerRoom = 3;
+    public static int numberOfPlayersPerRoom = 4;
 
     //Usernames that are inused
     private static ArrayList<String> inUsedUsernames = new ArrayList<String>();

@@ -269,6 +269,7 @@ public class MainFrame extends JFrame implements Runnable {
                     if (me.getUsername().equals(currentTurnUsername)) {
                         isMyTurn = true;
                     }
+
                     System.out.println("This is: " + fromServer + " turn!");
                     gamePanel.setTurn(isMyTurn, currentTurnUsername);
                 }
@@ -284,6 +285,7 @@ public class MainFrame extends JFrame implements Runnable {
         if (!winnerFound) {
             Object fromServer = server.read();
             System.out.println("Received from the others: " + fromServer);
+
             if (fromServer instanceof String) {
                 gamePanel.processResponseFromOtherPlayer(currentTurnUsername, fromServer.toString());
             }
