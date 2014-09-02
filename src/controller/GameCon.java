@@ -35,6 +35,7 @@ public class GameCon {
             //Refresh the MainFrame
             f.validate();
             f.repaint();
+//            System.exit(0);
         }
     }
 

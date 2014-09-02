@@ -99,7 +99,7 @@ public class GamePanel extends JPanel {
         for (int j = 0; j < playerPanels.size(); j++) {
             this.add(playerPanels.get(j));
         }
-        this.add(back);
+//        this.add(back);
         this.add(foldBut);
         this.add(callBut);
         this.add(raiseBut);
