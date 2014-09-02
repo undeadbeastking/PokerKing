@@ -35,17 +35,14 @@ public class LoginPU {
     //Sign in & Sign up buttons
     public static final int button_w = 150;//Combine bound
     public static final int button_h = 30;//Combine bound
-
-    public static final int signInButton_x = 225;
-    public static final int signInButton_y = 240;
-
-    public static final int signUpButton_x = 40;
-    public static final int signUpButton_y = 315;
+    public static final int signIn_x = 225;
+    public static final int signIn_y = 240;
+    public static final int signUp_x = 40;
+    public static final int signUp_y = 315;
 
     //Login Message
     public static final int error_x = 390;
     public static final int error_y = 330;
     public static final int error_w = 190;
     public static final int error_h = 30;
-
 }

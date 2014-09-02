@@ -12,7 +12,7 @@ import java.awt.*;
  */
 public class SignUpPanel extends JPanel {
 
-    private JLabel introLabel = new JLabel("Register Form");
+    private JLabel intro = new JLabel("Register Form");
     //Input fields
     private JTextField usernameField = new JTextField("Username...");
     private JPasswordField passwordField = new JPasswordField("Password...");
@@ -20,7 +20,7 @@ public class SignUpPanel extends JPanel {
     private JLabel usernameVal = new JLabel();
     private JLabel passwordVal = new JLabel();
     //Buttons
-    private CustBut backButton = new CustBut("back");
+    private CustBut backButton = new CustBut("backButton");
     private CustBut registerButton = new CustBut("Register");
 
     public SignUpPanel() {
@@ -29,7 +29,7 @@ public class SignUpPanel extends JPanel {
         this.setBackground(Utils.backGroundColor);
 
         //Set Bounds
-        introLabel.setBounds(110, 60, 180, 30);
+        intro.setBounds(110, 60, 180, 30);
         backButton.setBounds(320, 20, 50, 50);
         registerButton.setBounds(140, 240, 110, 30);
         //Vertical Gap for textfields: 55
@@ -40,7 +40,7 @@ public class SignUpPanel extends JPanel {
         passwordVal.setBounds(110, 195, 250, 30);
 
         //Add components
-        this.add(introLabel);
+        this.add(intro);
         this.add(backButton);
         this.add(registerButton);
         //Input fields
@@ -51,8 +51,8 @@ public class SignUpPanel extends JPanel {
         this.add(passwordVal);
 
         //Customize introduction label
-        introLabel.setFont(SignUpPU.introLFont);
-        introLabel.setForeground(SignUpPU.introLColor);
+        intro.setFont(SignUpPU.introLFont);
+        intro.setForeground(SignUpPU.introLColor);
 
         //Set border for fields
         usernameField.setBorder(Utils.JFColorBorder);

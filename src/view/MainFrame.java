@@ -41,20 +41,36 @@ public class MainFrame extends JFrame implements Runnable {
     private static final int PORT = 9000;
     private String serverAddress = "localhost";
     private PlayerCommunicator server;
-    private AutoObtainIP autoObtainIP = new AutoObtainIP();
+    AutoObtainIP autoObtainIP = new AutoObtainIP();
 
-    //My account
+    //All usernames in the room
+    private ArrayList<String> allUsernames;
+
+    //This client account
     private Account me;
 
-    //All usernames
-    private ArrayList<String> usernames;
-
-    //Bets and turns,...
+    //Cards
     private String myHoleCards, commuCards, currentTurnUsername;
+
+    private ArrayList<Integer> allMoney;
+    private int myMoney;
+    private int currentHighestBet = 100;
 
     private boolean winnerFound = false;
 
+
     public MainFrame() {
+
+//        try{
+//            if (autoObtainIP.obtainIP().length() > 1) {
+//                serverAddress = autoObtainIP.obtainIP();
+//                System.out.println("Connected to " + serverAddress);
+//            }else {
+//                System.out.println("Cant obtain IP");
+//            }
+//        }catch (Exception e){
+//            System.out.println("Cant connect to server");
+//        }
 
         //Customize MainFrame for loginPanel
         this.setSize(LoginPU.width, LoginPU.height);
@@ -74,74 +90,54 @@ public class MainFrame extends JFrame implements Runnable {
         //Add Windows listener - On Exit - save files
         this.addWindowListener(new OnExit());
 
-        //Start Connection
+        //Connect to server
         try {
             initSocket();
 
         } catch (IOException e) {
             System.out.println("Cannot connect to server");
-
         }
     }
 
     private void initSocket() throws IOException {
 
-        //Make connection and initialize streams
-        try {
-            if (autoObtainIP.obtainIP().length() > 0) {
-                serverAddress = autoObtainIP.obtainIP();
-                System.out.println("Obtained server IP");
-            } else {
-                System.out.println("Can not obtain server ip");
-                System.exit(0);
-            }
-        } catch (Exception e) {
-
-        }
         Socket socket = new Socket(serverAddress, PORT);
 
-        //*******************Must init oos first else Exceptions??**************** Cannot resolve
+        //Creepy error - oos must be init first before ois
         ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
         ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
 
         server = new PlayerCommunicator(socket, ois, oos);
     }
 
-    private class OnExit extends WindowAdapter {
-        @Override
-        public void windowClosing(WindowEvent windowEvent) {
-        }
-    }
-
-    public static void main(String[] args) {
-        MainFrame m = new MainFrame();
-        new Thread(m).start();
-    }
-
     @Override
     public void run() {
         //Process signals from Server
-        Object fromServer = server.read();
+        Object fromServer = server.read();//Read the first Signal
+        System.out.println("Read signal....");
         while (fromServer != null) {
+
             if (fromServer instanceof State) {
                 State s = (State) fromServer;
                 if (s == State.WrongAccount) {
                     loginPanel.getErrorMess().setText("*Wrong account");
 
                 } else if (s == State.Waiting) {
-                    loginPanel.loadWaiting();
+                    loginPanel.loadWaitingUI();
 
                 } else if (s == State.StartGame) {
-                    //Receive necessary info before pop up the Game
+                    //Receive necessary info before Init the GamePanel
                     receiveCards();
-                    receiveAllPlayerNames();
+                    receiveAllUsernames();
+                    receiveAllPlayerMoney();
 
-                    //Pop Up GamePanel
-                    System.out.println("Pop up GamePanel");
+                    //Init and Pop Up GamePanel
                     initGamePanel();
+                    System.out.println("Pop up GamePanel");
 
+                    //Process 4 BET states
                     for (int i = 0; i < 5; i++) {
-                        //Break when fold happens
+                        //During the Bet if only one does not Fold then break
                         if (winnerFound) break;
 
                         //Read the Bet State
@@ -168,14 +164,13 @@ public class MainFrame extends JFrame implements Runnable {
 
                             } else if(e == BetState.FourBet.ShowDown){
                                 gamePanel.getBetRoundLabel().setText("ShowDown");
+                                break;//Break the Bet Loop,skip method processABetState()
+
                             }
                         }
 
-                        //i = 4 means it is ShowDown so no Bet Processing
-                        if(i!=4){
                             System.out.println("Process a bet State...");
                             processABetState();
-                        }
                     }
 
                 } else if (s == State.EndGame) {
@@ -190,25 +185,38 @@ public class MainFrame extends JFrame implements Runnable {
 
     public void receiveCards() {
         server.write(State.SendCard);
+
         Object fromServer = server.read();
         if (fromServer != null) {
+
             String cards = fromServer.toString();
             StringTokenizer tokenizer = new StringTokenizer(cards, "/");
             myHoleCards = tokenizer.nextToken();
             commuCards = tokenizer.nextToken();
-            System.out.println(cards);
+
         } else {
-            System.out.println("Can not take cards from server");
+            System.out.println("Cannot take cards from server");
         }
     }
 
-    public void receiveAllPlayerNames() {
+    public void receiveAllUsernames() {
         server.write(State.SendPlayers);
         Object fromServer = server.read();
         if (fromServer instanceof ArrayList) {
-            usernames = (ArrayList<String>) fromServer;
+            allUsernames = (ArrayList<String>) fromServer;
         } else {
-            System.out.println("Can not take players from server");
+            System.out.println("Cannot take usernames from server");
+        }
+    }
+
+    public void receiveAllPlayerMoney(){
+        server.write(State.SendMoney);
+        Object fromServer = server.read();
+        if (fromServer instanceof ArrayList) {
+            allMoney = (ArrayList<Integer>) fromServer;
+
+        } else {
+            System.out.println("Cannot take allMoney from server");
         }
     }
 
@@ -265,6 +273,7 @@ public class MainFrame extends JFrame implements Runnable {
                 }
             }
 
+            System.out.println("Turn received, now listen to response.");
             listenResponse();
             if(winnerFound)   break;
         }
@@ -273,10 +282,22 @@ public class MainFrame extends JFrame implements Runnable {
     public void listenResponse() {
         if (!winnerFound) {
             Object fromServer = server.read();
+            System.out.println("Received from the others: " + fromServer);
             if (fromServer instanceof String) {
-                gamePanel.processResponse(currentTurnUsername, fromServer.toString());
+                gamePanel.processResponseFromOtherPlayer(currentTurnUsername, fromServer.toString());
             }
         }
+    }
+
+    private class OnExit extends WindowAdapter {
+        @Override
+        public void windowClosing(WindowEvent windowEvent) {
+        }
+    }
+
+    public static void main(String[] args) {
+        MainFrame m = new MainFrame();
+        new Thread(m).start();
     }
 
     public LoginPanel getLoginPanel() {
@@ -303,8 +324,8 @@ public class MainFrame extends JFrame implements Runnable {
         return myHoleCards;
     }
 
-    public ArrayList<String> getUsernames() {
-        return usernames;
+    public ArrayList<String> getAllUsernames() {
+        return allUsernames;
     }
 
     public void setMe(Account a) {
@@ -313,5 +334,25 @@ public class MainFrame extends JFrame implements Runnable {
 
     public Account getMyAccount() {
         return me;
+    }
+
+    public ArrayList<Integer> getAllMoney() {
+        return allMoney;
+    }
+
+    public int getCurrentHighestBet() {
+        return currentHighestBet;
+    }
+
+    public void setCurrentHighestBet(int value) {
+        currentHighestBet = value;
+    }
+
+    public int getMyMoney() {
+        return myMoney;
+    }
+
+    public void setMyMoney(int m) {
+        myMoney = m;
     }
 }
