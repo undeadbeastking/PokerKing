@@ -61,6 +61,15 @@ public class MainFrame extends JFrame implements Runnable {
 
     public MainFrame() {
 
+        try{
+            if (autoObtainIP.obtainIP().length() > 1)
+            serverAddress = autoObtainIP.obtainIP();
+            else
+                System.out.println("Cant obtain IP");
+        }catch (Exception e){
+            System.out.println("Cant connect to server");
+        }
+
         //Customize MainFrame for loginPanel
         this.setSize(LoginPU.width, LoginPU.height);
         this.setTitle("Poker King - The Game");

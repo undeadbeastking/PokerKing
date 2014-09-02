@@ -52,7 +52,7 @@ public class Server extends JFrame implements Runnable {
             try {
                 System.out.println("Server is running. The IP is: \n" + Inet4Address.getLocalHost().getHostAddress() + "\n");
                 IP = Inet4Address.getLocalHost().getHostAddress();
-                autoObtainIP.delete(IP);
+                autoObtainIP.delete(autoObtainIP.obtainIP());
                 autoObtainIP.create(IP);
 
             } catch (Exception e) {
