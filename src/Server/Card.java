@@ -2,7 +2,7 @@ package Server;
 
 /**
  * Created by Agatha of Wood Beyond
- *
+ * <p/>
  * A Poker game Tutorial reference:
  * 5 card-stud
  * http://www.dreamincode.net/forums/topic/116864-how-to-make-a-poker-game-in-java/
@@ -10,13 +10,12 @@ package Server;
 
 public class Card {
 
-    //suit: 1 - 4, rank: 1 - 13
-    private int suit, rank;
-
     //Suit & Rank as String array
     private static String[] suits = {"clubs", "diamonds", "hearts", "spades"};
     private static String[] ranks = {"Ace", "2", "3", "4", "5", "6", "7", "8", "9", "10",
             "Jack", "Queen", "King"};
+    //suit: 1 - 4, rank: 1 - 13
+    private int suit, rank;
 
     public Card(int suit, int rank) {
         this.suit = suit;

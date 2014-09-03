@@ -5,7 +5,8 @@ import model.Data;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -16,55 +17,18 @@ import java.util.ArrayList;
 
 public class Server extends JFrame implements Runnable {
 
+    public final static int numberOfPlayersPerRoom = 4;
     //Server connection Components
     private static final int PORT = 9000;
+    static AutoObtainIP autoObtainIP = new AutoObtainIP();
     private static ServerSocket server = null;
     private static Thread serverThread = null;
     //Server IP
     private static String IP;
-    static AutoObtainIP autoObtainIP = new AutoObtainIP();
-
-    //Count how many rooms the server is controlling
-    private int roomNumber = 1;
-    public final static int numberOfPlayersPerRoom = 4;
-
     //Usernames that are inused
     private static ArrayList<String> inUsedUsernames = new ArrayList<String>();
-
-    public static void main(String[] args) {
-        //Load users data
-        Data.loadAccounts();
-
-        if (initServerSocket()) {
-            serverThread = new Thread(new Server());
-            serverThread.start();
-
-        } else {
-            System.out.println("Fail to establish a server Connection.\nExit Program.");
-        }
-    }
-
-    public static boolean initServerSocket() {
-        try {
-            server = new ServerSocket(PORT);
-
-            //Print out server ip
-            try {
-                System.out.println("Server is running. The IP is: \n" + Inet4Address.getLocalHost().getHostAddress() + "\n");
-                IP = Inet4Address.getLocalHost().getHostAddress();
-                autoObtainIP.delete(autoObtainIP.obtainIP());
-                autoObtainIP.create(IP);
-
-            } catch (Exception e) {
-                System.out.println("Can not find server ip!");
-            }
-
-        } catch (IOException e) {
-            System.out.println("Cannot connect to ServerSocket.");
-            return false;
-        }
-        return true;
-    }
+    //Count how many rooms the server is controlling
+    private int roomNumber = 1;
 
     public Server() {
         //Server UI
@@ -105,6 +69,41 @@ public class Server extends JFrame implements Runnable {
         setSize(270, 130);
         setLocationRelativeTo(null);//Set center
         setVisible(true);
+    }
+
+    public static void main(String[] args) {
+        //Load users data
+        Data.loadAccounts();
+
+        if (initServerSocket()) {
+            serverThread = new Thread(new Server());
+            serverThread.start();
+
+        } else {
+            System.out.println("Fail to establish a server Connection.\nExit Program.");
+        }
+    }
+
+    public static boolean initServerSocket() {
+        try {
+            server = new ServerSocket(PORT);
+
+            //Print out server ip
+            try {
+                System.out.println("Server is running. The IP is: \n" + Inet4Address.getLocalHost().getHostAddress() + "\n");
+                IP = Inet4Address.getLocalHost().getHostAddress();
+                autoObtainIP.delete(autoObtainIP.obtainIP());
+                autoObtainIP.create(IP);
+
+            } catch (Exception e) {
+                System.out.println("Can not find server ip!");
+            }
+
+        } catch (IOException e) {
+            System.out.println("Cannot connect to ServerSocket.");
+            return false;
+        }
+        return true;
     }
 
     @Override

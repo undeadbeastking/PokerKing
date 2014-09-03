@@ -1,12 +1,11 @@
 package Server;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.Random;
 
 /**
  * Created by Agatha of Wood Beyond
- *
+ * <p/>
  * A Poker game Tutorial reference:
  * 5 card-stud
  * http://www.dreamincode.net/forums/topic/116864-how-to-make-a-poker-game-in-java/
@@ -21,14 +20,14 @@ public class Deck {
     //Community cards
     private Card[] commuCards;
 
-    public Deck(){
+    public Deck() {
         cards = new ArrayList<Card>();
 
         //Create a Poker deck with arranged order
         //4 types of suit
-        for (int i = 1; i <= 4; i++){
+        for (int i = 1; i <= 4; i++) {
             //For each suit, create 13 cards
-            for(int j = 1; j <= 13; j++){
+            for (int j = 1; j <= 13; j++) {
                 cards.add(new Card(i, j));
             }
         }
@@ -39,7 +38,7 @@ public class Deck {
         int position1, position2;
         Random generator = new Random();
         Card temp;
-        for(int i = 0; i < 100; i++){
+        for (int i = 0; i < 100; i++) {
             //Random any 2 cards from the deck
             position1 = generator.nextInt(cards.size() - 1);
             position2 = generator.nextInt(cards.size() - 1);
@@ -62,7 +61,7 @@ public class Deck {
         }
     }
 
-    public int generateID(){
+    public int generateID() {
         return id++;
     }
 
@@ -71,12 +70,12 @@ public class Deck {
     }
 
     //Draw the top card from a deck
-    public Card drawFromDeck(){
+    public Card drawFromDeck() {
         return cards.remove(0);
     }
 
     //How many cards the deck still has
-    public int getTotalCards(){
+    public int getTotalCards() {
         return cards.size();
     }
 }

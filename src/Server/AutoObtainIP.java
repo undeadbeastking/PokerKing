@@ -5,13 +5,10 @@ package Server;
  */
 
 import java.io.BufferedReader;
-import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.Inet4Address;
 import java.net.URL;
-
-import javax.net.ssl.HttpsURLConnection;
 
 public class AutoObtainIP {
 
@@ -93,7 +90,7 @@ public class AutoObtainIP {
 
         //print result
 //        System.out.println("Response Code : " + responseCode + " " + response.toString());
-        if (response.toString() != null){
+        if (response.toString() != null) {
             result = response.toString();
         }
         return result;

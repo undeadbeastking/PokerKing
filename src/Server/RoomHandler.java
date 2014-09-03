@@ -11,6 +11,8 @@ public class RoomHandler implements Runnable {
     //All username of a room
     private int numberOfPlayersPerRoom;
     private ArrayList<String> allUsernames;
+    String winner = "";
+    int numberOfWinner;
 
     //Communication of each player in a Room
     private ArrayList<PlayerCommunicator> playerComs;
@@ -24,7 +26,7 @@ public class RoomHandler implements Runnable {
     //Pot and Bets
     private int pot = 150;
     private int currentRaise = 100;
-    private ArrayList<Integer> allPlayerMoney;
+    private ArrayList<Integer> allPlayerCash;
     private int[] allBets;
 
     public RoomHandler(int numberOfPlayersInARoom) {
@@ -48,7 +50,7 @@ public class RoomHandler implements Runnable {
         disconnect();
     }
 
-    public void startAGame(){
+    public void startAGame() {
         initNewGame();
 
         //Handling Bets and Logic
@@ -60,25 +62,25 @@ public class RoomHandler implements Runnable {
 
     public void initNewGame() {
 
-        allPlayerMoney = new ArrayList<Integer>();
+        allPlayerCash = new ArrayList<Integer>();
         int testMoney = 600;
         for (int i = 0; i < numberOfPlayersPerRoom; i++) {
 
             //Subtract the money of small blind and big blind hosts first
-            if(i == numberOfPlayersPerRoom-2){
-                allPlayerMoney.add(testMoney-50);
-            } else if(i == numberOfPlayersPerRoom-1){
-                allPlayerMoney.add(testMoney-100);
+            if (i == numberOfPlayersPerRoom - 2) {
+                allPlayerCash.add(testMoney - 50);
+            } else if (i == numberOfPlayersPerRoom - 1) {
+                allPlayerCash.add(testMoney - 100);
             } else {
-                allPlayerMoney.add(testMoney);
+                allPlayerCash.add(testMoney);
             }
-            testMoney-=100;
+            testMoney -= 100;
         }
 
         //Init each player Bet
         allBets = new int[numberOfPlayersPerRoom];
-        allBets[numberOfPlayersPerRoom-2] = 50;//Small Blind
-        allBets[numberOfPlayersPerRoom-1] = 100;//Big Blind
+        allBets[numberOfPlayersPerRoom - 2] = 50;//Small Blind
+        allBets[numberOfPlayersPerRoom - 1] = 100;//Big Blind
 
         //Send Client's Hand and identities of all players, money
         for (PlayerCommunicator playerCom : playerComs) {
@@ -98,8 +100,8 @@ public class RoomHandler implements Runnable {
                 }
 
                 s = (State) playerCom.read();
-                if(s == State.SendMoney){
-                    playerCom.write(allPlayerMoney);
+                if (s == State.SendMoney) {
+                    playerCom.write(allPlayerCash);
                 }
             }
         }
@@ -122,7 +124,7 @@ public class RoomHandler implements Runnable {
             int raiseLoop = 0;
 
             //First Bet then set to -1 so it can reach the Big Blind Player
-            if(j == 0){
+            if (j == 0) {
                 raiseLoop = -1;
             }
 
@@ -151,7 +153,7 @@ public class RoomHandler implements Runnable {
             int playerIndex = dealerPosition;
 
             //There is still another player who tries to raise
-            while (raiseLoop != (playerComs.size()-1)) {
+            while (raiseLoop != (playerComs.size() - 1)) {
 
                 //Restart index to The first Player
                 if (playerIndex == playerComs.size()) {
@@ -176,9 +178,9 @@ public class RoomHandler implements Runnable {
                         //Check
                         if (moneyToAdd_FromPlayer == 0) {
                             raiseLoop++;
-                            responseToOthers = "Check: $" + allBets[playerIndex] + "/" + pot + "/" + allPlayerMoney.get(playerIndex);
+                            responseToOthers = "Check: $" + allBets[playerIndex] + "/" + pot + "/" + allPlayerCash.get(playerIndex);
 
-                        //Raise
+                            //Raise
                         } else if ((moneyToAdd_FromPlayer + allBets[playerIndex]) > currentRaise) {
                             raiseLoop = 0;
 
@@ -189,14 +191,14 @@ public class RoomHandler implements Runnable {
                             pot += moneyToAdd_FromPlayer;
 
                             //But decrease in that player money
-                            allPlayerMoney.set(playerIndex, allPlayerMoney.get(playerIndex) - moneyToAdd_FromPlayer);
+                            allPlayerCash.set(playerIndex, allPlayerCash.get(playerIndex) - moneyToAdd_FromPlayer);
 
                             //Update the current Bet of that player
                             allBets[playerIndex] = currentRaise;
 
-                            responseToOthers = "Raise: $" + currentRaise + "/" + pot + "/" + allPlayerMoney.get(playerIndex);
+                            responseToOthers = "Raise: $" + currentRaise + "/" + pot + "/" + allPlayerCash.get(playerIndex);
 
-                        //Call
+                            //Call
                         } else if ((moneyToAdd_FromPlayer + allBets[playerIndex]) == currentRaise) {
                             raiseLoop++;
 
@@ -204,29 +206,29 @@ public class RoomHandler implements Runnable {
                             pot += moneyToAdd_FromPlayer;
 
                             //But decrease in that player money
-                            allPlayerMoney.set(playerIndex, allPlayerMoney.get(playerIndex) - moneyToAdd_FromPlayer);
+                            allPlayerCash.set(playerIndex, allPlayerCash.get(playerIndex) - moneyToAdd_FromPlayer);
 
                             //Update the current Bet of that player
                             allBets[playerIndex] = currentRaise;
 
-                            responseToOthers = "Call: $" + currentRaise + "/" + pot + "/" + allPlayerMoney.get(playerIndex);
+                            responseToOthers = "Call: $" + currentRaise + "/" + pot + "/" + allPlayerCash.get(playerIndex);
 
-                        //All in
-                        } else if((moneyToAdd_FromPlayer + allBets[playerIndex]) < currentRaise){
+                            //All in
+                        } else if ((moneyToAdd_FromPlayer + allBets[playerIndex]) < currentRaise) {
                             raiseLoop++;
 
                             //Increase pot
                             pot += moneyToAdd_FromPlayer;
 
                             //But decrease in that player money
-                            allPlayerMoney.set(playerIndex, allPlayerMoney.get(playerIndex) - moneyToAdd_FromPlayer);
+                            allPlayerCash.set(playerIndex, allPlayerCash.get(playerIndex) - moneyToAdd_FromPlayer);
 
                             //Update the current Bet of that player
                             allBets[playerIndex] = moneyToAdd_FromPlayer + allBets[playerIndex];
 
-                            responseToOthers = "All in: $" + allBets[playerIndex] + "/" + pot + "/" + allPlayerMoney.get(playerIndex);
+                            responseToOthers = "All in: $" + allBets[playerIndex] + "/" + pot + "/" + allPlayerCash.get(playerIndex);
 
-                        //Fold
+                            //Fold
                         } else if (moneyToAdd_FromPlayer == -1) {
                             raiseLoop++;
                             responseToOthers = "Fold $";
@@ -256,9 +258,14 @@ public class RoomHandler implements Runnable {
         }
 
         //ShowDown
+        compileAndGetWinner();
+        chiaTien();
         for (PlayerCommunicator com : playerComs) {
             com.write(BetState.ShowDown);
+            com.write(winner);
+            com.write(allPlayerCash);
         }
+
     }
 
     public void sendTurn(int currentTurnIndex) {
@@ -289,7 +296,6 @@ public class RoomHandler implements Runnable {
     }
 
 
-
     public void endGame() {
         for (PlayerCommunicator p : playerComs) {
             //Send first hand info
@@ -309,5 +315,41 @@ public class RoomHandler implements Runnable {
 
     public void setPot(int pot) {
         this.pot = pot;
+    }
+
+    private void compileAndGetWinner() {
+        //remove the hand of the losers, eg. get the hand of the winner(s)
+        for (int i = 0; i < allUsernames.size(); i++) {
+            if (allUsernames.get(i) == null) {
+                hands.remove(i);
+            }
+        }
+
+        //compile and find the id(s) of the winner(s)
+        showHand = new ShowHand(hands, pot);
+        numberOfWinner = showHand.getWinnerList().size();
+        System.out.println("Number of winners: " + numberOfWinner);
+        for (int i = 0; i < numberOfWinner; i++) {
+            showHand.getWinnerList().get(i).display();
+            System.out.println("The hand id is: " + showHand.getWinnerList().get(i).getId());
+            getWinnerUsername(showHand.getWinnerList().get(i).getId());
+        }
+        System.out.println(winner);
+    }
+
+    private String getWinnerUsername(int id) {
+        for (int i = 0; i < allUsernames.size(); i++) {
+            if (i == id) {
+                winner = winner + allUsernames.get(i).toString() + ",";
+            }
+        }
+        return winner;
+    }
+
+    private void chiaTien() {
+        for (int i = 0; i < numberOfWinner; i++) {
+            int position = showHand.getWinnerList().get(i).getId();
+            allPlayerCash.set(position, pot);
+        }
     }
 }

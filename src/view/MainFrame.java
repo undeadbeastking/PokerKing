@@ -167,6 +167,8 @@ public class MainFrame extends JFrame implements Runnable {
 
                             } else if(e == BetState.FourBet.ShowDown){
                                 gamePanel.getBetRoundLabel().setText("ShowDown");
+                                showWinner();
+                                nhanTien();
                                 break;//Break the Bet Loop,skip method processABetState()
 
                             }
@@ -291,6 +293,33 @@ public class MainFrame extends JFrame implements Runnable {
             if (fromServer instanceof String) {
                 gamePanel.processResponseFromOtherPlayer(currentTurnUsername, fromServer.toString());
             }
+        }
+    }
+
+    private void showWinner(){
+        Object fromServer = server.read();
+        if (fromServer instanceof String && fromServer != null){
+            String winnerUsername = (String) fromServer;
+            System.out.println(winnerUsername);
+            StringTokenizer tokenizer = new StringTokenizer(winnerUsername, ",");
+            String display = tokenizer.nextToken();
+            while (tokenizer.hasMoreTokens()){
+                display = display + tokenizer.nextToken()  + " ,";
+            }
+            JOptionPane.showMessageDialog(null, "Our winner tonight, lady and gentlemen: " + display);
+        }
+    }
+
+    private void nhanTien(){
+        System.out.println("bat dau chia tien");
+        Object fromServer = server.read();
+        if (fromServer instanceof ArrayList) {
+            allMoney = (ArrayList<Integer>) fromServer;
+            for (int i = 0; i < allMoney.size(); i ++){
+                System.out.println("Tien oi la tien: " + allMoney.get(i));
+            }
+        } else {
+            System.out.println("Cannot take allMoney from server");
         }
     }
 
