@@ -30,6 +30,11 @@ public class RoomHandler implements Runnable {
     //Check if all the players have All In status
     private boolean[] allInStatus;
 
+    //ShowDown Components
+    String winner = "";
+    int numberOfWinner;
+    Database db = new Database();
+
     public RoomHandler(int numberOfPlayersInARoom) {
         this.numberOfPlayersPerRoom = numberOfPlayersInARoom;
         playerComs = new ArrayList<PlayerCommunicator>();
@@ -60,23 +65,26 @@ public class RoomHandler implements Runnable {
 
         //Test closing game
         endGame();
+
     }
 
     public void initNewGame() {
 
         allPlayerCash = new ArrayList<Integer>();
-        int testMoney = 600;
+
         for (int i = 0; i < numberOfPlayersPerRoom; i++) {
+
+            String name = allUsernames.get(i);
 
             //Subtract the money of small blind and big blind hosts first
             if (i == numberOfPlayersPerRoom - 2) {
-                allPlayerCash.add(testMoney - 50);
+                allPlayerCash.add(db.getPlayerMoney(name) - 50);
             } else if (i == numberOfPlayersPerRoom - 1) {
-                allPlayerCash.add(testMoney - 100);
+                allPlayerCash.add(db.getPlayerMoney(name) - 100);
+
             } else {
-                allPlayerCash.add(testMoney);
+                allPlayerCash.add(db.getPlayerMoney(name));
             }
-            testMoney -= 100;
         }
 
         //Init each player Bet
@@ -173,11 +181,13 @@ public class RoomHandler implements Runnable {
                         //receive response from that player socket
                         System.out.println("Waiting for response from that player");
 
+
                         Object responseFromAClient = playerComs.get(playerIndex).read();
                         String responseToOthers = "Cannot detect response.";
 
                         if (responseFromAClient instanceof Integer) {
                             System.out.println(responseFromAClient);
+
 
                             int moneyToAdd_FromPlayer = (Integer) responseFromAClient;
 
@@ -197,6 +207,7 @@ public class RoomHandler implements Runnable {
 
                                 raiseLoop++;
                                 responseToOthers = "Check: $" + allBets[playerIndex] + "/" + pot + "/" + allPlayerCash.get(playerIndex);
+
 
                             //All in
                             } else if (((moneyToAdd_FromPlayer + allBets[playerIndex]) < currentRaise) ||
@@ -219,6 +230,7 @@ public class RoomHandler implements Runnable {
 
                                 //if All in is even bigger than currentRaise -> set it to currentRaise
                                 if (allBets[playerIndex] > currentRaise) {
+
 
                                     raiseLoop = 0;//Bigger than current Raise then count as Raise
 
@@ -286,9 +298,15 @@ public class RoomHandler implements Runnable {
         }
 
         //ShowDown
+        compileAndGetWinner();
+        chiaTien();
+        savetoDB();
         for (PlayerCommunicator com : playerComs) {
             com.write(BetState.ShowDown);
+            com.write(allPlayerCash);
+            com.write(winner);
         }
+
     }
 
     public void sendTurn(int currentTurnIndex) {
@@ -350,4 +368,49 @@ public class RoomHandler implements Runnable {
     public void setPot(int pot) {
         this.pot = pot;
     }
+
+    private void compileAndGetWinner() {
+        //remove the hand of the losers, eg. get the hand of the winner(s)
+        for (int i = 0; i < allUsernames.size(); i++) {
+            if (allUsernames.get(i) == null) {
+                hands.remove(i);
+            }
+        }
+
+        //compile and find the id(s) of the winner(s)
+        showHand = new ShowHand(hands, pot);
+        numberOfWinner = showHand.getWinnerList().size();
+        System.out.println("Number of winners: " + numberOfWinner);
+        for (int i = 0; i < numberOfWinner; i++) {
+            showHand.getWinnerList().get(i).display();
+            System.out.println("The hand id is: " + showHand.getWinnerList().get(i).getId());
+            getWinnerUsername(showHand.getWinnerList().get(i).getId());
+        }
+        System.out.println(winner);
+    }
+
+    private String getWinnerUsername(int id) {
+        for (int i = 0; i < allUsernames.size(); i++) {
+            if (i == id) {
+                winner = winner + allUsernames.get(i).toString() + ",";
+            }
+        }
+        return winner;
+    }
+
+    private void chiaTien() {
+        for (int i = 0; i < numberOfWinner; i++) {
+            int position = showHand.getWinnerList().get(i).getId();
+            allPlayerCash.set(position, pot);
+        }
+    }
+
+    private void savetoDB(){
+        for (int i = 0; i < allUsernames.size(); i++) {
+            String name = allUsernames.get(i);
+            int tien = allPlayerCash.get(i);
+            db.updateMoney(name, tien);
+        }
+    }
+
 }

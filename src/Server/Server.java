@@ -5,7 +5,8 @@ import model.Data;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -16,20 +17,59 @@ import java.util.ArrayList;
 
 public class Server extends JFrame implements Runnable {
 
+    public final static int numberOfPlayersPerRoom = 4;
     //Server connection Components
     private static final int PORT = 9000;
+    static AutoObtainIP autoObtainIP = new AutoObtainIP();
     private static ServerSocket server = null;
     private static Thread serverThread = null;
     //Server IP
     private static String IP;
-    static AutoObtainIP autoObtainIP = new AutoObtainIP();
-
-    //Count how many rooms the server is controlling
-    private int roomNumber = 1;
-    public final static int numberOfPlayersPerRoom = 4;
-
     //Usernames that are inused
     private static ArrayList<String> inUsedUsernames = new ArrayList<String>();
+    //Count how many rooms the server is controlling
+    private int roomNumber = 1;
+
+    public Server() {
+        //Server UI
+        setTitle("Server");
+        setResizable(false);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        //Saving accounts before exiting the program
+        this.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                //Save accounts
+                System.out.println("\n\nTerminate the program.");
+                System.out.println("Saving accounts successfully.");
+//                Data.saveAccounts();
+
+                //Clean server IP
+                try {
+                    autoObtainIP.delete(IP);
+                } catch (Exception e1) {
+                    System.out.println("Cannot delete server IP.");
+                }
+            }
+        });
+
+        //JLabel info and custom UI
+        JLabel serverState = new JLabel("<html>" +
+                "Port: " + PORT +
+                "<br>Server IP: " + IP +
+                "<br>Number of players per Room: " + numberOfPlayersPerRoom +
+                "<br>Server is running." + "</html>", SwingConstants.CENTER);
+        serverState.setOpaque(true);
+        serverState.setBackground(Color.YELLOW);
+        add(serverState);
+
+        //Repack the JLabel, Set the Frame resolution and Position
+        pack();
+        setSize(270, 130);
+        setLocationRelativeTo(null);//Set center
+        setVisible(true);
+    }
 
     public static void main(String[] args) {
         //Load users data
@@ -64,47 +104,6 @@ public class Server extends JFrame implements Runnable {
             return false;
         }
         return true;
-    }
-
-    public Server() {
-        //Server UI
-        setTitle("Server");
-        setResizable(false);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        //Saving accounts before exiting the program
-        this.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                //Save accounts
-                System.out.println("\n\nTerminate the program.");
-                System.out.println("Saving accounts successfully.");
-                Data.saveAccounts();
-
-                //Clean server IP
-                try {
-                    autoObtainIP.delete(IP);
-                } catch (Exception e1) {
-                    System.out.println("Cannot delete server IP.");
-                }
-            }
-        });
-
-        //JLabel info and custom UI
-        JLabel serverState = new JLabel("<html>" +
-                "Port: " + PORT +
-                "<br>Server IP: " + IP +
-                "<br>Number of players per Room: " + numberOfPlayersPerRoom +
-                "<br>Server is running." + "</html>", SwingConstants.CENTER);
-        serverState.setOpaque(true);
-        serverState.setBackground(Color.YELLOW);
-        add(serverState);
-
-        //Repack the JLabel, Set the Frame resolution and Position
-        pack();
-        setSize(270, 130);
-        setLocationRelativeTo(null);//Set center
-        setVisible(true);
     }
 
     @Override

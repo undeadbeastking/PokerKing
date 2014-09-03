@@ -15,7 +15,7 @@ public class PlayerCommunicator {
     private ObjectInputStream ois;
     private ObjectOutputStream oos;
 
-    public PlayerCommunicator (Socket socket, ObjectInputStream ois, ObjectOutputStream oos) {
+    public PlayerCommunicator(Socket socket, ObjectInputStream ois, ObjectOutputStream oos) {
         this.socket = socket;
         this.ois = ois;
         this.oos = oos;

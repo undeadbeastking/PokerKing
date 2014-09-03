@@ -95,7 +95,7 @@ public class SignUpCon {
                 }
 
                 if (isQualified) {
-                    Data.addAccount(username, password);
+//                    Data.addAccount(username, password);
 
                     //Show success message
                     JOptionPane.showMessageDialog(null, "Register successfully");

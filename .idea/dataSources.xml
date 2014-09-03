@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourceManagerImpl" format="xml" hash="310850221">
+    <data-source source="LOCAL" name="SQLite -" uuid="0b15ce65-160a-4993-ada4-803fce11abcb">
+      <driver-ref>sqlite.xerial</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
+      <jdbc-url>jdbc:sqlite:$PROJECT_DIR$/pokerking.db</jdbc-url>
+      <libraries />
+    </data-source>
+  </component>
+</project>
+

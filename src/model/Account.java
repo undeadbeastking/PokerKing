@@ -9,6 +9,13 @@ public class Account implements Serializable {
 
     private String username;
     private String password;
+    private int money;
+
+    public Account(String x, String y, int z) {
+        this.username = x;
+        this.password = y;
+        this.money = z;
+    }
 
     public Account(String x, String y) {
         this.username = x;
@@ -23,8 +30,14 @@ public class Account implements Serializable {
         return password;
     }
 
+    public int getMoney() {
+        return money;
+    }
+
     @Override
     public String toString(){
         return username + ","+ password + "\n";
     }
+
+
 }
