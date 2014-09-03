@@ -39,7 +39,7 @@ public class GameCon {
     private class CallButtonListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            System.out.println("Call");
+            System.out.println("Call or Check");
             f.getServer().write(f.getMoneyToAdd());
         }
     }
@@ -47,7 +47,7 @@ public class GameCon {
     private class RaiseButtonListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            System.out.println("Raise or All in");
+            System.out.println("Raise or All in: " + f.getMoneyToAdd());
             f.getServer().write(f.getMoneyToAdd());
         }
     }
@@ -69,7 +69,7 @@ public class GameCon {
                 f.getGamePanel().getBetAmountLabel().setText("$" + f.getMyBet());
                 myPlayerPanel.getRemainCash().setText("Cash: $" + f.getMyMoney());
 
-                //Switch to All in Button
+                //After subtracting, if playerMoney is 0 -> Switch to All in Button
                 if(f.getMyMoney() == 0){
                     f.getGamePanel().getRaiseBut().setText("All In");
                 }
@@ -86,6 +86,9 @@ public class GameCon {
         public void actionPerformed(ActionEvent e) {
             PlayerPanel myPlayerPanel = f.getGamePanel().getPlayerPanels().get(f.getMyIndex());
 
+            //if Raise button is all in -> set back to Raise
+            f.getGamePanel().getRaiseBut().setText("Raise");
+
             //Decrease until it equals to current highest Raise
             if (f.getMyBet() >= f.getCurrentHighestBet() + increaseDecreaseUnit) {
                 //Update Data
@@ -97,17 +100,11 @@ public class GameCon {
                 f.getGamePanel().getBetAmountLabel().setText("$" + f.getMyBet());
                 myPlayerPanel.getRemainCash().setText("Cash: $" + f.getMyMoney());
 
-                if(f.getMyBet() == f.getCurrentHighestBet() + increaseDecreaseUnit){
+                //After subtracting, my Bet == CurrentHighestBet, disable buttons
+                if(f.getMyBet() == f.getCurrentHighestBet()){
                     //Decide to call then cannot Raise
                     f.getGamePanel().getRaiseBut().setEnabled(false);
                     f.getGamePanel().getCallBut().setEnabled(true);
-                }
-
-                //Reach the minimun -> back to Call or Check
-                if(f.getMoneyToAdd() == 0) {
-                    f.getGamePanel().getRaiseBut().setText("Check");
-                } else {
-                    f.getGamePanel().getRaiseBut().setText("Call");
                 }
             }
         }

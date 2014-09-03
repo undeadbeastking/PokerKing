@@ -1,7 +1,7 @@
 package view;
 
-import Server.BetState;
 import Server.AutoObtainIP;
+import Server.BetState;
 import Server.PlayerCommunicator;
 import Server.State;
 import Utils.GamePU;
@@ -59,7 +59,7 @@ public class MainFrame extends JFrame implements Runnable {
     private int myBet = 0;
     private int currentHighestBet = 100;
 
-    private boolean winnerFound = false;
+    private boolean skipBetting = false;
 
 
     public MainFrame() {
@@ -140,8 +140,6 @@ public class MainFrame extends JFrame implements Runnable {
 
                     //Process 4 BET states
                     for (int i = 0; i < 5; i++) {
-                        //During the Bet if only one does not Fold then break
-                        if (winnerFound) break;
 
                         //Read the Bet State
                         Object betState = server.read();
@@ -165,15 +163,15 @@ public class MainFrame extends JFrame implements Runnable {
                                 gamePanel.getBetRoundLabel().setText("The River");
                                 gamePanel.getComCard5().setVisible(true);
 
-                            } else if(e == BetState.FourBet.ShowDown){
+                            } else if (e == BetState.ShowDown) {
                                 gamePanel.getBetRoundLabel().setText("ShowDown");
                                 break;//Break the Bet Loop,skip method processABetState()
 
                             }
                         }
 
-                            System.out.println("Process a bet State...");
-                            processABetState();
+                        System.out.println("Process a bet State...");
+                        processABetState();
                     }
 
                 } else if (s == State.EndGame) {
@@ -212,7 +210,7 @@ public class MainFrame extends JFrame implements Runnable {
         }
     }
 
-    public void receiveAllPlayerMoney(){
+    public void receiveAllPlayerMoney() {
         server.write(State.SendMoney);
         Object fromServer = server.read();
         if (fromServer instanceof ArrayList) {
@@ -253,20 +251,24 @@ public class MainFrame extends JFrame implements Runnable {
             boolean isMyTurn = false;//false as default
             Object fromServer = server.read();
 
-            if(fromServer instanceof BetState){
+            if (fromServer instanceof BetState) {
                 BetState s = (BetState) fromServer;
-                if(s == BetState.EndState){
+                if (s == BetState.EndState) {
                     break;
+                }
+
+            } else if (fromServer instanceof String) {
+                //Find a winner before the game ends
+                if (fromServer.toString().equals("Skip")) {
+                    skipBetting = true;
+                    System.out.println("Skip betting");
                 }
             }
 
-            if (fromServer instanceof String) {
-                //Find a winner before the game ends
-                if (fromServer.toString().equals("Stop")) {
-                    winnerFound = true;
-                    System.out.println("Stop game");
+            if (skipBetting) break;
 
-                } else if(fromServer instanceof String) {
+            if (fromServer instanceof String) {
+                if (fromServer instanceof String) {
                     currentTurnUsername = fromServer.toString();
                     if (me.getUsername().equals(currentTurnUsername)) {
                         isMyTurn = true;
@@ -279,12 +281,11 @@ public class MainFrame extends JFrame implements Runnable {
 
             System.out.println("Turn received, now listen to response.");
             listenResponse();
-            if(winnerFound)   break;
         }
     }
 
     public void listenResponse() {
-        if (!winnerFound) {
+        if (!skipBetting) {
             Object fromServer = server.read();
             System.out.println("Received from the others: " + fromServer);
 

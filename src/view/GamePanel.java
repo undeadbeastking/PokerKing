@@ -143,12 +143,9 @@ public class GamePanel extends JPanel {
         if (isMyTurn) {
             foldBut.setEnabled(true);
 
-            //Calculate if the player have enough money?
-            int amountToAdd = f.getCurrentHighestBet() - f.getMyBet();
+            //Calculate if the player have enough money? to decide the options for them automatically
+            int amountToAdd = f.getCurrentHighestBet() - f.getMyBet();//Current highest Bet - previous Bet
             int moneyRemain = f.getMyMoney() - amountToAdd;
-
-            //Reset button to Call
-            callBut.setText("Call");
 
             //Check
             if(amountToAdd == 0){
@@ -176,7 +173,6 @@ public class GamePanel extends JPanel {
                     //Set All in: Old bet and the remaining cash
                     f.setMyBet(f.getMyBet() + f.getMyMoney());
                     f.setMoneyToAdd(f.getMyMoney());
-
                     //No cash left
                     f.setMyMoney(0);
 
@@ -191,10 +187,12 @@ public class GamePanel extends JPanel {
                     callBut.setEnabled(true);
                     raiseBut.setEnabled(false);
 
+                    //Reset button to Call
+                    callBut.setText("Call");
+
                     //Add to old bet amount
                     f.setMyBet(f.getMyBet() + amountToAdd);
                     f.setMoneyToAdd(amountToAdd);
-
                     //myMoney - amountToAdd
                     f.setMyMoney(moneyRemain);
 
@@ -243,9 +241,9 @@ public class GamePanel extends JPanel {
         potLabel.setText("Pot: $" + pot);
 
         //Set current highestRaise
-        if(response.startsWith("Raise")) {
+        if(response.startsWith("Raise") || response.startsWith("Big All In")) {
             StringTokenizer bet = new StringTokenizer(status, "$");
-            bet.nextToken();//ignore String "Raise"
+            bet.nextToken();//ignore String "Raise", "Big All in"
 
             f.setCurrentHighestBet(Integer.valueOf(bet.nextToken()));
         }
