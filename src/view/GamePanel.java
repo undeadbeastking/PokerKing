@@ -143,15 +143,13 @@ public class GamePanel extends JPanel {
         if (isMyTurn) {
             foldBut.setEnabled(true);
 
-            //Calculate if the player have enough money?
-            int amountToAdd = f.getCurrentHighestBet() - f.getMyBet();
+            //Calculate if the player have enough money? to decide the options for them automatically
+            int amountToAdd = f.getCurrentHighestBet() - f.getMyBet();//Current highest Bet - previous Bet
             int moneyRemain = f.getMyMoney() - amountToAdd;
-
-            //Reset button to Call
-            callBut.setText("Call");
 
             //Check
             if(amountToAdd == 0){
+                foldBut.setEnabled(false);
                 increaseMonButton.setEnabled(true);
                 decreaseMonButton.setEnabled(true);
                 callBut.setEnabled(true);
@@ -176,7 +174,6 @@ public class GamePanel extends JPanel {
                     //Set All in: Old bet and the remaining cash
                     f.setMyBet(f.getMyBet() + f.getMyMoney());
                     f.setMoneyToAdd(f.getMyMoney());
-
                     //No cash left
                     f.setMyMoney(0);
 
@@ -191,10 +188,12 @@ public class GamePanel extends JPanel {
                     callBut.setEnabled(true);
                     raiseBut.setEnabled(false);
 
+                    //Reset button to Call
+                    callBut.setText("Call");
+
                     //Add to old bet amount
                     f.setMyBet(f.getMyBet() + amountToAdd);
                     f.setMoneyToAdd(amountToAdd);
-
                     //myMoney - amountToAdd
                     f.setMyMoney(moneyRemain);
 
@@ -223,7 +222,7 @@ public class GamePanel extends JPanel {
         }
     }
 
-    public void processResponseFromOtherPlayer(String name, String response) {
+    public void processResponseFromOtherPlayer(String needToUpdateUsername, String response) {
 
         StringTokenizer tokenizer = new StringTokenizer(response, "/");
 
@@ -231,9 +230,10 @@ public class GamePanel extends JPanel {
         String pot = tokenizer.nextToken();
         String playerMoney = tokenizer.nextToken();
 
-        //Set that player status, money
+        //Update that player status, money
         for (int i = 0; i < playerPanels.size(); i++) {
-            if (name.equals(playerPanels.get(i).getUsername())) {
+
+            if (needToUpdateUsername.equals(playerPanels.get(i).getUsername())) {
                 playerPanels.get(i).setStatus(status);
                 playerPanels.get(i).getRemainCash().setText("Cash: $" + playerMoney);
             }
@@ -243,11 +243,12 @@ public class GamePanel extends JPanel {
         potLabel.setText("Pot: $" + pot);
 
         //Set current highestRaise
-        if(response.startsWith("Raise")) {
+        if(response.startsWith("Raise") || response.startsWith("Big All In")) {
             StringTokenizer bet = new StringTokenizer(status, "$");
-            bet.nextToken();//ignore String "Raise"
 
-            f.setCurrentHighestBet(Integer.valueOf(bet.nextToken()));
+            bet.nextToken();//Skip String token
+
+            f.setCurrentHighestBet(Integer.valueOf(bet.nextToken()));//String Int
         }
     }
 
