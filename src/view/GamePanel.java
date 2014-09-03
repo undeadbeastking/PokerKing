@@ -149,7 +149,6 @@ public class GamePanel extends JPanel {
 
             //Check
             if(amountToAdd == 0){
-                foldBut.setEnabled(false);
                 increaseMonButton.setEnabled(true);
                 decreaseMonButton.setEnabled(true);
                 callBut.setEnabled(true);
