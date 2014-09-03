@@ -11,7 +11,6 @@ public class ShowHand {
     private LinkedList<Hand> hands, winnerList;
     private int pot, finalMoney;
 
-
     public ShowHand(LinkedList<Hand> hands, int pot) {
         this.hands = hands;
         this.pot = pot;
@@ -26,7 +25,11 @@ public class ShowHand {
         return winnerList;
     }
 
-    private void findWinners() {
+//    public void setPot(int pot){
+//
+//    }
+
+    public void findWinners() {
 
         LinkedList<Hand> tieList = new LinkedList<Hand>();
 
@@ -51,10 +54,12 @@ public class ShowHand {
 
     }
 
-    private void splitPot() {
+    public void splitPot() {
         int numberOfWinner = winnerList.size();
         finalMoney = pot / numberOfWinner;
+
     }
+
 
     private LinkedList<Hand> handleTie(LinkedList<Hand> tieList, int strongestCom) {
 
@@ -197,43 +202,43 @@ public class ShowHand {
             case 6: //--------------------flush-------------------
                 System.out.println("Flush");
                 int flush_1 = findMaxInList(tieList, 1);
-//                int tieFlush_1 = checkTie(tieList, flush_1, 1);
-//
-//                if (tieFlush_1 > 1) {
-//
-//                    int flush_2 = findMaxInList(tieList, 2);
-//                    int tieFlush_2 = checkTie(tieList, flush_2, 2);
-//
-//                    if (tieFlush_2 > 1) {
-//
-//                        int flush_3 = findMaxInList(tieList, 3);
-//                        int tieFlush_3 = checkTie(tieList, flush_3, 3);
-//
-//                        if (tieFlush_3 > 1) {
-//
-//                            int flush_4 = findMaxInList(tieList, 4);
-//                            int tieFlush_4 = checkTie(tieList, flush_4, 4);
-//
-//                            if (tieFlush_4 > 1) {
-//
-//                                int flush_5 = findMaxInList(tieList, 5);
-//                                result = addToResult(tieList, flush_5, 5);
-//
-//                            } else {
-//                                result = addToResult(tieList, flush_4, 4);
-//                            }
-//
-//                        } else {
-//                            result = addToResult(tieList, flush_3, 3);
-//                        }
-//
-//                    } else {
-//                        result = addToResult(tieList, flush_2, 2);
-//                    }
-//
-//                } else {
-                result = addToResult(tieList, flush_1, 1);
-//                }
+                int tieFlush_1 = checkTie(tieList, flush_1, 1);
+
+                if (tieFlush_1 > 1) {
+
+                    int flush_2 = findMaxInList(tieList, 2);
+                    int tieFlush_2 = checkTie(tieList, flush_2, 2);
+
+                    if (tieFlush_2 > 1) {
+
+                        int flush_3 = findMaxInList(tieList, 3);
+                        int tieFlush_3 = checkTie(tieList, flush_3, 3);
+
+                        if (tieFlush_3 > 1) {
+
+                            int flush_4 = findMaxInList(tieList, 4);
+                            int tieFlush_4 = checkTie(tieList, flush_4, 4);
+
+                            if (tieFlush_4 > 1) {
+
+                                int flush_5 = findMaxInList(tieList, 5);
+                                result = addToResult(tieList, flush_5, 5);
+
+                            } else {
+                                result = addToResult(tieList, flush_4, 4);
+                            }
+
+                        } else {
+                            result = addToResult(tieList, flush_3, 3);
+                        }
+
+                    } else {
+                        result = addToResult(tieList, flush_2, 2);
+                    }
+
+                } else {
+                    result = addToResult(tieList, flush_1, 1);
+                }
 
                 break;
             case 7: //--------------------full house-------------------
@@ -277,7 +282,7 @@ public class ShowHand {
         return result;
     }
 
-    private int findMaxInList(LinkedList<Hand> list, int position) {
+    public int findMaxInList(LinkedList<Hand> list, int position) {
 
         int max = 0;
         for (int i = 0; i < list.size(); i++) {
@@ -288,7 +293,7 @@ public class ShowHand {
         return max;
     }
 
-    private LinkedList<Hand> addToResult(LinkedList<Hand> list, int max, int position) {
+    public LinkedList<Hand> addToResult(LinkedList<Hand> list, int max, int position) {
 
         LinkedList<Hand> result = new LinkedList<Hand>();
 
@@ -301,7 +306,7 @@ public class ShowHand {
         return result;
     }
 
-    private int checkTie(LinkedList<Hand> tieList, int max, int position) {
+    public int checkTie(LinkedList<Hand> tieList, int max, int position) {
 
         int numberOfTie = 0;
 
@@ -310,7 +315,9 @@ public class ShowHand {
                 numberOfTie++;
             }
         }
+
         return numberOfTie;
     }
+
 
 }
