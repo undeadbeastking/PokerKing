@@ -36,7 +36,7 @@ public class PlayerPanel extends JPanel {
 
         //Read player image into JLabel icon
         Image img = PlayerPU.randomIcon();
-        ImageIcon imageIcon = null;
+        ImageIcon imageIcon;
         if (img != null) {
             imageIcon = new ImageIcon(img);
             icon.setIcon(imageIcon);
@@ -63,11 +63,10 @@ public class PlayerPanel extends JPanel {
         //Local cast username list from MainFrame
         ArrayList<String> usernames = f.getAllUsernames();
 
-        //The player behind the final player will pay the small blind
+        //for all player to see who hosts the Small Blind and Big Blind
         if(index == usernames.size()-2){
             status.setText("Small Blind: $50");
 
-        //The final player hosts the big blind
         } else if(index == usernames.size()-1) {
             status.setText("Big Blind: $100");
         }
@@ -76,12 +75,7 @@ public class PlayerPanel extends JPanel {
         username.setText(usernames.get(index));
 
         //Set text for player's cash
-        //First one will be expected to used $100 to match a Call
-        if(index == 0){
-            remainCash.setText("Cash: $" + (f.getAllMoney().get(index) - f.getCurrentHighestBet()));
-        } else {
-            remainCash.setText("Cash: $" + f.getAllMoney().get(index));
-        }
+        remainCash.setText("Cash: $" + f.getAllMoney().get(index));
 
         //If the current username == Client username then Highlight his username
         if (usernames.get(index).equals(f.getMyAccount().getUsername())) {
@@ -94,6 +88,13 @@ public class PlayerPanel extends JPanel {
             //Remember this player Money, other just for display
             f.setMyMoney(f.getAllMoney().get(index));
 
+            //Small blind and big blind hosts will have myBet as 50 and 100
+            if(index == usernames.size()-2){
+                f.setMyBet(50);
+            } else if(index == usernames.size()-1){
+                f.setMyBet(100);
+            }
+
             //Set my index
             f.setMyIndex(index);
 
@@ -104,7 +105,6 @@ public class PlayerPanel extends JPanel {
 
             //Hide hole cards of other players
             setHoleCards(false);
-
         }
 
         //Add component

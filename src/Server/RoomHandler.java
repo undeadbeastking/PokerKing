@@ -171,69 +171,66 @@ public class RoomHandler implements Runnable {
 
                     if (responseFromAClient instanceof Integer) {
                         System.out.println(responseFromAClient);
-                        int moneyFromPlayer = (Integer) responseFromAClient;
+                        int moneyToAdd_FromPlayer = (Integer) responseFromAClient;
+
+                        //Check
+                        if (moneyToAdd_FromPlayer == 0) {
+                            raiseLoop++;
+                            responseToOthers = "Check: $" + allBets[playerIndex] + "/" + pot + "/" + allPlayerMoney.get(playerIndex);
 
                         //Raise
-                        if (moneyFromPlayer > currentRaise) {
+                        } else if ((moneyToAdd_FromPlayer + allBets[playerIndex]) > currentRaise) {
                             raiseLoop = 0;
 
                             //Update the new Raise
-                            currentRaise = moneyFromPlayer;
-
-                            //Get the sent money subtract the old bet to see how much he has to add
-                            int moneyToAdd = moneyFromPlayer - allBets[playerIndex];
+                            currentRaise = moneyToAdd_FromPlayer + allBets[playerIndex];
 
                             //Increase pot
-                            pot += moneyToAdd;
+                            pot += moneyToAdd_FromPlayer;
 
                             //But decrease in that player money
-                            allPlayerMoney.set(playerIndex, allPlayerMoney.get(playerIndex) - moneyToAdd);
+                            allPlayerMoney.set(playerIndex, allPlayerMoney.get(playerIndex) - moneyToAdd_FromPlayer);
 
                             //Update the current Bet of that player
-                            allBets[playerIndex] = moneyFromPlayer;
+                            allBets[playerIndex] = currentRaise;
 
-                            responseToOthers = "Raise: $" + moneyFromPlayer + "/" + pot + "/" + allPlayerMoney.get(playerIndex);
+                            responseToOthers = "Raise: $" + currentRaise + "/" + pot + "/" + allPlayerMoney.get(playerIndex);
 
                         //Call
-                        } else if (moneyFromPlayer == currentRaise) {
+                        } else if ((moneyToAdd_FromPlayer + allBets[playerIndex]) == currentRaise) {
                             raiseLoop++;
 
-                            //Get the sent money subtract the old bet to see how much he has to add
-                            int moneyToAdd = moneyFromPlayer - allBets[playerIndex];
-
                             //Increase pot
-                            pot += moneyToAdd;
+                            pot += moneyToAdd_FromPlayer;
 
                             //But decrease in that player money
-                            allPlayerMoney.set(playerIndex, allPlayerMoney.get(playerIndex) - moneyToAdd);
+                            allPlayerMoney.set(playerIndex, allPlayerMoney.get(playerIndex) - moneyToAdd_FromPlayer);
 
                             //Update the current Bet of that player
-                            allBets[playerIndex] = moneyFromPlayer;
+                            allBets[playerIndex] = currentRaise;
 
-                            responseToOthers = "Call: $" + moneyFromPlayer + "/" + pot + "/" + allPlayerMoney.get(playerIndex);
+                            responseToOthers = "Call: $" + currentRaise + "/" + pot + "/" + allPlayerMoney.get(playerIndex);
 
                         //All in
-                        } else if(moneyFromPlayer < currentRaise){
+                        } else if((moneyToAdd_FromPlayer + allBets[playerIndex]) < currentRaise){
                             raiseLoop++;
-
-                            //Get the sent money subtract the old bet to see how much he has to add
-                            int moneyToAdd = moneyFromPlayer - allBets[playerIndex];
 
                             //Increase pot
-                            pot += moneyToAdd;
+                            pot += moneyToAdd_FromPlayer;
 
                             //But decrease in that player money
-                            allPlayerMoney.set(playerIndex, allPlayerMoney.get(playerIndex) - moneyToAdd);
+                            allPlayerMoney.set(playerIndex, allPlayerMoney.get(playerIndex) - moneyToAdd_FromPlayer);
 
                             //Update the current Bet of that player
-                            allBets[playerIndex] = moneyFromPlayer;
+                            allBets[playerIndex] = moneyToAdd_FromPlayer + allBets[playerIndex];
 
-                            responseToOthers = "All in: $" + moneyFromPlayer + "/" + pot + "/" + allPlayerMoney.get(playerIndex);
+                            responseToOthers = "All in: $" + allBets[playerIndex] + "/" + pot + "/" + allPlayerMoney.get(playerIndex);
 
-
-                        } else if (moneyFromPlayer == -1) {
+                        //Fold
+                        } else if (moneyToAdd_FromPlayer == -1) {
                             raiseLoop++;
                             responseToOthers = "Fold $";
+
                         }
 
                         //send that response to everyone
@@ -250,10 +247,6 @@ public class RoomHandler implements Runnable {
                 }
 
                 playerIndex++;
-
-                if (raiseLoop == playerComs.size()) {
-                    break;
-                }
             }
 
             //The final turn has been processed, send end turn to every player

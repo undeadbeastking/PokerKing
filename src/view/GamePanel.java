@@ -142,42 +142,69 @@ public class GamePanel extends JPanel {
     public void setTurn(boolean isMyTurn, String currentTurnUsername) {
         if (isMyTurn) {
             foldBut.setEnabled(true);
-            increaseMonButton.setEnabled(true);
-            decreaseMonButton.setEnabled(true);
-            callBut.setEnabled(true);
-            raiseBut.setEnabled(false);
-
-            StringTokenizer tokenizer = new StringTokenizer(f.getGamePanel().getBetAmountLabel().getText(), "$");
-            int currentBet = Integer.valueOf(tokenizer.nextToken());
 
             //Calculate if the player have enough money?
-            int neededToAdd = f.getCurrentHighestBet() - currentBet;
-            int moneyRemain = f.getMyMoney() - neededToAdd;
+            int amountToAdd = f.getCurrentHighestBet() - f.getMyBet();
+            int moneyRemain = f.getMyMoney() - amountToAdd;
 
-            //Can only All in or Fold
-            if(moneyRemain <= 0){
-                increaseMonButton.setEnabled(false);
-                decreaseMonButton.setEnabled(false);
-                callBut.setEnabled(false);
+            //Reset button to Call
+            callBut.setText("Call");
 
-                //All in button
-                raiseBut.setEnabled(true);
-                raiseBut.setText("All in");
+            //Check
+            if(amountToAdd == 0){
+                increaseMonButton.setEnabled(true);
+                decreaseMonButton.setEnabled(true);
+                callBut.setEnabled(true);
+                raiseBut.setEnabled(false);
 
-                //Set All in amount as default
-                currentBet += f.getMyMoney();
-                f.setMyMoney(0);
+                //Set button to check
+                callBut.setText("Check");
 
-                //Set them to UI
-                int myIndex = f.getAllUsernames().indexOf(currentTurnUsername);
-                f.getGamePanel().getPlayerPanels().get(myIndex).getRemainCash().setText("Cash: $" + f.getMyMoney());
-                f.getGamePanel().getBetAmountLabel().setText("$" + currentBet);
+                f.setMoneyToAdd(0);
 
             } else {
-                //Enough money so set BetAmountLabel to currentHighest
-                f.getGamePanel().getBetAmountLabel().setText("$" + f.getCurrentHighestBet());
+                //Can only All in or Fold
+                if(moneyRemain <= 0){
+                    increaseMonButton.setEnabled(false);
+                    decreaseMonButton.setEnabled(false);
+                    callBut.setEnabled(false);
+
+                    //All in button
+                    raiseBut.setEnabled(true);
+                    raiseBut.setText("All in");
+
+                    //Set All in: Old bet and the remaining cash
+                    f.setMyBet(f.getMyBet() + f.getMyMoney());
+                    f.setMoneyToAdd(f.getMyMoney());
+
+                    //No cash left
+                    f.setMyMoney(0);
+
+                    //Set them to UI
+                    f.getGamePanel().getPlayerPanels().get(f.getMyIndex()).getRemainCash().setText("Cash: $" + f.getMyMoney());
+                    f.getGamePanel().getBetAmountLabel().setText("$" + f.getMyBet());
+
+                //Call or Raise
+                } else {
+                    increaseMonButton.setEnabled(true);
+                    decreaseMonButton.setEnabled(true);
+                    callBut.setEnabled(true);
+                    raiseBut.setEnabled(false);
+
+                    //Add to old bet amount
+                    f.setMyBet(f.getMyBet() + amountToAdd);
+                    f.setMoneyToAdd(amountToAdd);
+
+                    //myMoney - amountToAdd
+                    f.setMyMoney(moneyRemain);
+
+                    //Set them to UI
+                    f.getGamePanel().getPlayerPanels().get(f.getMyIndex()).getRemainCash().setText("Cash: $" + f.getMyMoney());
+                    f.getGamePanel().getBetAmountLabel().setText("$" + f.getMyBet());
+                }
             }
-            
+
+        //Not my Turn
         } else {
             callBut.setEnabled(false);
             foldBut.setEnabled(false);

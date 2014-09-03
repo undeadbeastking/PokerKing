@@ -55,6 +55,8 @@ public class MainFrame extends JFrame implements Runnable {
 
     private ArrayList<Integer> allMoney;
     private int myMoney;
+    private int moneyToAdd;
+    private int myBet = 0;
     private int currentHighestBet = 100;
 
     private boolean winnerFound = false;
@@ -363,11 +365,23 @@ public class MainFrame extends JFrame implements Runnable {
         return myIndex;
     }
 
-    public Account getMe() {
-        return me;
+    public int getMyBet() {
+        return myBet;
+    }
+
+    public void setMyBet(int myBet) {
+        this.myBet = myBet;
     }
 
     public void setMyIndex(int myIndex) {
         this.myIndex = myIndex;
+    }
+
+    public int getMoneyToAdd() {
+        return moneyToAdd;
+    }
+
+    public void setMoneyToAdd(int moneyToAdd) {
+        this.moneyToAdd = moneyToAdd;
     }
 }

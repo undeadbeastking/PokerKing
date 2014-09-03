@@ -13,7 +13,7 @@ import java.util.StringTokenizer;
 public class GameCon {
 
     private MainFrame f;
-    private int moneyRaiseAndFall = 10;
+    private int increaseDecreaseUnit = 10;
 
     public GameCon(MainFrame frame) {
         this.f = frame;
@@ -40,9 +40,7 @@ public class GameCon {
         @Override
         public void actionPerformed(ActionEvent e) {
             System.out.println("Call");
-            StringTokenizer tokenizer = new StringTokenizer(f.getGamePanel().getBetAmountLabel().getText(), "$");
-            int bet = Integer.valueOf(tokenizer.nextToken());
-            f.getServer().write(bet);
+            f.getServer().write(f.getMoneyToAdd());
         }
     }
 
@@ -50,25 +48,25 @@ public class GameCon {
         @Override
         public void actionPerformed(ActionEvent e) {
             System.out.println("Raise or All in");
-            StringTokenizer tokenizer = new StringTokenizer(f.getGamePanel().getBetAmountLabel().getText(), "$");
-            int bet = Integer.valueOf(tokenizer.nextToken());
-            f.getServer().write(bet);
+            f.getServer().write(f.getMoneyToAdd());
         }
     }
 
     private class IncreaseMoneyListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            StringTokenizer tokenizer = new StringTokenizer(f.getGamePanel().getBetAmountLabel().getText(), "$");
-            int bet = Integer.valueOf(tokenizer.nextToken());
+
             PlayerPanel myPlayerPanel = f.getGamePanel().getPlayerPanels().get(f.getMyIndex());
 
             //Still enough money then raise
-            if (f.getMyMoney() >= moneyRaiseAndFall) {
-                f.getGamePanel().getBetAmountLabel().setText("$" + (bet + moneyRaiseAndFall));
+            if (f.getMyMoney() >= increaseDecreaseUnit) {
+                //Update Data
+                f.setMyBet(f.getMyBet() + increaseDecreaseUnit);
+                f.setMoneyToAdd(f.getMoneyToAdd() + increaseDecreaseUnit);
+                f.setMyMoney(f.getMyMoney() - increaseDecreaseUnit);
 
-                //My cash decrease
-                f.setMyMoney(f.getMyMoney() - moneyRaiseAndFall);
+                //Update UI
+                f.getGamePanel().getBetAmountLabel().setText("$" + f.getMyBet());
                 myPlayerPanel.getRemainCash().setText("Cash: $" + f.getMyMoney());
 
                 //Switch to All in Button
@@ -86,26 +84,31 @@ public class GameCon {
     private class DecreaseMoneyListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            StringTokenizer tokenizer = new StringTokenizer(f.getGamePanel().getBetAmountLabel().getText(), "$");
-            int bet = Integer.valueOf(tokenizer.nextToken());
             PlayerPanel myPlayerPanel = f.getGamePanel().getPlayerPanels().get(f.getMyIndex());
 
             //Decrease until it equals to current highest Raise
-            if (bet >= f.getCurrentHighestBet() + moneyRaiseAndFall) {
-                f.getGamePanel().getBetAmountLabel().setText("$" + (bet - moneyRaiseAndFall));
+            if (f.getMyBet() >= f.getCurrentHighestBet() + increaseDecreaseUnit) {
+                //Update Data
+                f.setMyBet(f.getMyBet() - increaseDecreaseUnit);
+                f.setMoneyToAdd(f.getMoneyToAdd() - increaseDecreaseUnit);
+                f.setMyMoney(f.getMyMoney() + increaseDecreaseUnit);
 
-                //My cash increase
-                f.setMyMoney(f.getMyMoney() + moneyRaiseAndFall);
+                //Update UI
+                f.getGamePanel().getBetAmountLabel().setText("$" + f.getMyBet());
                 myPlayerPanel.getRemainCash().setText("Cash: $" + f.getMyMoney());
 
-                if(bet == f.getCurrentHighestBet() + moneyRaiseAndFall){
+                if(f.getMyBet() == f.getCurrentHighestBet() + increaseDecreaseUnit){
                     //Decide to call then cannot Raise
                     f.getGamePanel().getRaiseBut().setEnabled(false);
                     f.getGamePanel().getCallBut().setEnabled(true);
                 }
 
-                //If all in status then change back to Raise
-                f.getGamePanel().getRaiseBut().setText("Raise");
+                //Reach the minimun -> back to Call or Check
+                if(f.getMoneyToAdd() == 0) {
+                    f.getGamePanel().getRaiseBut().setText("Check");
+                } else {
+                    f.getGamePanel().getRaiseBut().setText("Call");
+                }
             }
         }
     }
