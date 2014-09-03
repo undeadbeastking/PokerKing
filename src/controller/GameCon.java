@@ -31,7 +31,6 @@ public class GameCon {
     private class FoldButtonListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            System.out.println("Fold");
             f.getServer().write(-1);
         }
     }
@@ -39,7 +38,6 @@ public class GameCon {
     private class CallButtonListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            System.out.println("Call or Check");
             f.getServer().write(f.getMoneyToAdd());
         }
     }
@@ -47,7 +45,6 @@ public class GameCon {
     private class RaiseButtonListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            System.out.println("Raise or All in: " + f.getMoneyToAdd());
             f.getServer().write(f.getMoneyToAdd());
         }
     }

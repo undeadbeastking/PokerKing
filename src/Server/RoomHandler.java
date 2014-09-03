@@ -28,13 +28,13 @@ public class RoomHandler implements Runnable {
     private int[] allBets;
 
     //Check if all the players have All In status
-    private boolean[] isAllIn;
+    private boolean[] allInStatus;
 
     public RoomHandler(int numberOfPlayersInARoom) {
         this.numberOfPlayersPerRoom = numberOfPlayersInARoom;
         playerComs = new ArrayList<PlayerCommunicator>();
         allUsernames = new ArrayList<String>();
-        isAllIn = new boolean[numberOfPlayersPerRoom];
+        allInStatus = new boolean[numberOfPlayersPerRoom];
         deck = new Deck();
     }
 
@@ -52,7 +52,7 @@ public class RoomHandler implements Runnable {
         disconnect();
     }
 
-    public void startAGame(){
+    public void startAGame() {
         initNewGame();
 
         //Handling Bets and Logic
@@ -69,20 +69,20 @@ public class RoomHandler implements Runnable {
         for (int i = 0; i < numberOfPlayersPerRoom; i++) {
 
             //Subtract the money of small blind and big blind hosts first
-            if(i == numberOfPlayersPerRoom-2){
+            if (i == numberOfPlayersPerRoom - 2) {
                 allPlayerCash.add(testMoney - 50);
-            } else if(i == numberOfPlayersPerRoom-1){
+            } else if (i == numberOfPlayersPerRoom - 1) {
                 allPlayerCash.add(testMoney - 100);
             } else {
                 allPlayerCash.add(testMoney);
             }
-            testMoney-=100;
+            testMoney -= 100;
         }
 
         //Init each player Bet
         allBets = new int[numberOfPlayersPerRoom];
-        allBets[numberOfPlayersPerRoom-2] = 50;//Small Blind
-        allBets[numberOfPlayersPerRoom-1] = 100;//Big Blind
+        allBets[numberOfPlayersPerRoom - 2] = 50;//Small Blind
+        allBets[numberOfPlayersPerRoom - 1] = 100;//Big Blind
 
         //Send Client's Hand and identities of all players, money
         for (PlayerCommunicator playerCom : playerComs) {
@@ -102,7 +102,7 @@ public class RoomHandler implements Runnable {
                 }
 
                 s = (State) playerCom.read();
-                if(s == State.SendMoney){
+                if (s == State.SendMoney) {
                     playerCom.write(allPlayerCash);
                 }
             }
@@ -122,10 +122,9 @@ public class RoomHandler implements Runnable {
         //Loop through 4 Betting States
         for (int j = 0; j < 4; j++) {
 
-            //if raiseLoop == (number of players - 1) -> everyone chooses Call || All IN || Fold
             //There is a Raise then raiseLoop starts again
-            int raiseLoop = 0;
             int playerIndex = 0;
+            int raiseLoop = 0;
 
             //Notify all the players about each Bet State
             for (PlayerCommunicator com : playerComs) {
@@ -149,135 +148,141 @@ public class RoomHandler implements Runnable {
             }
 
             //Skip betting
-            boolean skip = check_allFold_or_allAllIn();
-            if(skip) {
+            boolean skipBetting = check_allFold_or_allAllIn();
+            if (skipBetting) {
                 //Send Stop signal to clients, tell them that a winner has been found
                 for (int i = 0; i < playerComs.size(); i++) {
-                    playerComs.get(i).write("Skip");
-                }
-            }
-
-            //There is still another player who tries to raise, SKip if all Fold or all All IN
-            while (raiseLoop != (playerComs.size()) && !skip) {
-
-                if(check_allFold_or_allAllIn()) break;
-
-                if(allUsernames.get(playerIndex) == null && isAllIn[playerIndex]){
-                    raiseLoop++;
+                    playerComs.get(i).write("Skip betting");
                 }
 
-                //If a username is not null then his turn is sent and the server will listen to the response of his socket
-                if (allUsernames.get(playerIndex) != null && !isAllIn[playerIndex]) {
-                    //send whos turn
-                    System.out.println("Send a player's turn.");
-                    sendTurn(playerIndex);
+            } else {
+                //There is still another player who tries to raise, SKip if all Fold or all All IN
+                while (raiseLoop != (playerComs.size())) {
 
-                    //receive response from that player socket
-                    System.out.println("Waiting for response from that player");
-                    Object responseFromAClient = playerComs.get(playerIndex).read();
-                    String responseToOthers = "Cannot detect";
+                    if (check_allFold_or_allAllIn()) break;
 
-                    if (responseFromAClient instanceof Integer) {
-                        System.out.println(responseFromAClient);
-                        int moneyToAdd_FromPlayer = (Integer) responseFromAClient;
+                    //A player chooses FOLD or ALL IN then Skip him
+                    if (allUsernames.get(playerIndex) == null || allInStatus[playerIndex]) {
+                        raiseLoop++;
 
-                        if (moneyToAdd_FromPlayer == -1) {
-                            raiseLoop++;
-                            responseToOthers = "Fold $" + allBets[playerIndex] + "/" + pot + "/" + allPlayerCash.get(playerIndex);
+                    } else {
+                        //Send normal still Active Player's turn
+                        System.out.println("Send a player's turn.");
+                        sendTurn(playerIndex);
 
-                            //Fold and All in - Special Pass
-                            if (responseToOthers.startsWith("Fold")) {
-                                allUsernames.set(playerIndex, null);
+                        //receive response from that player socket
+                        System.out.println("Waiting for response from that player");
+
+                        Object responseFromAClient = playerComs.get(playerIndex).read();
+                        String responseToOthers = "Cannot detect response.";
+
+                        if (responseFromAClient instanceof Integer) {
+                            System.out.println(responseFromAClient);
+
+                            int moneyToAdd_FromPlayer = (Integer) responseFromAClient;
+
+                            //Fold
+                            if (moneyToAdd_FromPlayer == -1) {
+
+                                raiseLoop++;
+                                responseToOthers = "Fold $" + "/" + pot + "/" + allPlayerCash.get(playerIndex);
+
+                                //Next time, server will not send turn to this username
+                                if (responseToOthers.startsWith("Fold")) {
+                                    allUsernames.set(playerIndex, null);
+                                }
+
+                            //Check
+                            } else if (moneyToAdd_FromPlayer == 0) {
+
+                                raiseLoop++;
+                                responseToOthers = "Check: $" + allBets[playerIndex] + "/" + pot + "/" + allPlayerCash.get(playerIndex);
+
+                            //All in
+                            } else if (((moneyToAdd_FromPlayer + allBets[playerIndex]) < currentRaise) ||
+                                    //Player has nothing left after subtracting moneyToAdd
+                                    ((allPlayerCash.get(playerIndex) - moneyToAdd_FromPlayer) == 0)) {
+
+                                raiseLoop++;
+                                allInStatus[playerIndex] = true;
+
+                                //Increase pot
+                                pot += moneyToAdd_FromPlayer;
+
+                                //But decrease in that player money
+                                allPlayerCash.set(playerIndex, allPlayerCash.get(playerIndex) - moneyToAdd_FromPlayer);
+
+                                //Update the current Bet of that player
+                                allBets[playerIndex] = moneyToAdd_FromPlayer + allBets[playerIndex];
+
+                                responseToOthers = "All in: $" + allBets[playerIndex] + "/" + pot + "/" + allPlayerCash.get(playerIndex);
+
+                                //if All in is even bigger than currentRaise -> set it to currentRaise
+                                if (allBets[playerIndex] > currentRaise) {
+
+                                    raiseLoop = 0;//Bigger than current Raise then count as Raise
+
+                                    currentRaise = allBets[playerIndex];
+                                    responseToOthers = "Big All In: $" + allBets[playerIndex] + "/" + pot + "/" + allPlayerCash.get(playerIndex);
+                                }
+
+                            //Raise
+                            } else if ((moneyToAdd_FromPlayer + allBets[playerIndex]) > currentRaise) {
+                                raiseLoop = 0;
+
+                                //Update the new Raise
+                                currentRaise = moneyToAdd_FromPlayer + allBets[playerIndex];
+
+                                //Increase pot
+                                pot += moneyToAdd_FromPlayer;
+
+                                //But decrease in that player money
+                                allPlayerCash.set(playerIndex, allPlayerCash.get(playerIndex) - moneyToAdd_FromPlayer);
+
+                                //Update the current Bet of that player
+                                allBets[playerIndex] = currentRaise;
+
+                                responseToOthers = "Raise: $" + currentRaise + "/" + pot + "/" + allPlayerCash.get(playerIndex);
+
+                            //Call
+                            } else if ((moneyToAdd_FromPlayer + allBets[playerIndex]) == currentRaise) {
+
+                                raiseLoop++;
+
+                                //Increase pot
+                                pot += moneyToAdd_FromPlayer;
+
+                                //But decrease in that player money
+                                allPlayerCash.set(playerIndex, allPlayerCash.get(playerIndex) - moneyToAdd_FromPlayer);
+
+                                //Update the current Bet of that player
+                                allBets[playerIndex] = currentRaise;
+
+                                responseToOthers = "Call: $" + currentRaise + "/" + pot + "/" + allPlayerCash.get(playerIndex);
+
                             }
 
-                        //Check
-                        } else if (moneyToAdd_FromPlayer == 0) {
-                            raiseLoop++;
-                            responseToOthers = "Check: $" + allBets[playerIndex] + "/" + pot + "/" + allPlayerCash.get(playerIndex);
-
-                        //All in
-                        } else if( ((moneyToAdd_FromPlayer + allBets[playerIndex]) < currentRaise) ||
-                                //Player has nothing left after subtracting moneyToAdd
-                                ((allPlayerCash.get(playerIndex) - moneyToAdd_FromPlayer) == 0)){
-
-                            isAllIn[playerIndex] = true;
-                            raiseLoop++;
-
-                            //Increase pot
-                            pot += moneyToAdd_FromPlayer;
-
-                            //But decrease in that player money
-                            allPlayerCash.set(playerIndex, allPlayerCash.get(playerIndex) - moneyToAdd_FromPlayer);
-
-                            //Update the current Bet of that player
-                            allBets[playerIndex] = moneyToAdd_FromPlayer + allBets[playerIndex];
-
-                            responseToOthers = "All in: $" + allBets[playerIndex] + "/" + pot + "/" + allPlayerCash.get(playerIndex);
-
-                            //if All in is bigger than currentRaise -> set it to currentRaise
-                            if(allBets[playerIndex] > currentRaise){
-                                currentRaise = allBets[playerIndex];
-                                responseToOthers = "Big All In: $" + allBets[playerIndex] + "/" + pot + "/" + allPlayerCash.get(playerIndex);
-                                raiseLoop = 0;//Bigger than current Raise then count as Raise
+                            //send that response to everyone
+                            for (int y = 0; y < playerComs.size(); y++) {
+                                System.out.println("Writing " + responseToOthers + " to everyone.");
+                                playerComs.get(y).write(responseToOthers);
                             }
-
-                        //Raise
-                        } else if ((moneyToAdd_FromPlayer + allBets[playerIndex]) > currentRaise) {
-                            raiseLoop = 0;
-
-                            //Update the new Raise
-                            currentRaise = moneyToAdd_FromPlayer + allBets[playerIndex];
-
-                            //Increase pot
-                            pot += moneyToAdd_FromPlayer;
-
-                            //But decrease in that player money
-                            allPlayerCash.set(playerIndex, allPlayerCash.get(playerIndex) - moneyToAdd_FromPlayer);
-
-                            //Update the current Bet of that player
-                            allBets[playerIndex] = currentRaise;
-
-                            responseToOthers = "Raise: $" + currentRaise + "/" + pot + "/" + allPlayerCash.get(playerIndex);
-
-                        //Call
-                        } else if ((moneyToAdd_FromPlayer + allBets[playerIndex]) == currentRaise) {
-                            raiseLoop++;
-
-                            //Increase pot
-                            pot += moneyToAdd_FromPlayer;
-
-                            //But decrease in that player money
-                            allPlayerCash.set(playerIndex, allPlayerCash.get(playerIndex) - moneyToAdd_FromPlayer);
-
-                            //Update the current Bet of that player
-                            allBets[playerIndex] = currentRaise;
-
-                            responseToOthers = "Call: $" + currentRaise + "/" + pot + "/" + allPlayerCash.get(playerIndex);
-
                         }
+                    }
 
-                        //send that response to everyone
-                        for (int y = 0; y < playerComs.size(); y++) {
-                            System.out.println("Writing " + responseToOthers + " to everyone.");
-                            playerComs.get(y).write(responseToOthers);
-                        }
+                    //Next Player
+                    playerIndex++;
+                    //Restart index to The first Player
+                    if (playerIndex == playerComs.size()) {
+                        playerIndex = 0;
                     }
                 }
 
-                playerIndex++;
-                //Restart index to The first Player
-                if (playerIndex == playerComs.size()) {
-                    playerIndex = 0;
-                }
-            }
-
-            if(!skip){
                 //The final turn has been processed, send end turn to every player
                 for (int x = 0; x < playerComs.size(); x++) {
                     playerComs.get(x).write(BetState.EndState);
                 }
             }
-
         }
 
         //ShowDown
@@ -295,26 +300,30 @@ public class RoomHandler implements Runnable {
     }
 
     public boolean check_allFold_or_allAllIn() {
-        int count = 0;
+        int foldCount = 0;
         boolean result = false;
+
+        //Number of Folds
         for (int i = 0; i < allUsernames.size(); i++) {
             if (allUsernames.get(i) == null) {
-                count++;
+                foldCount++;
             }
         }
-        System.out.println("Number of folded players" + count);
 
-        int count1 = 0;
-        for (int i = 0; i < isAllIn.length; i++) {
-            if(isAllIn[i])    count1++;
+        System.out.println("Number of folded players: " + foldCount);
+
+        int allInCount = 0;
+        for (int i = 0; i < allInStatus.length; i++) {
+            if (allInStatus[i])
+                allInCount++;
         }
 
-        if (count == playerComs.size() - 1 || count1 == playerComs.size()) {
+        if (foldCount == playerComs.size() - 1 || allInCount == playerComs.size()) {
             result = true;
         }
 
         //Fold and All at the same time
-        if(count + count1 == playerComs.size()){
+        if (foldCount + allInCount >= playerComs.size()) {
             result = true;
         }
 

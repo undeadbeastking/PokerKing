@@ -59,9 +59,6 @@ public class MainFrame extends JFrame implements Runnable {
     private int myBet = 0;
     private int currentHighestBet = 100;
 
-    private boolean skipBetting = false;
-
-
     public MainFrame() {
 
 //        try{
@@ -139,7 +136,7 @@ public class MainFrame extends JFrame implements Runnable {
                     System.out.println("Pop up GamePanel");
 
                     //Process 4 BET states
-                    for (int i = 0; i < 5; i++) {
+                    for (int i = 0; i < 4; i++) {
 
                         //Read the Bet State
                         Object betState = server.read();
@@ -163,15 +160,20 @@ public class MainFrame extends JFrame implements Runnable {
                                 gamePanel.getBetRoundLabel().setText("The River");
                                 gamePanel.getComCard5().setVisible(true);
 
-                            } else if (e == BetState.ShowDown) {
-                                gamePanel.getBetRoundLabel().setText("ShowDown");
-                                break;//Break the Bet Loop,skip method processABetState()
-
                             }
                         }
 
                         System.out.println("Process a bet State...");
                         processABetState();
+                    }
+
+                    Object betState = server.read();
+                    if (betState instanceof BetState) {
+                        BetState e = (BetState) betState;
+
+                        if (e == BetState.ShowDown) {
+                            gamePanel.getBetRoundLabel().setText("ShowDown");
+                        }
                     }
 
                 } else if (s == State.EndGame) {
@@ -248,27 +250,16 @@ public class MainFrame extends JFrame implements Runnable {
     public void processABetState() {
         while (true) {
             System.out.println("Enter Processing Bet State.");
-            boolean isMyTurn = false;//false as default
+            boolean isMyTurn = false;
             Object fromServer = server.read();
 
-            if (fromServer instanceof BetState) {
-                BetState s = (BetState) fromServer;
-                if (s == BetState.EndState) {
-                    break;
-                }
-
-            } else if (fromServer instanceof String) {
-                //Find a winner before the game ends
-                if (fromServer.toString().equals("Skip")) {
-                    skipBetting = true;
-                    System.out.println("Skip betting");
-                }
-            }
-
-            if (skipBetting) break;
-
             if (fromServer instanceof String) {
-                if (fromServer instanceof String) {
+
+                //Find a winner before the game ends
+                if (fromServer.toString().equals("Skip betting")) {
+                    break;
+
+                } else {
                     currentTurnUsername = fromServer.toString();
                     if (me.getUsername().equals(currentTurnUsername)) {
                         isMyTurn = true;
@@ -276,22 +267,26 @@ public class MainFrame extends JFrame implements Runnable {
 
                     System.out.println("This is: " + fromServer + " turn!");
                     gamePanel.setTurn(isMyTurn, currentTurnUsername);
+
+                    System.out.println("Turn received, now listen to response.");
+                    listenResponse();
+                }
+
+            } else if (fromServer instanceof BetState) {
+                BetState s = (BetState) fromServer;
+                if (s == BetState.EndState) {
+                    break;
                 }
             }
-
-            System.out.println("Turn received, now listen to response.");
-            listenResponse();
         }
     }
 
     public void listenResponse() {
-        if (!skipBetting) {
-            Object fromServer = server.read();
-            System.out.println("Received from the others: " + fromServer);
+        Object fromServer = server.read();
+        System.out.println("Received from the others: " + fromServer);
 
-            if (fromServer instanceof String) {
-                gamePanel.processResponseFromOtherPlayer(currentTurnUsername, fromServer.toString());
-            }
+        if (fromServer instanceof String) {
+            gamePanel.processResponseFromOtherPlayer(currentTurnUsername, fromServer.toString());
         }
     }
 
