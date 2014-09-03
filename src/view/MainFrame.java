@@ -167,8 +167,8 @@ public class MainFrame extends JFrame implements Runnable {
 
                             } else if(e == BetState.FourBet.ShowDown){
                                 gamePanel.getBetRoundLabel().setText("ShowDown");
-                                showWinner();
                                 nhanTien();
+                                showWinner();
                                 break;//Break the Bet Loop,skip method processABetState()
 
                             }

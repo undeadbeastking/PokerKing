@@ -262,8 +262,8 @@ public class RoomHandler implements Runnable {
         chiaTien();
         for (PlayerCommunicator com : playerComs) {
             com.write(BetState.ShowDown);
-            com.write(winner);
             com.write(allPlayerCash);
+            com.write(winner);
         }
 
     }
